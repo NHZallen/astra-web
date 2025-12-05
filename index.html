@@ -20,7 +20,7 @@
             --accent-color: #FA2D48;
             --accent-color-light: rgba(250, 45, 72, 0.1);
             --divider: #E5E5E5;
-            --player-bg: rgba(255, 255, 255, 0.95);
+            --player-bg: rgba(255, 255, 255, 0.98);
             --modal-bg: #FFFFFF;
             --input-bg: #F0F0F0;
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
@@ -41,7 +41,7 @@
             --text-secondary: #A1A1A6;
             --accent-color-light: rgba(250, 45, 72, 0.2);
             --divider: #333333;
-            --player-bg: rgba(28, 28, 30, 0.95);
+            --player-bg: rgba(28, 28, 30, 0.98);
             --modal-bg: #000000;
             --input-bg: #1C1C1E;
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
@@ -61,7 +61,7 @@
         .input-style { width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none; font-size: 1rem; }
         .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; }
         
-        /* --- 1. Landing Page --- */
+        /* --- Landing Page --- */
         #landing-page {
             height: 100vh; overflow-y: auto; background: var(--bg-color); z-index: 2000; position: relative;
             scroll-behavior: smooth; padding-top: var(--safe-top);
@@ -91,7 +91,7 @@
         }
         #login-modal.active .login-box { transform: scale(1); }
 
-        /* --- 2. App Interface --- */
+        /* --- App Interface --- */
         #app-view { display: flex; height: 100vh; width: 100%; }
 
         /* Sidebar */
@@ -132,7 +132,7 @@
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Search Section UI */
+        /* Search Section */
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg);
@@ -142,8 +142,6 @@
         .search-history-dropdown.active { display: block; }
         .history-item { padding: 12px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
         .history-item:hover { background: var(--input-bg); color: var(--text-primary); }
-        
-        /* New Search Result Sections */
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; margin-top: 30px; color: var(--text-primary); }
 
         /* Cards */
@@ -163,7 +161,6 @@
         }
         .music-card:hover .add-btn { opacity: 1; }
 
-        /* Circle Card for Artists */
         .artist-card { text-align: center; cursor: pointer; transition: 0.3s; }
         .artist-card:hover { opacity: 0.8; }
         .artist-img { width: 140px; height: 140px; border-radius: 50%; background: #eee; margin: 0 auto 10px; background-size: cover; background-position: center; box-shadow: var(--shadow-sm); }
@@ -175,14 +172,16 @@
         .playlist-row:hover { border-color: var(--accent-color); }
         .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
 
-        /* Player Bar */
+        /* --- Player Bar (Top Priority) --- */
         .player-bar {
             position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
-            z-index: 100; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom);
+            z-index: 2000; /* 最高層級 */
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom);
             transform: translateY(200%); opacity: 0;
         }
         .player-bar.active { transform: translateY(0); opacity: 1; }
+
         @media (min-width: 769px) { 
             .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; }
         }
@@ -230,6 +229,7 @@
             }
             .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
             .mobile-nav-item.active::before { transform: translateX(-50%) scale(1); }
+            
             .player-bar {
                 bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); 
                 left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0;
@@ -365,7 +365,7 @@
         </footer>
     </section>
 
-    <!-- Modals (Profile, Settings, etc.) are reused from previous logic but consolidated for clarity -->
+    <!-- Modals (Profile, Settings, etc.) -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
         <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button></div>
         <div class="modal-body">
@@ -440,6 +440,24 @@
     <audio id="audio-player"></audio>
 
     <script>
+        // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
+        // 請在這裡填入圖片連結 (GitHub Pages 連結或外部網址)
+        // 範例: "BABYMONSTER": "./images/artist_bm.jpg"
+        
+        const artistImages = {
+            "BABYMONSTER": "https://i.scdn.co/image/ab6761610000e5eb3c029339239d67fb2b339486", // 範例圖
+            "Blackpink": "https://i.scdn.co/image/ab6761610000e5ebee07b5820dd91d15d397e29c"
+        };
+
+        const albumImages = {
+            "New Era.": "https://upload.wikimedia.org/wikipedia/en/2/2f/Babymonster_-_Drip.png", // 範例圖
+            "Born Pink": "..." 
+        };
+
+        // 預設圖片 (當找不到對應圖片時顯示)
+        const DEFAULT_ARTIST_IMG = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        const DEFAULT_ALBUM_IMG = "https://cdn-icons-png.flaticon.com/512/3208/3208703.png";
+
         // --- DB & Variables ---
         const DB_NAME = 'ASTRA_DB';
         const STORE_NAME = 'user_data';
@@ -448,12 +466,41 @@
         async function saveUserToDB(userObj) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(userObj); tx.oncomplete = () => res(); tx.onerror = () => rej(); }); }
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
-        // --- Music Data (Added Album field) ---
+        // --- Music Data ---
+        // cover 欄位現在如果留空，程式會嘗試自動去對應 albumImages，如果也沒有才用預設
         const musicLibrary = [
-            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "New Era.", filename: "song1.mp3" },
-            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "New Era.", filename: "song2.mp3" },
-            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "New Era.", filename: "song3.mp3" },
-            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "New Era.", filename: "song4.mp3" },
+            { 
+                id: 1, 
+                title: "WE GO UP", 
+                artist: "BABYMONSTER", 
+                album: "New Era.", 
+                filename: "song1.mp3",
+                cover: "" // 留空測試自動對應
+            },
+            { 
+                id: 2, 
+                title: "PSYCHO", 
+                artist: "BABYMONSTER", 
+                album: "New Era.", 
+                filename: "song2.mp3",
+                cover: ""
+            },
+            { 
+                id: 3, 
+                title: "SUPA DUPA LUV", 
+                artist: "BABYMONSTER", 
+                album: "New Era.", 
+                filename: "song3.mp3",
+                cover: ""
+            },
+            { 
+                id: 4, 
+                title: "WILD", 
+                artist: "BABYMONSTER", 
+                album: "New Era.", 
+                filename: "song4.mp3",
+                cover: ""
+            },
         ];
         
         let currentUserData = null; 
@@ -462,6 +509,20 @@
         let currentCollectionSongs = []; // Temp storage for detail view
         let songToAdd = null; 
         let tempImgBase64 = null;
+
+        // --- Helper: Get Images ---
+        function getArtistImage(name) {
+            return artistImages[name] || DEFAULT_ARTIST_IMG;
+        }
+        function getAlbumImage(name) {
+            return albumImages[name] || DEFAULT_ALBUM_IMG;
+        }
+        function getSongCover(song) {
+            if(song.cover) return song.cover;
+            // 如果歌曲沒設定封面，嘗試用專輯封面
+            if(song.album && albumImages[song.album]) return albumImages[song.album];
+            return DEFAULT_ALBUM_IMG;
+        }
 
         // --- Init ---
         window.onload = async function() {
@@ -528,7 +589,7 @@
             else header.classList.remove('scrolled');
         }
 
-        // --- Search System (New: Aggregated) ---
+        // --- Search System ---
         function showSearchHistory() {
             const history = currentUserData.search_history || [];
             const dropdown = document.getElementById('search-history-dropdown');
@@ -555,7 +616,7 @@
                 html += `<div class="search-section-title">歌手</div><div class="grid-container">`;
                 html += matchedArtists.map(artist => `
                     <div class="artist-card" onclick="openArtistDetail('${artist}')">
-                        <div class="artist-img" style="background-image:url('https://cdn-icons-png.flaticon.com/512/3208/3208703.png')"></div>
+                        <div class="artist-img" style="background-image:url('${getArtistImage(artist)}')"></div>
                         <div style="font-weight:bold;">${artist}</div>
                     </div>
                 `).join('');
@@ -567,7 +628,7 @@
                 html += `<div class="search-section-title">專輯</div><div class="grid-container">`;
                 html += matchedAlbums.map(album => `
                     <div class="music-card" onclick="openAlbumDetail('${album}')">
-                        <div class="cover-art" style="background-image:url('https://cdn-icons-png.flaticon.com/512/3208/3208703.png')"></div>
+                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
                         <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
                         <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
                     </div>
@@ -598,7 +659,7 @@
         async function deleteHistory(e, item) { e.stopPropagation(); let history = currentUserData.search_history || []; history = history.filter(h => h !== item); currentUserData.search_history = history; await saveUserToDB(currentUserData); showSearchHistory(); }
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
 
-        // --- Detail Views (Generic) ---
+        // --- Detail Views (Updated with Images) ---
         function openCollectionDetail(title, subtitle, coverUrl, songs) {
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
@@ -620,18 +681,18 @@
 
         function openArtistDetail(artistName) {
             const songs = musicLibrary.filter(s => s.artist === artistName);
-            openCollectionDetail(artistName, "歌手", "https://cdn-icons-png.flaticon.com/512/3208/3208703.png", songs);
+            openCollectionDetail(artistName, "歌手", getArtistImage(artistName), songs);
         }
         function openAlbumDetail(albumName) {
             const songs = musicLibrary.filter(s => s.album === albumName);
             const artist = songs.length > 0 ? songs[0].artist : "Unknown";
-            openCollectionDetail(albumName, `專輯 • ${artist}`, "https://cdn-icons-png.flaticon.com/512/3208/3208703.png", songs);
+            openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs);
         }
         function openPlaylistDetail(plId) {
             const pl = currentUserData.playlists.find(p => p.id === plId);
             if(!pl) return;
             const songs = musicLibrary.filter(s => pl.songs.includes(s.id));
-            openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || "https://cdn-icons-png.flaticon.com/512/3208/3208703.png", songs);
+            openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs);
         }
         
         function playCollectionAll() {
@@ -642,7 +703,7 @@
             }
         }
 
-        // --- Player Logic (Enhanced) ---
+        // --- Player Logic ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
 
@@ -650,10 +711,6 @@
             const song = musicLibrary.find(s => s.id === id);
             if(!song) return;
             
-            // If playing from individual click, queue = just this song, unless we implement smart queue context.
-            // For now, let's allow "Next" to trigger random if queue is empty/done.
-            // Or better: clicking a song in list sets queue to that list? 
-            // Simplified: Click sets single song, "Next" picks random.
             currentQueue = [song]; 
             currentSongIndex = 0;
             
@@ -664,11 +721,30 @@
             audioPlayer.src = `./music/${song.filename}`;
             document.getElementById('p-title').innerText = song.title;
             document.getElementById('p-artist').innerText = song.artist;
-            document.getElementById('p-thumb').style.backgroundImage = "url('https://cdn-icons-png.flaticon.com/512/3208/3208703.png')";
+            
+            const coverImage = getSongCover(song);
+            document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
+            
             audioPlayer.play();
             isPlaying = true;
             document.getElementById('playBtn').innerText = "||";
             document.getElementById('player-bar').classList.add('active');
+
+            // Lock Screen Control
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: song.artist,
+                    album: song.album,
+                    artwork: [
+                        { src: coverImage, sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', togglePlay);
+                navigator.mediaSession.setActionHandler('pause', togglePlay);
+                navigator.mediaSession.setActionHandler('nexttrack', playNext);
+            }
         }
 
         function togglePlay() {
@@ -681,14 +757,11 @@
 
         function playNext() {
             if(currentQueue.length > 0 && currentSongIndex < currentQueue.length - 1) {
-                // Play next in queue
                 currentSongIndex++;
                 playSongObject(currentQueue[currentSongIndex]);
             } else {
-                // Queue finished or single song -> Random Play (Auto Shuffle)
                 const randomSong = musicLibrary[Math.floor(Math.random() * musicLibrary.length)];
                 playSongObject(randomSong);
-                // Reset queue to this random song so 'next' works again
                 currentQueue = [randomSong];
                 currentSongIndex = 0;
             }
@@ -696,9 +769,10 @@
 
         // --- Helpers ---
         function createSongCardHTML(song) {
+            const img = getSongCover(song);
             return `
                 <div class="music-card" onclick="playSong(${song.id})">
-                    <div class="cover-art" style="background-image:url('https://cdn-icons-png.flaticon.com/512/3208/3208703.png')">
+                    <div class="cover-art" style="background-image:url('${img}')">
                         <div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </div>
@@ -715,13 +789,13 @@
             if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; }
             container.innerHTML = playlists.map(pl => `
                 <div class="playlist-row" onclick="openPlaylistDetail(${pl.id})">
-                    <div class="playlist-cover-small" style="background-image:url(${pl.img || 'https://cdn-icons-png.flaticon.com/512/3208/3208703.png'})"></div>
+                    <div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div>
                     <div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div>
                 </div>
             `).join('');
         }
 
-        // (Other Login/Profile/Settings functions remain identical to previous version, condensed here for space)
+        // (Other Login/Profile/Settings functions remain same)
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         async function handleLogin(e) { e.preventDefault(); const u = document.getElementById('username').value; const p = document.getElementById('password').value; let user = await getUserFromDB(u); if(user){ if(user.password===p){ currentUserData=user; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); }else alert("密碼錯誤"); }else{ if(confirm("註冊?")){ const n={username:u,password:p,avatar:null,playlists:[],theme:'light',search_history:[]}; await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); } } }
