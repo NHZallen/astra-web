@@ -1022,21 +1022,32 @@
             document.getElementById('cd-cover').style.backgroundImage = `url(${coverUrl})`;
             currentCollectionSongs = songs;
 
+            // 1. 上方區塊：只保留「播放全部」按鈕，移除原本在這裡的刪除按鈕
             const actionArea = document.getElementById('cd-action-area');
-            let actionHtml = `<button onclick="playCollectionAll()" style="padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>`;
+            actionArea.innerHTML = `<button onclick="playCollectionAll()" style="padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer; box-shadow: 0 4px 12px var(--accent-color-light);">播放全部</button>`;
             
-            // 如果是播放清單，加入刪除按鈕
-            if (isPlaylist) {
-                actionHtml += `<button onclick="deleteCurrentPlaylist()" style="padding:8px 24px; background:transparent; color:var(--text-secondary); border:1px solid var(--divider); border-radius:20px; font-size:0.9rem; cursor:pointer;">刪除清單</button>`;
-            }
-            actionArea.innerHTML = actionHtml;
-            
-            const area = document.getElementById('cd-content-area');
-            area.innerHTML = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>` + 
+            // 2. 內容區塊：生成歌曲列表
+            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>` + 
                              songs.map(s => createSongRowHTML(s, isPlaylist)).join('');
+            
+            // 3. 如果是播放清單，在最下方加入「刪除清單」按鈕，並使用 Flex 排版靠右對齊
+            if (isPlaylist) {
+                html += `
+                <div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;">
+                    <button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; transition: 0.2s;">
+                        <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        刪除此清單
+                    </button>
+                </div>
+                `;
+            }
+
+            const area = document.getElementById('cd-content-area');
+            area.innerHTML = html;
             
             document.getElementById('collection-detail-modal').classList.add('active');
         }
+
 
         // 新增：刪除清單功能
         async function deleteCurrentPlaylist() {
@@ -1212,3 +1223,4 @@
     </script>
 </body>
 </html>
+
