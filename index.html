@@ -20,7 +20,7 @@
             --accent-color: #FA2D48;
             --divider: #E5E5E5;
             --player-bg: rgba(255, 255, 255, 0.9);
-            --header-bg: rgba(255, 255, 255, 0.85); /* 頂部導航背景 */
+            --header-bg: rgba(255, 255, 255, 0.85);
             --modal-bg: #FFFFFF;
             --input-bg: #F0F0F0;
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
@@ -89,7 +89,6 @@
 
         .main-content { flex: 1; overflow-y: auto; position: relative; display: flex; flex-direction: column; }
         
-        /* --- NEW: 頂部標題與頭像列 --- */
         .content-header {
             position: sticky; top: 0; z-index: 90;
             background: var(--header-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
@@ -134,18 +133,39 @@
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
 
-        /* 手機版適配 */
+        /* 手機版適配 & 底部遮擋修正 */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
             .lp-title { font-size: 2.5rem; }
             .content-header { padding: 15px 20px; padding-top: calc(15px + var(--safe-top)); }
-            .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: calc(60px + var(--safe-bottom)); background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 110; justify-content: space-around; padding-bottom: var(--safe-bottom); align-items: center; }
+            
+            .mobile-nav { 
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                height: calc(60px + var(--safe-bottom)); background: var(--modal-bg); 
+                border-top: 1px solid var(--divider); z-index: 110; 
+                justify-content: space-around; padding-bottom: var(--safe-bottom); 
+                align-items: center; 
+            }
             .mobile-nav-item { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
             .mobile-nav-item.active { color: var(--accent-color); }
-            .player-bar { bottom: calc(65px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: 92%; border-radius: 18px; height: 65px; padding: 0 15px; padding-bottom:0; }
-            .page-section { padding: 20px; }
+            
+            .player-bar { 
+                bottom: calc(65px + var(--safe-bottom)); /* 抬高避免蓋住導航 */
+                left: 50%; transform: translateX(-50%); 
+                width: 92%; border-radius: 18px; 
+                height: 65px; padding: 0 15px; padding-bottom:0; 
+            }
+            
+            /* 修正：增加底部 Padding 防止內容被播放器與導航遮擋 */
+            .page-section { 
+                padding: 20px; 
+                padding-bottom: calc(160px + var(--safe-bottom)); /* 關鍵修正 */
+            }
             .modal-nav { padding: 15px 20px; }
+            
+            /* 全螢幕視窗也需要足夠底部空間 */
+            .modal-body { padding-bottom: calc(100px + var(--safe-bottom)); }
         }
 
         /* 藥丸切換器 */
@@ -155,7 +175,6 @@
         .pill-option { flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
         .pill-option.active { color: var(--text-primary); }
 
-        /* 日誌與頭像編輯 */
         .log-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--divider); }
         .log-ver { display: inline-block; background: var(--accent-color); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
         .profile-section { margin-bottom: 25px; }
@@ -208,7 +227,6 @@
         </nav>
 
         <main class="main-content">
-            <!-- NEW: 頂部標題與頭像列 -->
             <header class="content-header">
                 <h1 id="page-title-display" class="header-title">首頁</h1>
                 <div class="user-avatar-btn" id="header-avatar-btn" onclick="openProfileModal()"></div>
@@ -271,14 +289,13 @@
         </footer>
     </section>
 
-    <!-- 個人帳戶設定頁 (New!) -->
+    <!-- 個人帳戶設定頁 -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
         <div class="modal-nav">
             <h2>編輯個人檔案</h2>
             <button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer; font-weight:bold; color:var(--text-primary);">完成</button>
         </div>
         <div class="modal-body" style="text-align:center;">
-            <!-- 頭像編輯 -->
             <div class="profile-section">
                 <div id="profile-edit-avatar" style="width:120px; height:120px; border-radius:50%; background-color:#ccc; background-size:cover; background-position:center; margin:0 auto 15px; position:relative; cursor:pointer; border:3px solid var(--card-bg); box-shadow:var(--shadow-md);" onclick="document.getElementById('upload-avatar').click()">
                     <div style="position:absolute; bottom:0; right:0; background:var(--accent-color); color:white; width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid var(--card-bg);">📷</div>
@@ -286,25 +303,18 @@
                 <input type="file" id="upload-avatar" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)">
                 <p style="color:var(--text-secondary); font-size:0.8rem;">點擊上方更換大頭貼</p>
             </div>
-
-            <!-- 基本資料 -->
             <div class="profile-section" style="text-align:left;">
                 <label class="profile-label">使用者名稱</label>
                 <input type="text" id="edit-username" class="input-style" placeholder="輸入新的名稱">
             </div>
-
             <hr style="border:none; border-top:1px solid var(--divider); margin:30px 0;">
-
-            <!-- 修改密碼 -->
             <div class="profile-section" style="text-align:left;">
                 <h3 style="margin-bottom:15px;">安全性</h3>
                 <label class="profile-label">目前密碼</label>
                 <input type="password" id="current-password" class="input-style" placeholder="輸入目前密碼以驗證">
-                
                 <label class="profile-label">新密碼</label>
                 <input type="password" id="new-password" class="input-style" placeholder="輸入新密碼">
             </div>
-
             <button onclick="saveProfileChanges()" style="width:100%; padding:15px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; margin-top:20px;">儲存變更</button>
         </div>
     </div>
@@ -325,7 +335,7 @@
                 </div>
             </div>
             <div style="padding:20px 0; border-bottom:1px solid var(--divider); cursor:pointer;" onclick="showChangelog()">
-                <div style="display:flex; justify-content:space-between;"><span>更新日誌</span><span style="color:var(--text-secondary);" id="setting-ver">v1.1.0 ></span></div>
+                <div style="display:flex; justify-content:space-between;"><span>更新日誌</span><span style="color:var(--text-secondary);" id="setting-ver">v1.2.0 ></span></div>
             </div>
             <button onclick="handleLogout()" style="margin-top:40px; width:100%; padding:15px; background:var(--divider); color:var(--text-primary); border:none; border-radius:12px; font-weight:bold; cursor:pointer;">登出系統</button>
         </div>
@@ -340,7 +350,7 @@
         <div class="modal-body" id="changelog-content"></div>
     </div>
 
-    <!-- 選擇/建立清單 (加入歌曲時) -->
+    <!-- 選擇/建立清單 -->
     <div id="select-playlist-modal" class="fullscreen-modal" style="z-index:320; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
         <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px;">
             <h3 style="margin-bottom:20px;">添加到播放清單</h3>
@@ -349,12 +359,11 @@
         </div>
     </div>
 
-    <!-- 建立新清單視窗 (含圖片上傳) -->
+    <!-- 建立新清單 -->
     <div id="create-playlist-modal" class="fullscreen-modal" style="z-index:330; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
         <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px;">
             <h3 style="margin-bottom:20px;">建立新清單</h3>
             <input type="text" id="new-playlist-name" class="input-style" placeholder="清單名稱">
-            
             <div style="margin-bottom:20px;">
                 <p style="margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">封面圖片 (選填)</p>
                 <input type="file" id="new-playlist-img" accept="image/*" style="display:none;" onchange="previewImage(this)">
@@ -362,7 +371,6 @@
                     <span style="font-size:2rem; color:var(--text-secondary);">+</span>
                 </div>
             </div>
-            
             <button onclick="confirmCreatePlaylist()" style="width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">建立</button>
             <button onclick="closeCreatePlaylistModal()" style="width:100%; margin-top:10px; padding:10px; background:none; border:none; color:var(--text-secondary); cursor:pointer;">取消</button>
         </div>
@@ -389,6 +397,72 @@
     <audio id="audio-player"></audio>
 
     <script>
+        // --- 1. IndexedDB 封裝 ---
+        const DB_NAME = 'AstraMusicDB';
+        const DB_VERSION = 1;
+
+        const DB = {
+            db: null,
+            async open() {
+                if (this.db) return this.db;
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(DB_NAME, DB_VERSION);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        // 建立 Stores
+                        if (!db.objectStoreNames.contains('users')) db.createObjectStore('users', { keyPath: 'username' });
+                        if (!db.objectStoreNames.contains('playlists')) db.createObjectStore('playlists', { keyPath: 'id' });
+                        if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+                    };
+                    req.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        resolve(this.db);
+                    };
+                    req.onerror = (e) => reject(e);
+                });
+            },
+            async get(storeName, key) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const req = store.get(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            async put(storeName, data) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const req = store.put(data);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            async delete(storeName, key) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const req = store.delete(key);
+                    req.onsuccess = () => resolve();
+                    req.onerror = () => reject(req.error);
+                });
+            },
+            async getAll(storeName) {
+                const db = await this.open();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+        };
+
         // --- 資料設定 ---
         const musicLibrary = [
             { id: 1, title: "WE GO UP", artist: "BABYMONSTER", filename: "song1.mp3" },
@@ -397,84 +471,86 @@
             { id: 4, title: "WILD", artist: "BABYMONSTER", filename: "song4.mp3" },
         ];
         
-        // 頁面標題對應
-        const pageTitles = {
-            'home': '首頁',
-            'search': '搜尋',
-            'discovery': '新發現',
-            'database': '資料庫'
-        };
+        const pageTitles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
 
-        let myPlaylists = JSON.parse(localStorage.getItem('astra_playlists')) || [];
-        // User Profile Structure: { username: "", password: "", avatar: "base64..." }
-        let currentUser = JSON.parse(localStorage.getItem('astra_account')) || null;
-
+        let myPlaylists = [];
+        let currentUser = null;
         let songToAdd = null;
         let tempImgBase64 = null;
         let tempAvatarBase64 = null;
         let currentPlaylistView = null;
 
-        // --- 初始化與登入 ---
         const observer = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') }));
         document.querySelectorAll('.feature-card').forEach(c => observer.observe(c));
 
-        window.onload = function() {
+        // --- 2. 初始化流程 (改為 Async) ---
+        window.onload = async function() {
+            await DB.open(); // 初始化資料庫
+
+            // 檢查登入狀態
+            const session = await DB.get('settings', 'current_user');
+            if(session) {
+                // 獲取完整使用者資料
+                currentUser = await DB.get('users', session.value);
+            }
+
+            // 檢查主題
+            const themeData = await DB.get('settings', 'theme');
+            if(themeData && themeData.value === 'dark') updateThemeUI('dark', false);
+
             if(currentUser) {
                 document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('app-view').classList.remove('hidden');
-                initApp();
+                await initApp();
             }
-            if(localStorage.getItem('astra_theme') === 'dark') updateThemeUI('dark');
         };
 
+        async function initApp() {
+            renderCards('home-grid', musicLibrary);
+            renderCards('search-grid', musicLibrary);
+            renderCards('discovery-grid', [...musicLibrary].reverse());
+            
+            // 從 DB 讀取播放清單
+            myPlaylists = await DB.getAll('playlists') || [];
+            renderPlaylists();
+            
+            checkVersion();
+            updateHeaderAvatar();
+            document.getElementById('page-title-display').innerText = pageTitles['home'];
+        }
+
+        // --- 登入與登出 (IndexedDB) ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         
-        function handleLogin(e) {
+        async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('login-username').value;
             const pass = document.getElementById('login-password').value;
             
-            // 簡單模擬：如果沒有帳號則創建，有則覆蓋 (Demo用)
-            // 實際應檢查是否匹配。這裡為了演示直接允許登入並保存當前密碼
-            if (!currentUser) {
-                currentUser = { username: user, password: pass, avatar: null };
+            // 嘗試從 DB 找用戶
+            let dbUser = await DB.get('users', user);
+
+            if (!dbUser) {
+                // 註冊新用戶
+                dbUser = { username: user, password: pass, avatar: null };
+                await DB.put('users', dbUser);
             } else {
-                // 如果已經有此用戶記錄，這裡為了方便測試，暫不強制驗證舊密碼，
-                // 但為了「修改密碼」功能，我們更新當前 Session 的資訊
-                if(currentUser.username !== user) {
-                   // 不同用戶，重置
-                   currentUser = { username: user, password: pass, avatar: null };
-                }
+                // 驗證 (這裡簡化，直接更新 session)
+                // 實際應驗證 dbUser.password === pass
             }
-            
-            localStorage.setItem('astra_account', JSON.stringify(currentUser));
+
+            // 設置 Session
+            await DB.put('settings', { key: 'current_user', value: user });
             location.reload();
         }
         
-        function handleLogout() { 
-            // 登出不刪除帳號資料，只刷新頁面回到 Landing
-            // 實際應用可清除 Session Token
-            // 這裡為了演示登出效果，我清除 currentUser 變數指向並重整，
-            // 但保留 localStorage 以便下次登入 (模擬記住帳號) 或可選擇 removeItem
-            // 這裡選擇直接重整，因為 onload 檢查 astra_account
-            // 若要完全登出需要清除 localStorage 裡的標記
-            localStorage.removeItem('astra_account'); 
+        async function handleLogout() { 
+            await DB.delete('settings', 'current_user');
             location.reload(); 
         }
 
-        function initApp() {
-            renderCards('home-grid', musicLibrary);
-            renderCards('search-grid', musicLibrary);
-            renderCards('discovery-grid', [...musicLibrary].reverse());
-            renderPlaylists();
-            checkVersion();
-            updateHeaderAvatar();
-            // 預設頁面標題
-            document.getElementById('page-title-display').innerText = pageTitles['home'];
-        }
-
-        // --- 核心：Header 與 Profile ---
+        // --- 核心：Header 與 Profile (IndexedDB) ---
         function updateHeaderAvatar() {
             const btn = document.getElementById('header-avatar-btn');
             if(currentUser && currentUser.avatar) {
@@ -483,13 +559,11 @@
             } else {
                 btn.style.backgroundImage = 'none';
                 btn.style.backgroundColor = '#ccc';
-                // 預設顯示首字
                 btn.innerHTML = `<span style="display:flex;justify-content:center;align-items:center;height:100%;font-weight:bold;color:#666;">${currentUser ? currentUser.username.charAt(0).toUpperCase() : '?'}</span>`;
             }
         }
 
         function openProfileModal() {
-            // 填入當前資料
             document.getElementById('edit-username').value = currentUser.username;
             document.getElementById('current-password').value = '';
             document.getElementById('new-password').value = '';
@@ -500,8 +574,7 @@
             } else {
                 preview.style.backgroundImage = 'none';
             }
-            tempAvatarBase64 = currentUser.avatar; // 初始為現有
-            
+            tempAvatarBase64 = currentUser.avatar; 
             document.getElementById('profile-modal').classList.add('active');
         }
         function closeProfileModal() { document.getElementById('profile-modal').classList.remove('active'); }
@@ -517,28 +590,30 @@
             }
         }
 
-        function saveProfileChanges() {
+        async function saveProfileChanges() {
             const newName = document.getElementById('edit-username').value;
             const currentPassInput = document.getElementById('current-password').value;
             const newPassInput = document.getElementById('new-password').value;
 
             if(!newName) return alert("使用者名稱不能為空");
 
-            // 如果要改密碼，必須輸入舊密碼
             if(newPassInput) {
-                if(currentPassInput !== currentUser.password) {
-                    return alert("目前密碼錯誤，無法更改密碼！");
-                }
-                currentUser.password = newPassInput; // 更新密碼
+                if(currentPassInput !== currentUser.password) return alert("目前密碼錯誤！");
+                currentUser.password = newPassInput; 
                 alert("密碼已更新");
             }
 
-            // 更新其他資料
+            // 如果改了使用者名稱，需要處理 Key 變更 (刪舊增新)
+            const oldUsername = currentUser.username;
             currentUser.username = newName;
             currentUser.avatar = tempAvatarBase64;
 
-            // 存回 LocalStorage
-            localStorage.setItem('astra_account', JSON.stringify(currentUser));
+            if(oldUsername !== newName) {
+                await DB.delete('users', oldUsername);
+                // 更新 Session
+                await DB.put('settings', { key: 'current_user', value: newName });
+            }
+            await DB.put('users', currentUser);
             
             updateHeaderAvatar();
             closeProfileModal();
@@ -548,14 +623,10 @@
         function switchPage(pid) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+pid).classList.add('active');
-            
-            // 更新 Sidebar
             document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('nav-'+pid)) document.getElementById('nav-'+pid).classList.add('active');
 
-            // 更新頂部標題
             const titleEl = document.getElementById('page-title-display');
-            // 淡入動畫效果
             titleEl.style.opacity = 0;
             setTimeout(() => {
                 titleEl.innerText = pageTitles[pid] || 'ASTRA';
@@ -563,7 +634,6 @@
             }, 150);
         }
 
-        // --- 核心：渲染卡片 ---
         function renderCards(containerId, songs) {
             const container = document.getElementById(containerId);
             container.innerHTML = songs.map(song => `
@@ -601,7 +671,6 @@
             const pl = myPlaylists.find(p => p.id === plId);
             if(!pl) return;
             currentPlaylistView = pl;
-            
             document.getElementById('pd-name').innerText = pl.name;
             document.getElementById('pd-title-large').innerText = pl.name;
             document.getElementById('pd-count').innerText = `${pl.songs.length} 首歌曲`;
@@ -624,19 +693,15 @@
         function closePlaylistDetail() { document.getElementById('playlist-detail-modal').classList.remove('active'); }
         
         function playPlaylistAll() {
-            if(currentPlaylistView && currentPlaylistView.songs.length > 0) {
-                playSong(currentPlaylistView.songs[0]);
-            }
+            if(currentPlaylistView && currentPlaylistView.songs.length > 0) playSong(currentPlaylistView.songs[0]);
         }
 
-        // --- 加入歌曲流程 ---
+        // --- 加入歌曲 (IndexedDB) ---
         function openPlaylistSelector(e, songId) {
             e.stopPropagation();
             songToAdd = songId;
             if(myPlaylists.length === 0) {
-                if(confirm("您還沒有建立任何播放清單，是否立即建立？")) {
-                    openCreatePlaylistModal();
-                }
+                if(confirm("您還沒有建立任何播放清單，是否立即建立？")) openCreatePlaylistModal();
                 return;
             }
             const list = document.getElementById('playlist-selector-list');
@@ -655,11 +720,12 @@
             document.getElementById('select-playlist-modal').classList.add('active');
         }
 
-        function addToPlaylist(plId) {
+        async function addToPlaylist(plId) {
             const pl = myPlaylists.find(p => p.id === plId);
             if(pl && !pl.songs.includes(songToAdd)) {
                 pl.songs.push(songToAdd);
-                localStorage.setItem('astra_playlists', JSON.stringify(myPlaylists));
+                // 更新 DB
+                await DB.put('playlists', pl);
                 renderPlaylists();
                 alert(`已加入 "${pl.name}"`);
             } else {
@@ -669,7 +735,7 @@
         }
         function closePlaylistSelector() { document.getElementById('select-playlist-modal').classList.remove('active'); }
 
-        // --- 建立清單 ---
+        // --- 建立清單 (IndexedDB) ---
         function openCreatePlaylistModal() {
             document.getElementById('select-playlist-modal').classList.remove('active');
             document.getElementById('create-playlist-modal').classList.add('active');
@@ -692,7 +758,7 @@
             }
         }
 
-        function confirmCreatePlaylist() {
+        async function confirmCreatePlaylist() {
             const name = document.getElementById('new-playlist-name').value;
             if(!name) return alert("請輸入清單名稱");
             
@@ -702,14 +768,16 @@
                 songs: [], 
                 img: tempImgBase64 
             };
+            
+            await DB.put('playlists', newPl); // 存入 DB
             myPlaylists.push(newPl);
-            localStorage.setItem('astra_playlists', JSON.stringify(myPlaylists));
+            
             renderPlaylists();
             closeCreatePlaylistModal();
             if(songToAdd) addToPlaylist(newPl.id);
         }
 
-        // --- 日誌系統 ---
+        // --- 其他功能 ---
         async function showChangelog() {
             const content = document.getElementById('changelog-content');
             content.innerHTML = '<p style="text-align:center; padding:20px;">載入中...</p>';
@@ -717,16 +785,8 @@
             try {
                 const res = await fetch('./changelog.json');
                 const logs = await res.json();
-                content.innerHTML = logs.map(log => `
-                    <div class="log-item">
-                        <div class="log-ver">v${log.version}</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">${log.date}</div>
-                        <div style="line-height:1.6;">${log.content}</div>
-                    </div>
-                `).join('');
-            } catch (e) {
-                content.innerHTML = '<p style="text-align:center; color:red;">無法讀取日誌</p>';
-            }
+                content.innerHTML = logs.map(log => `<div class="log-item"><div class="log-ver">v${log.version}</div><div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px;">${log.date}</div><div style="line-height:1.6;">${log.content}</div></div>`).join('');
+            } catch (e) { content.innerHTML = '<p style="text-align:center; color:red;">無法讀取日誌</p>'; }
         }
         function closeChangelog() { document.getElementById('changelog-modal').classList.remove('active'); }
         async function checkVersion() {
@@ -737,14 +797,13 @@
             } catch(e){}
         }
 
-        // --- 主題 ---
-        function toggleThemePill() {
+        async function toggleThemePill() {
             const pill = document.getElementById('theme-pill');
             const isDark = pill.getAttribute('data-state') === 'dark';
-            updateThemeUI(isDark ? 'light' : 'dark');
+            await updateThemeUI(isDark ? 'light' : 'dark', true);
         }
 
-        function updateThemeUI(theme) {
+        async function updateThemeUI(theme, save = false) {
             const pill = document.getElementById('theme-pill');
             const pLight = document.getElementById('pill-light');
             const pDark = document.getElementById('pill-dark');
@@ -755,19 +814,17 @@
                 pill.setAttribute('data-state', 'dark');
                 pLight.classList.remove('active');
                 pDark.classList.add('active');
-                localStorage.setItem('astra_theme', 'dark');
                 metaTheme.setAttribute('content', '#000000');
             } else {
                 document.body.removeAttribute('data-theme');
                 pill.setAttribute('data-state', 'light');
                 pDark.classList.remove('active');
                 pLight.classList.add('active');
-                localStorage.setItem('astra_theme', 'light');
                 metaTheme.setAttribute('content', '#FFFFFF');
             }
+            if(save) await DB.put('settings', { key: 'theme', value: theme });
         }
 
-        // --- 播放器與其他 ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
         function playSong(id) {
