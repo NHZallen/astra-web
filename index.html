@@ -196,13 +196,22 @@
         }
         .artist-song-row::-webkit-scrollbar { display: none; }
         
-        /* Force 3 items to fit in viewport width minus gaps */
+        /* Desktop: 3 items per row */
         .artist-song-row .song-list-item {
-            min-width: calc((100% - 20px) / 3); /* 20px = 10px gap * 2 */
+            min-width: calc((100% - 20px) / 3); /* 3 items */
             width: calc((100% - 20px) / 3);
             scroll-snap-align: start;
             flex-shrink: 0;
-            margin-bottom: 0; /* Remove bottom margin for horizontal layout */
+            margin-bottom: 0;
+        }
+        
+        /* Mobile: 1 item per row (full width) */
+        @media (max-width: 768px) {
+            .artist-song-row .song-list-item {
+                min-width: calc(100% - 10px); /* Show 1 item mostly */
+                width: calc(100% - 10px);
+                margin-right: 5px;
+            }
         }
         
         /* Artist Album Grid (Responsive) */
@@ -273,7 +282,14 @@
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto; }
         .search-history-dropdown.active { display: block; }
-        .history-item { padding: 12px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Updated History Item Style */
+        .history-item { padding: 10px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .history-item:hover { background: var(--input-bg); }
+        .history-left { display: flex; align-items: center; overflow: hidden; }
+        .history-thumb { width: 36px; height: 36px; border-radius: 6px; background-size: cover; background-position: center; margin-right: 12px; flex-shrink: 0; background-color: #eee; }
+        .history-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.95rem; }
+
         .pill-toggle { background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer; width: 200px; height: 40px; }
         .pill-bg { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: 32px; background: var(--bg-color); border-radius: 20px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .pill-toggle[data-state="dark"] .pill-bg { transform: translateX(100%); }
@@ -434,11 +450,12 @@
             <!-- B. Search -->
             <div id="page-search" class="page-section">
                 <div class="search-container">
-                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." onfocus="showSearchHistory()" onkeydown="handleSearchKey(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
+                    <!-- Changed onkeydown to oninput for real-time search -->
+                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." onfocus="showSearchHistory()" oninput="handleSearchInput(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
                     <div id="search-history-dropdown" class="search-history-dropdown"></div>
                 </div>
                 <div id="search-results-area">
-                    <div style="color:var(--text-secondary); text-align:center; padding-top:20px;">輸入關鍵字並按下 Enter 搜尋</div>
+                    <div style="color:var(--text-secondary); text-align:center; padding-top:20px;">輸入關鍵字開始搜尋</div>
                 </div>
             </div>
 
@@ -777,19 +794,45 @@
             }
         }
 
-        // --- Search System ---
+        // --- Search System (New: Real-time & History Logic) ---
+        
+        // 1. Handle Real-time Input
+        function handleSearchInput(e) {
+            const val = e.target.value.trim();
+            if(val) performSearch(val);
+            else document.getElementById('search-results-area').innerHTML = '<div style="color:var(--text-secondary); text-align:center; padding-top:20px;">輸入關鍵字開始搜尋</div>';
+        }
+
         function showSearchHistory() {
             const history = currentUserData.search_history || [];
             const dropdown = document.getElementById('search-history-dropdown');
             if(history.length === 0) dropdown.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">無搜尋紀錄</div>';
-            else dropdown.innerHTML = history.map(item => `<div class="history-item" onclick="performSearch('${item}')"><span><span class="history-icon">🕒</span> ${item}</span><span onclick="deleteHistory(event, '${item}')" style="font-size:1.2rem;">×</span></div>`).join('');
+            else {
+                // Modified rendering for object-based history
+                dropdown.innerHTML = history.map(item => `
+                    <div class="history-item" onclick="handleHistoryItemClick('${item.type}', '${item.title}', '${item.id || ''}')">
+                        <div class="history-left">
+                            <div class="history-thumb" style="background-image:url('${item.img || DEFAULT_ALBUM_IMG}')"></div>
+                            <div class="history-text">${item.title}</div>
+                        </div>
+                        <span onclick="deleteHistory(event, '${item.title}', '${item.type}')" style="font-size:1.2rem; opacity:0.6;">×</span>
+                    </div>
+                `).join('');
+            }
             dropdown.classList.add('active');
         }
-        function handleSearchKey(event) { if(event.key === 'Enter') { const val = event.target.value.trim(); if(val) performSearch(val); event.target.blur(); } }
 
+        // Helper to click history item and perform action
+        function handleHistoryItemClick(type, title, id) {
+            document.getElementById('search-history-dropdown').classList.remove('active');
+            if(type === 'artist') openArtistDetail(title);
+            else if(type === 'album') openAlbumDetail(title);
+            else if(type === 'song' && id) playSong(parseInt(id));
+        }
+
+        // Perform search (Display only, NO saving history here)
         async function performSearch(keyword) {
             document.getElementById('search-history-dropdown').classList.remove('active');
-            document.getElementById('search-input').value = keyword;
             const area = document.getElementById('search-results-area');
             
             const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(keyword.toLowerCase()));
@@ -801,57 +844,89 @@
             // Artist Section
             if(matchedArtists.length > 0) {
                 html += `<div class="search-section-title">歌手</div><div class="horizontal-row">`;
-                html += matchedArtists.map(artist => `
-                    <div class="artist-card" onclick="openArtistDetail('${artist}')">
-                        <div class="artist-img" style="background-image:url('${getArtistImage(artist)}')"></div>
+                html += matchedArtists.map(artist => {
+                    const img = getArtistImage(artist);
+                    return `
+                    <div class="artist-card" onclick="handleSearchResultClick('artist', '${artist}', '${img}')">
+                        <div class="artist-img" style="background-image:url('${img}')"></div>
                         <div style="font-weight:bold; font-size:0.95rem;">${artist}</div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
                 html += `</div>`;
             }
             
             // Album Section
             if(matchedAlbums.length > 0) {
                 html += `<div class="search-section-title">專輯</div><div class="horizontal-row">`;
-                html += matchedAlbums.map(album => `
-                    <div class="music-card" onclick="openAlbumDetail('${album}')">
-                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
+                html += matchedAlbums.map(album => {
+                    const img = getAlbumImage(album);
+                    return `
+                    <div class="music-card" onclick="handleSearchResultClick('album', '${album}', '${img}')">
+                        <div class="cover-art" style="background-image:url('${img}')"></div>
                         <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
                         <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
                 html += `</div>`;
             }
             
             // Song Section
             if(matchedSongs.length > 0) {
                 html += `<div class="search-section-title">歌曲</div><div class="grid-container">`; 
-                html += matchedSongs.map(song => createSongCardHTML(song)).join('');
+                html += matchedSongs.map(song => {
+                    const img = getSongCover(song);
+                    // Create wrapper onclick to save history AND play
+                    return `<div class="music-card" onclick="handleSearchResultClick('song', '${song.title}', '${img}', ${song.id})">
+                        <div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
+                    </div>`;
+                }).join('');
                 html += `</div>`;
             }
 
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center; padding-top:40px;">找不到 "${keyword}" 的結果</div>`;
             area.innerHTML = html;
+        }
 
+        // New function to handle Click -> Save History -> Open Content
+        async function handleSearchResultClick(type, title, img, id) {
+            // 1. Add to history
+            const newItem = { type, title, img, id: id || null, timestamp: Date.now() };
             let history = currentUserData.search_history || [];
-            history = history.filter(h => h !== keyword);
-            history.unshift(keyword);
-            if(history.length > 10) history = history.slice(0, 10);
+            
+            // Remove exact duplicates to bring latest to top
+            history = history.filter(h => !(h.title === title && h.type === type));
+            
+            history.unshift(newItem);
+            
+            // Limit to 30
+            if(history.length > 30) history = history.slice(0, 30);
+            
             currentUserData.search_history = history;
-            await saveUserToDB(currentUserData);
+            saveUserToDB(currentUserData);
+
+            // 2. Perform Action
+            if(type === 'artist') openArtistDetail(title);
+            else if(type === 'album') openAlbumDetail(title);
+            else if(type === 'song') playSong(id);
         }
         
-        async function deleteHistory(e, item) { e.stopPropagation(); let history = currentUserData.search_history || []; history = history.filter(h => h !== item); currentUserData.search_history = history; await saveUserToDB(currentUserData); showSearchHistory(); }
+        async function deleteHistory(e, title, type) { 
+            e.stopPropagation(); 
+            let history = currentUserData.search_history || []; 
+            history = history.filter(h => !(h.title === title && h.type === type)); 
+            currentUserData.search_history = history; 
+            await saveUserToDB(currentUserData); 
+            showSearchHistory(); 
+        }
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
 
         // --- Detail Views Logic ---
 
-        // 1. Artist Detail: 3 Independent Rows for Songs (List Items), Grid for Albums
+        // 1. Artist Detail: 
+        // Mobile: 4 Rows, 1 item visible (~95% width)
+        // Desktop: 3 Rows, 3 items visible (~33% width)
         function openArtistDetail(artistName) {
             currentPlaylistId = null; // Reset context
-            // Sort Strategy:
-            // 1. Sort by ID descending (Simulates "Newest First" and keeps albums roughly together if added sequentially)
-            // Note: Since real dates are missing, ID descending is the best proxy for "Newest first".
             const songs = musicLibrary.filter(s => s.artist === artistName).sort((a, b) => b.id - a.id);
             const albums = [...new Set(songs.map(s => s.album))];
 
@@ -864,13 +939,17 @@
 
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3>`;
             
-            // Distribute songs into 3 independent rows equally
-            const rows = [[], [], []];
+            // Logic to determine rows
+            const isMobile = window.innerWidth <= 768;
+            const numRows = isMobile ? 4 : 3;
+            
+            // Distribute songs into rows
+            const rows = Array.from({length: numRows}, () => []);
             songs.forEach((song, index) => {
-                rows[index % 3].push(song);
+                rows[index % numRows].push(song);
             });
 
-            // Render 3 independent horizontal rows using List Item Style (Long bar)
+            // Render rows
             html += `<div class="artist-song-container">`;
             rows.forEach(rowSongs => {
                 if(rowSongs.length > 0) {
@@ -881,7 +960,7 @@
             });
             html += `</div>`;
 
-            // Album Grid (2 per row mobile, 5 per row desktop)
+            // Album Grid
             if (albums.length > 0) {
                 html += `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:30px;">專輯</h3><div class="artist-album-grid">`;
                 html += albums.map(album => `
@@ -898,7 +977,7 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
-        // 2. Album Detail: Standard List View
+        // 2. Album Detail
         function openAlbumDetail(albumName) {
             currentPlaylistId = null; 
             const songs = musicLibrary.filter(s => s.album === albumName);
@@ -906,17 +985,15 @@
             openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs, false);
         }
 
-        // 3. Playlist Detail: List View with Remove Buttons
+        // 3. Playlist Detail
         function openPlaylistDetail(plId) {
             const pl = currentUserData.playlists.find(p => p.id === plId);
             if(!pl) return;
             currentPlaylistId = plId; // Set context
-            // Filter songs preserving order
             const songs = pl.songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
             openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs, true);
         }
 
-        // Generic List Renderer
         function openCollectionDetail(title, subtitle, coverUrl, songs, isPlaylist) {
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
@@ -934,7 +1011,6 @@
         function createSongRowHTML(song, isPlaylist) {
             const img = getSongCover(song);
             let btnHtml = '';
-            // Only add remove button if context is playlist
             if (isPlaylist) {
                 btnHtml = `<button class="remove-btn" onclick="removeFromPlaylist(event, ${song.id})"><svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
             }
@@ -953,15 +1029,13 @@
         async function removeFromPlaylist(e, songId) {
             e.stopPropagation();
             if (!currentPlaylistId) return;
-            
             if(!confirm("確定要從清單移除這首歌嗎？")) return;
-
             const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
             if (pl) {
-                pl.songs = pl.songs.filter(id => id !== songId); // Remove ID
+                pl.songs = pl.songs.filter(id => id !== songId); 
                 await saveUserToDB(currentUserData);
-                renderPlaylists(); // Update main grid
-                openPlaylistDetail(currentPlaylistId); // Refresh modal
+                renderPlaylists(); 
+                openPlaylistDetail(currentPlaylistId);
             }
         }
 
@@ -993,13 +1067,10 @@
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
-            
             if(playlists.length === 0) { 
                 container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; 
                 return; 
             } 
-            
-            // Generate Grid Cards for Playlists
             container.innerHTML = playlists.map(pl => `
                 <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
                     <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
