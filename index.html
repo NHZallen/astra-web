@@ -81,7 +81,7 @@
         .lp-nav {
             position: fixed; top: 0; width: 100%; padding: 20px 40px; padding-top: calc(20px + var(--safe-top));
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 100; transition: 0.3s; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .lp-logo { font-weight: 700; font-size: 1.4rem; letter-spacing: -0.5px; display: flex; align-items: center; color: #000; }
@@ -92,34 +92,30 @@
         .lp-login-btn:hover { transform: scale(1.05); background: #333; }
 
         /* Sections General */
-        .lp-section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; box-sizing: border-box; }
+        .lp-section { padding: 100px 40px; max-width: 1200px; margin: 0 auto; }
         
         /* Hero Section */
         .lp-hero {
             min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; 
-            padding: 140px 40px 60px 40px;
-            position: relative;
+            text-align: center; padding-top: 120px; position: relative;
             background: radial-gradient(circle at 50% 30%, rgba(250, 45, 72, 0.05) 0%, transparent 60%);
-            width: 100%; box-sizing: border-box;
         }
         .hero-tag {
             color: var(--accent-color); font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase;
-            margin-bottom: 24px; opacity: 0; animation: fadeUp 0.8s ease forwards;
+            margin-bottom: 20px; opacity: 0; animation: fadeUp 0.8s ease forwards;
         }
         .hero-title {
             font-size: 5rem; font-weight: 800; line-height: 1.05; letter-spacing: -2px; margin-bottom: 30px;
             color: #1D1D1F; opacity: 0; animation: fadeUp 0.8s ease 0.2s forwards;
-            max-width: 900px;
         }
         .hero-title span { background: linear-gradient(135deg, #FA2D48, #FF7657); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .hero-subtitle {
-            font-size: 1.3rem; color: #86868B; max-width: 600px; margin: 0 auto 50px; line-height: 1.6;
+            font-size: 1.3rem; color: #86868B; max-width: 600px; margin: 0 auto 50px; line-height: 1.5;
             opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
         }
         .hero-cta-group {
-            display: flex; gap: 20px; justify-content: center; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards; width: 100%;
+            display: flex; gap: 20px; justify-content: center; opacity: 0; animation: fadeUp 0.8s ease 0.6s forwards;
         }
         .btn-large {
             padding: 18px 45px; border-radius: 40px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s;
@@ -138,9 +134,9 @@
         }
         @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        /* App Showcase */
+        /* App Showcase (Mockup) */
         .app-showcase {
-            display: flex; justify-content: center; margin: 80px 0; perspective: 1000px; padding: 0 20px;
+            display: flex; justify-content: center; margin: 80px 0; perspective: 1000px;
         }
         .phone-mockup {
             width: 320px; height: 640px; background: #FFF; border-radius: 45px; border: 12px solid #1D1D1F;
@@ -165,7 +161,7 @@
         }
         .feature-box {
             background: #FFFFFF; padding: 40px; border-radius: 24px; transition: 0.3s;
-            display: flex; flex-direction: column; align-items: flex-start; /* 保持卡片內左對齊以利閱讀 */
+            display: flex; flex-direction: column; align-items: flex-start;
             border: 1px solid transparent; opacity: 0; transform: translateY(30px);
         }
         .feature-box.visible { opacity: 1; transform: translateY(0); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -173,93 +169,38 @@
         .f-icon { width: 50px; height: 50px; background: #F5F5F7; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--accent-color); }
         
         /* Footer */
-        .lp-footer { text-align: center; padding: 100px 30px; background: #FFF; border-top: 1px solid #F5F5F7; }
+        .lp-footer { text-align: center; padding: 80px 20px; background: #FFF; border-top: 1px solid #F5F5F7; }
         .footer-logo { font-size: 2rem; font-weight: 800; margin-bottom: 20px; color: #1D1D1F; }
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Responsive Logic (Strict Separation) --- */
+        /* Responsive Fixes (修正手機版顯示) */
         @media (max-width: 768px) {
-            
-            /* === 1. Landing Page Specifics (登入頁面) === */
-            /* 修正文字大小與換行 */
-            .hero-title { 
-                font-size: 3rem; 
-                margin-bottom: 20px; 
-                word-wrap: break-word; /* 防止長字溢出 */
-            }
-            .hero-subtitle { 
-                font-size: 1rem; 
-            }
-            
-            /* 修正貼邊問題：使用 35px 內距 */
-            .lp-section { 
-                padding: 80px 35px; /* 寬鬆的左右間距 */
+            /* 修正：增加手機版的左右內距，避免文字貼邊 */
+            .lp-nav { 
+                padding: 15px 30px; 
+                padding-top: calc(15px + var(--safe-top)); 
             }
             .lp-hero { 
-                padding: 120px 35px 60px 35px; /* 增加呼吸空間 */
-                align-items: center; /* 確保垂直排列置中 */
-                display: flex;
-                flex-direction: column;
+                padding: 120px 30px 60px 30px; 
             }
-            .lp-nav { 
-                padding-left: 35px; 
-                padding-right: 35px; 
-                padding-top: calc(15px + var(--safe-top));
+            .lp-section { 
+                padding: 80px 30px; 
             }
             
-            /* 按鈕群組調整 */
-            .hero-cta-group { flex-direction: column; width: 100%; max-width: 320px; margin: 0 auto; gap: 15px; }
-            .btn-large { width: 100%; }
+            .hero-title { font-size: 2.8rem; } /* 稍微縮小標題以適應窄螢幕 */
+            .hero-subtitle { font-size: 1.1rem; }
             
-            /* Feature Grid 調整 */
-            .features-section { margin: 20px 10px; border-radius: 30px; padding: 60px 30px; }
-            .feature-box { padding: 30px; }
-
-            /* 手機版 Mockup 調整 */
             .phone-mockup { width: 280px; height: 560px; transform: none; margin: 0 auto; border-width: 8px; }
             .phone-mockup:hover { transform: scale(1.02); }
-
-
-            /* === 2. App View Specifics (App 介面) === */
-            /* 嚴格保持 20px，不被上方影響 */
-            .sidebar { display: none; }
-            .content-header { 
-                left: 0; 
-                width: 100%; 
-                padding: 0 20px; /* 保持 20px */
-                padding-top: calc(10px + var(--safe-top)); 
-                height: calc(60px + var(--safe-top)); 
-            }
-            .page-section { 
-                padding: 10px 20px 120px 20px; /* 保持 20px */
-            }
-            .main-content { 
-                padding-top: calc(70px + var(--safe-top)); 
-                padding-bottom: 160px; 
-            }
             
-            /* Mobile Nav */
-            .mobile-nav { 
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
-                height: calc(var(--mobile-nav-height) + var(--safe-bottom)); 
-                background: var(--modal-bg); border-top: 1px solid var(--divider); 
-                z-index: 120; justify-content: space-around; 
-                padding-bottom: var(--safe-bottom); align-items: center; 
-            }
-            .mobile-nav-item { position: relative; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; width: 20%; height: 100%; transition: color 0.3s; }
-            .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
-            
-            .player-bar { 
-                bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); 
-                left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; 
-                border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0; 
-                box-shadow: 0 8px 20px rgba(0,0,0,0.15); 
-            }
-            .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+            .hero-cta-group { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
+            .btn-large { width: 100%; }
+            .features-section { margin: 20px 10px; border-radius: 30px; padding: 40px 20px; }
+            .feature-box { padding: 30px 20px; } /* 功能卡片在手機上的內距 */
         }
 
-        /* --- Login Modal & App Styles --- */
+        /* --- Existing Login Modal & App Styles --- */
         #login-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.6); z-index: 2500;
             display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; 
@@ -273,7 +214,7 @@
         }
         #login-modal.active .login-box { transform: scale(1); }
 
-        /* App styles (General Desktop) */
+        /* App CSS */
         .sidebar-logo { 
             font-size: 1.3rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
             padding-left: 10px; display: flex; align-items: center; white-space: nowrap; overflow: hidden;
@@ -294,7 +235,6 @@
         }
         .change-avatar-btn:hover { background: #E5E5E5; }
         
-        /* Layout */
         #app-view { display: flex; height: 100vh; width: 100%; }
         .sidebar { width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top)); display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0; }
         .main-content { flex: 1; overflow-y: auto; position: relative; display: flex; flex-direction: column; padding-top: var(--header-height); }
@@ -322,6 +262,18 @@
         .fullscreen-modal.active { transform: translateY(0); }
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
+        .mobile-nav { display: none; }
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .content-header { left: 0; width: 100%; padding: 0 20px; padding-top: calc(10px + var(--safe-top)); height: calc(60px + var(--safe-top)); }
+            .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--mobile-nav-height) + var(--safe-bottom)); background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 120; justify-content: space-around; padding-bottom: var(--safe-bottom); align-items: center; }
+            .mobile-nav-item { position: relative; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; width: 20%; height: 100%; transition: color 0.3s; }
+            .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
+            .player-bar { bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+            .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+            .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
+            .page-section { padding: 10px 20px 120px 20px; }
+        }
         .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
         .user-profile-btn { width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer; background-size: cover; background-position: center; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg); }
         .page-section { padding: 20px 30px 120px 30px; display: none; animation: fadeIn 0.3s ease; }
@@ -340,7 +292,7 @@
 </head>
 <body>
 
-    <!-- Landing Page (Redesigned: Light, Clean, Premium) -->
+    <!-- Landing Page (Mobile Padding Fixed) -->
     <section id="landing-page">
         <!-- Navigation -->
         <nav class="lp-nav">
