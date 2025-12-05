@@ -18,6 +18,7 @@
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --accent-color: #FA2D48;
+            --accent-color-light: rgba(250, 45, 72, 0.1);
             --divider: #E5E5E5;
             --player-bg: rgba(255, 255, 255, 0.95);
             --modal-bg: #FFFFFF;
@@ -29,6 +30,7 @@
             --safe-top: env(safe-area-inset-top, 20px);
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --header-height: 80px;
+            --mobile-nav-height: 65px;
         }
 
         [data-theme="dark"] {
@@ -37,6 +39,7 @@
             --card-bg: #1C1C1E;
             --text-primary: #F5F5F7;
             --text-secondary: #A1A1A6;
+            --accent-color-light: rgba(250, 45, 72, 0.2);
             --divider: #333333;
             --player-bg: rgba(28, 28, 30, 0.95);
             --modal-bg: #000000;
@@ -58,7 +61,7 @@
         .input-style { width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none; font-size: 1rem; }
         .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; }
         
-        /* --- 1. Landing Page --- */
+        /* --- Landing Page --- */
         #landing-page {
             height: 100vh; overflow-y: auto; background: var(--bg-color); z-index: 2000; position: relative;
             scroll-behavior: smooth; padding-top: var(--safe-top);
@@ -88,9 +91,10 @@
         }
         #login-modal.active .login-box { transform: scale(1); }
 
-        /* --- 2. App Interface --- */
+        /* --- App Interface --- */
         #app-view { display: flex; height: 100vh; width: 100%; }
 
+        /* PC Sidebar */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top));
             display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0;
@@ -104,30 +108,20 @@
         .nav-item.active { background: var(--accent-color); color: white; }
         .nav-item svg { margin-right: 12px; }
 
+        /* Main Content */
         .main-content { 
             flex: 1; overflow-y: auto; position: relative; display: flex; flex-direction: column;
-            padding-top: var(--header-height); /* 預留標題高度 */
+            padding-top: var(--header-height);
         }
 
-        /* --- Fixed Header (UI Fix) --- */
+        /* Fixed Header */
         .content-header {
-            position: fixed; top: 0; left: 260px; /* Sidebar width */
-            width: calc(100% - 260px);
-            height: var(--header-height);
-            padding: 0 30px;
-            padding-top: var(--safe-top); /* 避開劉海 */
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 90; background: var(--bg-color);
-            border-bottom: 1px solid transparent;
-            transition: 0.3s;
+            position: fixed; top: 0; left: 260px; width: calc(100% - 260px); height: var(--header-height);
+            padding: 0 30px; padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center;
+            z-index: 90; background: var(--bg-color); border-bottom: 1px solid transparent; transition: 0.3s;
         }
-        /* 當捲動時給 Header 加陰影效果 (JS 控制) */
-        .content-header.scrolled {
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--divider);
-        }
+        .content-header.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--divider); }
         [data-theme="dark"] .content-header.scrolled { background: rgba(0,0,0,0.9); }
-
         .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
         .user-profile-btn {
             width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer;
@@ -139,22 +133,18 @@
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Search History Dropdown */
+        /* Search History */
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg);
-            border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20;
-            display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto;
+            border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; 
+            border: 1px solid var(--divider); max-height: 300px; overflow-y: auto;
         }
         .search-history-dropdown.active { display: block; }
-        .history-item {
-            padding: 12px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-secondary);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .history-item { padding: 12px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
         .history-item:hover { background: var(--input-bg); color: var(--text-primary); }
-        .history-icon { margin-right: 10px; font-size: 0.9rem; }
 
-        /* Cards & Lists */
+        /* Cards */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
         .music-card:hover { transform: translateY(-4px); }
@@ -176,19 +166,17 @@
             margin-bottom: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
         }
         .playlist-row:hover { border-color: var(--accent-color); }
-        .playlist-cover-small {
-            width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee;
-            background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center;
-        }
+        .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
 
-        /* Player - Auto Hide Logic */
+        /* --- Player Bar (Fixed for Mobile & Auto Hide) --- */
         .player-bar {
             position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
-            z-index: 100; transition: 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); padding-bottom: env(safe-area-inset-bottom);
-            transform: translateY(120%); /* 預設隱藏在下方 */
+            z-index: 100; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom);
+            transform: translateY(200%); /* Default Hidden */
+            opacity: 0;
         }
-        .player-bar.active { transform: translateY(0); } /* 播放時滑入 */
+        .player-bar.active { transform: translateY(0); opacity: 1; }
 
         @media (min-width: 769px) { 
             .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; }
@@ -204,8 +192,6 @@
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
 
-        /* Profile Modal (UI Fix) */
-        .profile-header { text-align: center; margin-bottom: 30px; position: relative; }
         .profile-avatar-large {
             width: 120px; height: 120px; border-radius: 50%; background: #eee; margin: 0 auto 15px;
             background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 4px solid var(--card-bg);
@@ -217,28 +203,54 @@
             color: white; border: 3px solid var(--card-bg); cursor: pointer;
         }
 
-        /* Mobile Responsive */
+        /* --- Mobile Navigation (With Bubble Animation) --- */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .content-header {
-                left: 0; width: 100%; padding: 0 20px;
-                padding-top: calc(10px + var(--safe-top)); /* Mobile Header Top Padding Fix */
-                height: calc(60px + var(--safe-top));
-            }
+            .content-header { left: 0; width: 100%; padding: 0 20px; padding-top: calc(10px + var(--safe-top)); height: calc(60px + var(--safe-top)); }
             .page-heading { font-size: 1.8rem; }
-            .lp-title { font-size: 2.5rem; }
+            
+            /* Bottom Nav Container */
             .mobile-nav {
-                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: calc(60px + var(--safe-bottom));
-                background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 110; justify-content: space-around; 
-                padding-bottom: var(--safe-bottom); align-items: center;
+                display: flex; position: fixed; bottom: 0; left: 0; width: 100%; 
+                height: calc(var(--mobile-nav-height) + var(--safe-bottom));
+                background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 120; 
+                justify-content: space-around; padding-bottom: var(--safe-bottom); align-items: center;
             }
-            .mobile-nav-item { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
-            .mobile-nav-item.active { color: var(--accent-color); }
-            .player-bar { bottom: calc(65px + var(--safe-bottom)); left: 50%; transform: translateX(-50%); width: 92%; border-radius: 18px; height: 65px; padding: 0 15px; padding-bottom:0; }
+            
+            /* Nav Items */
+            .mobile-nav-item {
+                position: relative; color: var(--text-secondary); display: flex; flex-direction: column; 
+                align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500;
+                width: 20%; height: 100%; transition: color 0.3s;
+            }
+            
+            /* Bubble Effect */
+            .mobile-nav-item::before {
+                content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%) scale(0);
+                width: 45px; height: 32px; background: var(--accent-color-light);
+                border-radius: 20px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                z-index: -1;
+            }
+            
+            /* Active State */
+            .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
+            .mobile-nav-item.active::before { transform: translateX(-50%) scale(1); }
+            .mobile-nav-item svg { transition: 0.3s; margin-bottom: 2px; }
+            .mobile-nav-item.active svg { transform: translateY(-2px); }
+
+            /* Mobile Player Position (Above Nav) */
+            .player-bar {
+                bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); 
+                left: 50%; transform: translateX(-50%) translateY(200%); /* Default hidden */
+                width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            }
+            /* When active on mobile */
+            .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
+            
             .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
             .page-section { padding: 10px 20px 120px 20px; }
-            .modal-nav { padding: 15px 20px; }
         }
 
         .pill-toggle { background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer; width: 200px; height: 40px; }
@@ -246,7 +258,6 @@
         .pill-toggle[data-state="dark"] .pill-bg { transform: translateX(100%); }
         .pill-option { flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
         .pill-option.active { color: var(--text-primary); }
-
         .log-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--divider); }
         .log-ver { display: inline-block; background: var(--accent-color); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
     </style>
@@ -297,13 +308,12 @@
         </nav>
 
         <main class="main-content" onscroll="handleScroll()">
-            <!-- Fixed Header -->
             <header class="content-header" id="main-header">
                 <h1 class="page-heading" id="current-page-title">首頁</h1>
                 <div class="user-profile-btn" id="header-avatar" onclick="openProfileModal()" style="background-image:url('https://cdn-icons-png.flaticon.com/512/847/847969.png')"></div>
             </header>
 
-            <!-- A. 首頁 -->
+            <!-- A. Home -->
             <div id="page-home" class="page-section active">
                 <div class="hero-banner" style="height:300px; border-radius:24px; background:linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%); display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white;">
                     <div>
@@ -316,33 +326,23 @@
                 <div class="grid-container" id="home-grid" style="margin-top:20px;"></div>
             </div>
 
-            <!-- B. 搜尋 (Search) Updated -->
+            <!-- B. Search -->
             <div id="page-search" class="page-section">
                 <div class="search-container">
-                    <!-- 移除 oninput，改為 onfocus 和 onkeydown -->
-                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." 
-                           onfocus="showSearchHistory()" onkeydown="handleSearchKey(event)"
-                           style="padding:16px; font-size:1.1rem; margin-bottom:0;">
-                    
-                    <!-- Search History Dropdown -->
-                    <div id="search-history-dropdown" class="search-history-dropdown">
-                        <!-- JS renders items here -->
-                    </div>
+                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." onfocus="showSearchHistory()" onkeydown="handleSearchKey(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
+                    <div id="search-history-dropdown" class="search-history-dropdown"></div>
                 </div>
-                
                 <div class="grid-container" id="search-grid">
-                    <div style="color:var(--text-secondary); grid-column:1/-1; text-align:center; padding-top:20px;">
-                        輸入關鍵字並按下 Enter 搜尋
-                    </div>
+                    <div style="color:var(--text-secondary); grid-column:1/-1; text-align:center; padding-top:20px;">輸入關鍵字並按下 Enter 搜尋</div>
                 </div>
             </div>
 
-            <!-- C. 新發現 -->
+            <!-- C. Discovery -->
             <div id="page-discovery" class="page-section">
                 <div class="grid-container" id="discovery-grid"></div>
             </div>
 
-            <!-- D. 資料庫 -->
+            <!-- D. Database -->
             <div id="page-database" class="page-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <h2>我的播放清單</h2>
@@ -352,11 +352,12 @@
             </div>
         </main>
 
-        <!-- Mobile Nav -->
+        <!-- Mobile Nav (Updated) -->
         <div class="mobile-nav">
-            <div class="mobile-nav-item" onclick="switchPage('home')"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
-            <div class="mobile-nav-item" onclick="switchPage('search')"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
-            <div class="mobile-nav-item" onclick="switchPage('database')"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>資料庫</div>
+            <div class="mobile-nav-item" onclick="switchPage('home')" id="mobile-nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
+            <div class="mobile-nav-item" onclick="switchPage('search')" id="mobile-nav-search"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
+            <div class="mobile-nav-item" onclick="switchPage('discovery')" id="mobile-nav-discovery"><svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>新發現</div>
+            <div class="mobile-nav-item" onclick="switchPage('database')" id="mobile-nav-database"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>資料庫</div>
             <div class="mobile-nav-item" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
         </div>
 
@@ -383,7 +384,6 @@
         <div class="modal-body">
             <div class="profile-header">
                 <input type="file" id="profile-upload" accept="image/*" style="display:none;" onchange="handleProfileUpload(this)">
-                <!-- Fix: Avatar Overlay removed, Camera Icon added -->
                 <div id="profile-preview-large" class="profile-avatar-large" onclick="document.getElementById('profile-upload').click()">
                     <div class="camera-icon-badge">
                         <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
@@ -527,7 +527,7 @@
             { id: 4, title: "WILD", artist: "BABYMONSTER", filename: "song4.mp3" },
         ];
         
-        let currentUserData = null; // Stores { username, password, avatar, playlists, theme, search_history }
+        let currentUserData = null; 
         let songToAdd = null;
         let tempImgBase64 = null;
         let currentPlaylistView = null;
@@ -538,12 +538,10 @@
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
                 if(currentUserData) {
-                    // Ensure search history array exists (migration)
                     if(!currentUserData.search_history) { 
                         currentUserData.search_history = []; 
                         saveUserToDB(currentUserData);
                     }
-                    
                     document.getElementById('landing-page').classList.add('hidden');
                     document.getElementById('app-view').classList.remove('hidden');
                     initApp();
@@ -555,12 +553,13 @@
 
         function initApp() {
             renderCards('home-grid', musicLibrary);
-            // Search grid initially shows instruction, not all songs
-            // renderCards('search-grid', musicLibrary); 
             renderCards('discovery-grid', [...musicLibrary].reverse());
             renderPlaylists();
             checkVersion();
             updateUIFromUserData();
+            
+            // Set initial active mobile nav
+            updateMobileNavActive('home');
         }
 
         function updateUIFromUserData() {
@@ -626,18 +625,14 @@
         async function updateUsername() {
             const newName = document.getElementById('edit-username').value.trim();
             if(!newName) return alert("請輸入名稱");
-            
             const oldUser = JSON.parse(JSON.stringify(currentUserData));
             const existing = await getUserFromDB(newName);
             if(existing) return alert("此使用者名稱已被使用");
-
             const newUser = { ...oldUser, username: newName };
             await saveUserToDB(newUser);
-            
             const db = await openDB();
             const tx = db.transaction(STORE_NAME, 'readwrite');
             tx.objectStore(STORE_NAME).delete(oldUser.username);
-            
             currentUserData = newUser;
             localStorage.setItem('current_session_user', newName);
             updateUIFromUserData();
@@ -671,33 +666,46 @@
         function switchPage(pid) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+pid).classList.add('active');
+            
+            // PC Sidebar
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('nav-'+pid)) document.getElementById('nav-'+pid).classList.add('active');
+
+            // Mobile Nav
+            updateMobileNavActive(pid);
             
             const titles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
             document.getElementById('current-page-title').innerText = titles[pid];
 
-            // Reset Search state
-            if(pid !== 'search') {
-                document.getElementById('search-history-dropdown').classList.remove('active');
-            }
+            if(pid !== 'search') document.getElementById('search-history-dropdown').classList.remove('active');
+        }
+
+        function updateMobileNavActive(pid) {
+            // Remove active from all
+            document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
+            
+            // Add active to current (if it's a page in the nav)
+            const navId = 'mobile-nav-' + pid;
+            const navEl = document.getElementById(navId);
+            if(navEl) navEl.classList.add('active');
+            
+            // Handle Settings special case (it's a modal, not a page-section, but has a nav button)
+             if(pid === 'settings') {
+                 // usually settings opens modal, so we might not want to switch page state completely
+             }
         }
         
         function handleScroll() {
             const header = document.getElementById('main-header');
             const mainContent = document.querySelector('.main-content');
-            if(mainContent.scrollTop > 10) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            if(mainContent.scrollTop > 10) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
         }
 
-        // --- Search Logic (New) ---
+        // --- Search Logic ---
         function showSearchHistory() {
             const history = currentUserData.search_history || [];
             const dropdown = document.getElementById('search-history-dropdown');
-            
             if(history.length === 0) {
                 dropdown.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">無搜尋紀錄</div>';
             } else {
@@ -720,27 +728,17 @@
         }
 
         async function performSearch(keyword) {
-            // Hide dropdown
             document.getElementById('search-history-dropdown').classList.remove('active');
             document.getElementById('search-input').value = keyword;
-
-            // Execute Search
             const result = musicLibrary.filter(s => s.title.toLowerCase().includes(keyword.toLowerCase()) || s.artist.toLowerCase().includes(keyword.toLowerCase()));
             const container = document.getElementById('search-grid');
-            if(result.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">找不到 "${keyword}" 的結果</div>`;
-            } else {
-                renderCards('search-grid', result);
-            }
+            if(result.length === 0) container.innerHTML = `<div style="color:var(--text-secondary); grid-column:1/-1; text-align:center;">找不到 "${keyword}" 的結果</div>`;
+            else renderCards('search-grid', result);
 
-            // Save History
             let history = currentUserData.search_history || [];
-            // Remove duplicates and move to top
             history = history.filter(h => h !== keyword);
             history.unshift(keyword);
-            // Limit to 10
             if(history.length > 10) history = history.slice(0, 10);
-            
             currentUserData.search_history = history;
             await saveUserToDB(currentUserData);
         }
@@ -751,15 +749,12 @@
             history = history.filter(h => h !== item);
             currentUserData.search_history = history;
             await saveUserToDB(currentUserData);
-            showSearchHistory(); // refresh
+            showSearchHistory();
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
             const container = document.querySelector('.search-container');
-            if (container && !container.contains(e.target)) {
-                document.getElementById('search-history-dropdown').classList.remove('active');
-            }
+            if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active');
         });
 
         // --- Other Utils ---
@@ -768,9 +763,7 @@
             container.innerHTML = songs.map(song => `
                 <div class="music-card" onclick="playSong(${song.id})">
                     <div class="cover-art" style="background-image:url('https://cdn-icons-png.flaticon.com/512/3208/3208703.png')">
-                        <div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </div>
+                        <div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div>
                     </div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
@@ -781,17 +774,11 @@
         function renderPlaylists() {
             const container = document.getElementById('playlists-container');
             const playlists = currentUserData.playlists || [];
-            if(playlists.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>';
-                return;
-            }
+            if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; }
             container.innerHTML = playlists.map(pl => `
                 <div class="playlist-row" onclick="openPlaylistDetail(${pl.id})">
                     <div class="playlist-cover-small" style="background-image:url(${pl.img || 'https://cdn-icons-png.flaticon.com/512/3208/3208703.png'})"></div>
-                    <div>
-                        <div style="font-weight:bold;">${pl.name}</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
-                    </div>
+                    <div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div>
                 </div>
             `).join('');
         }
@@ -809,9 +796,7 @@
             audioPlayer.play();
             isPlaying = true;
             document.getElementById('playBtn').innerText = "||";
-            
-            // Show player bar
-            document.getElementById('player-bar').classList.add('active');
+            document.getElementById('player-bar').classList.add('active'); // Show player
         }
         function togglePlay() {
             if(audioPlayer.src) {
@@ -821,7 +806,6 @@
             }
         }
 
-        // --- Standard Functions ---
         function toggleThemePill() {
             const isDark = document.body.getAttribute('data-theme') === 'dark';
             currentUserData.theme = isDark ? 'light' : 'dark';
@@ -833,7 +817,6 @@
             const pLight = document.getElementById('pill-light');
             const pDark = document.getElementById('pill-dark');
             const metaTheme = document.getElementById('theme-color-meta');
-            
             if(theme === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
                 pill.setAttribute('data-state', 'dark');
@@ -859,7 +842,6 @@
         }
         function closeChangelog() { document.getElementById('changelog-modal').classList.remove('active'); }
 
-        // Playlist Utils
         function openPlaylistSelector(e, songId) {
             e.stopPropagation(); songToAdd = songId;
             if(!currentUserData.playlists.length) { if(confirm("建立新清單？")) openCreatePlaylistModal(); return; }
