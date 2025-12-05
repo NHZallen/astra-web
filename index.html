@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
-    <!-- PWA 設定 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#F5F5F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <style>
-        /* --- CSS 變數定義 (預設淺色模式) --- */
+        /* --- CSS 變數 --- */
         :root {
             --bg-color: #F5F5F7;
             --sidebar-bg: #FFFFFF;
@@ -24,12 +23,11 @@
             --player-border: rgba(255,255,255,0.5);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
-            --modal-bg: rgba(255, 255, 255, 0.95);
             --radius-lg: 18px;
             --radius-md: 12px;
+            --header-height: 80px;
         }
 
-        /* --- 深色模式覆寫 (Dark Mode) --- */
         [data-theme="dark"] {
             --bg-color: #000000;
             --sidebar-bg: #121212;
@@ -39,7 +37,6 @@
             --divider: #333333;
             --player-bg: rgba(28, 28, 30, 0.85);
             --player-border: rgba(255,255,255,0.1);
-            --modal-bg: rgba(28, 28, 30, 0.95);
             --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
             --shadow-md: 0 8px 24px rgba(0,0,0,0.5);
         }
@@ -47,27 +44,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-primary); 
-            overflow: hidden; 
-            height: 100vh; 
+            background-color: var(--bg-color); color: var(--text-primary); 
+            overflow: hidden; height: 100vh; 
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         .hidden { display: none !important; }
 
-        /* --- 1. 登入頁面 --- */
+        /* --- 登入頁面 --- */
         #login-view {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-color);
-            flex-direction: column;
-            transition: 0.3s;
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: var(--bg-color); flex-direction: column; transition: 0.3s;
         }
         .login-box { width: 90%; max-width: 320px; text-align: center; }
-        .brand-title { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; color: var(--text-primary); }
+        .brand-title { font-size: 2.5rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 5px; }
         .brand-subtitle { color: var(--text-secondary); margin-bottom: 40px; font-size: 0.95rem; }
         
         .input-field {
@@ -80,32 +70,51 @@
             width: 100%; padding: 16px; background: var(--text-primary); color: var(--bg-color); border: none;
             border-radius: var(--radius-md); font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
-        .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+        
+        /* --- 主介面佈局 --- */
+        #app-view { display: flex; height: 100vh; width: 100%; position: relative; }
 
-        /* --- 2. 主程式介面 --- */
-        #app-view { display: flex; height: 100vh; width: 100%; }
-
-        /* 側邊欄 */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 30px; display: flex; flex-direction: column;
-            border-right: 1px solid var(--divider); transition: background 0.3s ease;
-            flex-shrink: 0;
+            border-right: 1px solid var(--divider); transition: background 0.3s ease; flex-shrink: 0;
         }
         .sidebar-logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); letter-spacing: -0.5px; }
         .nav-item { padding: 12px 0; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1.05rem; display: flex; align-items: center; }
         .nav-item:hover, .nav-item.active { color: var(--text-primary); }
         .nav-item.active::before { content: ''; width: 4px; height: 4px; background: var(--accent-color); border-radius: 50%; margin-right: 10px; }
 
-        /* 主要內容區 */
         .main-content {
-            flex: 1; overflow-y: auto; padding: 40px; padding-bottom: 120px;
-            position: relative;
+            flex: 1; overflow-y: auto; padding: 40px; padding-bottom: 120px; position: relative;
         }
-        .page-header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .page-title { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+
+        /* --- Header & Search --- */
+        .page-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header-left h2 { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
         .user-greet { font-size: 0.9rem; color: var(--text-secondary); margin-top: 5px; }
 
-        /* 音樂卡片 */
+        .search-container {
+            position: relative; width: 250px;
+        }
+        .search-input {
+            width: 100%; padding: 10px 15px; padding-left: 35px;
+            background: rgba(0,0,0,0.05); border: none; border-radius: 20px;
+            color: var(--text-primary); font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        [data-theme="dark"] .search-input { background: rgba(255,255,255,0.1); }
+        .search-input:focus { background: var(--card-bg); box-shadow: 0 0 0 2px var(--accent-color); }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5; font-size: 0.8rem; }
+
+        /* --- 功能按鈕區 (新發現) --- */
+        .action-bar { margin-bottom: 25px; display: flex; gap: 10px; }
+        .btn-discovery {
+            padding: 8px 16px; background: linear-gradient(135deg, #FA2D48, #FF556E); 
+            color: white; border: none; border-radius: 20px; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 4px 10px rgba(250, 45, 72, 0.3);
+            transition: 0.2s;
+        }
+        .btn-discovery:active { transform: scale(0.95); }
+
+        /* --- Grid & Card --- */
         .grid-container {
             display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px;
         }
@@ -121,56 +130,48 @@
             display: flex; align-items: center; justify-content: center; color: #888; font-weight: bold; font-size: 2rem;
         }
         [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); color: #555; }
-        .card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-primary); }
+        .card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-artist { font-size: 0.8rem; color: var(--text-secondary); }
 
-        /* --- 播放器 (關鍵修改:區分電腦與手機) --- */
+        /* --- 播放器 --- */
         .player-bar {
-            position: fixed; 
-            height: 80px;
-            background: var(--player-bg); 
+            position: fixed; height: 80px; background: var(--player-bg); 
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--player-border);
             display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
-            z-index: 100;
-            transition: 0.3s ease;
+            z-index: 100; transition: 0.3s ease;
         }
-        
         .track-info { display: flex; align-items: center; width: 30%; overflow: hidden; }
         .track-thumb { width: 48px; height: 48px; background: #eee; border-radius: 8px; margin-right: 12px; flex-shrink: 0; }
-        .track-details h4 { font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; color: var(--text-primary); }
+        .track-details h4 { font-size: 0.95rem; margin-bottom: 2px; white-space: nowrap; }
         .track-details p { font-size: 0.8rem; color: var(--text-secondary); }
-
         .controls { display: flex; align-items: center; gap: 24px; }
-        .ctrl-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-primary); display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .ctrl-btn:hover { opacity: 0.7; }
-        .play-btn { width: 44px; height: 44px; background: var(--text-primary); color: var(--bg-color); border-radius: 50%; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .play-btn:hover { transform: scale(1.05); opacity: 1; }
+        .ctrl-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-primary); }
+        .play-btn { width: 44px; height: 44px; background: var(--text-primary); color: var(--bg-color); border-radius: 50%; font-size: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center; }
 
-        /* --- 模態視窗 (Modal) --- */
-        .modal-overlay {
+        /* --- 全螢幕視窗 (Full Screen Views) --- */
+        .fullscreen-view {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: 200;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0; pointer-events: none; transition: 0.3s;
+            background: var(--bg-color); z-index: 200;
+            display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            overflow-y: auto; padding: 0;
         }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        
-        .modal-content {
-            background: var(--modal-bg); width: 90%; max-width: 400px;
-            padding: 30px; border-radius: var(--radius-lg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            box-shadow: var(--shadow-md); transform: scale(0.9); transition: 0.3s;
-            max-height: 80vh; overflow-y: auto;
+        .fullscreen-view.active { transform: translateY(0); }
+
+        .view-header {
+            padding: 20px 30px; display: flex; align-items: center;
+            border-bottom: 1px solid var(--divider); position: sticky; top: 0; background: var(--bg-color); z-index: 10;
         }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-        .modal-header { font-size: 1.5rem; font-weight: bold; margin-bottom: 20px; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; }
-        .modal-close { cursor: pointer; font-size: 1.2rem; opacity: 0.5; }
+        .btn-back { font-size: 1.5rem; background: none; border: none; color: var(--text-primary); cursor: pointer; margin-right: 20px; }
+        .view-title { font-size: 1.5rem; font-weight: bold; }
         
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--divider); }
-        .setting-label { font-size: 1rem; color: var(--text-primary); }
+        .view-content { padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--divider); }
+        .setting-label { font-size: 1.1rem; color: var(--text-primary); }
         
-        /* 開關 (Toggle Switch) */
+        /* Switch */
         .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #E5E5E5; transition: .4s; border-radius: 34px; }
@@ -179,45 +180,34 @@
         input:checked + .slider:before { transform: translateX(22px); }
         [data-theme="dark"] .slider { background-color: #3A3A3C; }
 
-        /* 更新日誌列表 */
-        .changelog-list { list-style: none; margin-top: 10px; }
-        .changelog-item { margin-bottom: 20px; }
-        .ver-badge { display: inline-block; background: var(--accent-color); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; margin-bottom: 5px; }
-        .ver-content { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; }
+        /* Changelog */
+        .changelog-list { list-style: none; }
+        .changelog-item { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px dashed var(--divider); }
+        .ver-badge { display: inline-block; background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 6px; font-weight: bold; margin-bottom: 8px; }
+        .ver-content { color: var(--text-secondary); line-height: 1.6; }
 
-        /* --- 手機版面 (RWD) --- */
+        /* --- RWD --- */
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .main-content { padding: 20px; padding-top: 60px; }
+            .main-content { padding: 20px; padding-top: 70px; }
+            .player-bar { bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); height: 70px; padding: 0 15px; }
+            .mobile-header {
+                position: fixed; top: 0; left: 0; width: 100%; height: 60px; background: var(--bg-color);
+                z-index: 90; display: flex; align-items: center; justify-content: center;
+                border-bottom: 1px solid var(--divider); font-weight: 700;
+            }
             .grid-container { grid-template-columns: repeat(2, 1fr); gap: 15px; }
             
-            /* 手機版：播放器浮在底部中央 */
-            .player-bar { 
-                bottom: 20px; left: 50%; transform: translateX(-50%); 
-                width: 90%; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-                height: 70px; padding: 0 15px;
-            }
-            .mobile-header {
-                position: fixed; top: 0; left: 0; width: 100%; height: 50px; background: var(--bg-color);
-                z-index: 90; display: flex; align-items: center; justify-content: center;
-                border-bottom: 1px solid var(--divider); font-weight: 700; color: var(--text-primary);
-            }
-            .user-greet { display: none; }
+            /* 手機版隱藏 Header 裡的搜尋與標題，改用簡化版 */
+            .page-header { display: block; margin-top: 0; }
+            .header-left { display: none; }
+            .search-container { width: 100%; margin-bottom: 15px; } /* 手機版搜尋條滿版 */
+            .nav-item-settings { display: none; } /* 手機版上方不顯示設定齒輪，改用底部導航(如有)或保持側邊欄 */
         }
 
-        /* --- 電腦版面 (修正播放條位置) --- */
         @media (min-width: 769px) { 
             .mobile-header { display: none; }
-            
-            /* 電腦版：播放器靠右，不蓋側邊欄 */
-            .player-bar {
-                bottom: 30px; 
-                right: 40px; 
-                left: auto; /* 重要：取消左對齊 */
-                width: calc(100% - 260px - 80px); /* 100% - 側邊欄 - 左右間距 */
-                border-radius: var(--radius-lg);
-                box-shadow: var(--shadow-md);
-            }
+            .player-bar { bottom: 30px; right: 40px; left: auto; width: calc(100% - 260px - 80px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
         }
     </style>
 </head>
@@ -242,21 +232,35 @@
 
         <nav class="sidebar">
             <div class="sidebar-logo">ASTRA.</div>
-            <div class="nav-item active">首頁</div>
-            <div class="nav-item">搜尋</div>
-            <div class="nav-item">我的片單</div>
+            <div class="nav-item active" onclick="resetFilter()">首頁</div>
+            <div class="nav-item" onclick="resetFilter()">搜尋</div>
+            <div class="nav-item">資料庫</div>
             <div class="nav-item" style="margin-top:auto" onclick="openSettings()">設定</div>
         </nav>
 
         <main class="main-content">
             <header class="page-header">
-                <div>
-                    <h2 class="page-title">現在聆聽</h2>
+                <div class="header-left">
+                    <h2 class="page-title">資料庫</h2>
                     <p class="user-greet" id="greeting">歡迎回來</p>
                 </div>
+                
+                <!-- 搜尋條 -->
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="搜尋歌曲或藝人..." oninput="handleSearch(this.value)">
+                </div>
+
                 <!-- 電腦版設定按鈕 -->
-                <div class="nav-item" style="font-size: 1.5rem;" onclick="openSettings()">⚙</div>
+                <div class="nav-item nav-item-settings" style="font-size: 1.5rem; width: auto;" onclick="openSettings()">⚙</div>
             </header>
+
+            <!-- 新發現功能鍵 -->
+            <div class="action-bar">
+                <button class="btn-discovery" onclick="shuffleDiscovery()">
+                    ✦ 新發現
+                </button>
+            </div>
 
             <div class="grid-container" id="music-grid">
                 <!-- Javascript will load content here -->
@@ -279,14 +283,13 @@
         </footer>
     </section>
 
-    <!-- 3. 設定模態窗 -->
-    <div id="settings-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>設定</span>
-                <span class="modal-close" onclick="closeSettings()">✕</span>
-            </div>
-            
+    <!-- 3. 設定全螢幕視窗 -->
+    <div id="settings-view" class="fullscreen-view">
+        <div class="view-header">
+            <button class="btn-back" onclick="closeSettings()">←</button>
+            <div class="view-title">設定</div>
+        </div>
+        <div class="view-content">
             <div class="setting-item">
                 <span class="setting-label">深色模式</span>
                 <label class="switch">
@@ -295,28 +298,27 @@
                 </label>
             </div>
 
-            <div class="setting-item" style="cursor: pointer;" onclick="showChangelog(true)">
+            <div class="setting-item" style="cursor: pointer;" onclick="openChangelog()">
                 <span class="setting-label">查看更新日誌</span>
-                <span style="color: var(--text-secondary); font-size: 0.9rem;">v1.0.0 ></span>
+                <span id="setting-ver-text" style="color: var(--text-secondary); font-size: 0.9rem;">v1.0.0 ></span>
             </div>
 
-            <div class="setting-item" style="border:none; margin-top: 10px;">
+            <div class="setting-item" style="border:none; margin-top: 30px;">
                 <button class="btn-primary" onclick="handleLogout()" style="background: var(--accent-color);">登出系統</button>
             </div>
         </div>
     </div>
 
-    <!-- 4. 更新日誌模態窗 -->
-    <div id="changelog-modal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>更新日誌</span>
-                <span class="modal-close" onclick="closeChangelog()">✕</span>
-            </div>
+    <!-- 4. 更新日誌全螢幕視窗 -->
+    <div id="changelog-view" class="fullscreen-view">
+        <div class="view-header">
+            <button class="btn-back" onclick="closeChangelog()">←</button>
+            <div class="view-title">更新日誌</div>
+        </div>
+        <div class="view-content">
             <ul class="changelog-list" id="changelog-content">
                 <!-- JS 動態寫入 -->
             </ul>
-            <button class="btn-primary" onclick="closeChangelog()" style="margin-top: 20px;">我知道了</button>
         </div>
     </div>
 
@@ -327,13 +329,17 @@
         let currentVersion = '0.0.0'; 
         let updateLogs = [];
 
-        // 音樂庫設定 (請確認 music 資料夾內有這些檔案)
+        // 音樂庫設定
+        // 建議保留完整的音樂庫，搜尋時會用到
         const musicLibrary = [
             { id: 1, title: "WE GO UP", artist: "BABYMONSTER", filename: "song1.mp3" },
             { id: 2, title: "PSYCHO", artist: "BABYMONSTER", filename: "song2.mp3" },
             { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", filename: "song3.mp3" },
             { id: 4, title: "WILD", artist: "BABYMONSTER", filename: "song4.mp3" },
         ];
+        
+        // 用來顯示的清單 (搜尋或篩選後會變動)
+        let displayList = [...musicLibrary];
 
         const audioPlayer = document.getElementById('audio-player');
         const playBtn = document.getElementById('playBtn');
@@ -341,64 +347,79 @@
 
         // --- 2. 初始化流程 ---
         window.onload = async function() {
-            // A. 載入外部日誌
             await loadChangelogData();
 
-            // B. 檢查是否已登入
             const savedUser = localStorage.getItem('astra_user');
-            if (savedUser) {
-                loginSuccess(savedUser);
-            }
+            if (savedUser) loginSuccess(savedUser);
 
-            // C. 檢查深色模式
             const savedTheme = localStorage.getItem('astra_theme');
             if (savedTheme === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
                 document.getElementById('theme-toggle').checked = true;
             }
 
-            // D. 渲染音樂列表
-            renderMusicGrid();
+            renderMusicGrid(); // 預設顯示全部
 
-            // E. 註冊 PWA
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js')
-                    .catch(err => console.log('SW error:', err));
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
             }
         };
 
-        // --- 3. 功能：讀取 JSON 日誌 ---
+        // --- 3. 搜尋與新發現功能 (新功能) ---
+        
+        // 搜尋邏輯
+        function handleSearch(query) {
+            const lowerQuery = query.toLowerCase();
+            if (!lowerQuery) {
+                displayList = [...musicLibrary]; // 如果沒輸入，還原全部
+            } else {
+                displayList = musicLibrary.filter(song => 
+                    song.title.toLowerCase().includes(lowerQuery) || 
+                    song.artist.toLowerCase().includes(lowerQuery)
+                );
+            }
+            renderMusicGrid();
+        }
+
+        // 新發現 (隨機打亂)
+        function shuffleDiscovery() {
+            // 簡單的隨機排序
+            displayList = [...musicLibrary].sort(() => Math.random() - 0.5);
+            renderMusicGrid();
+            
+            // 視覺回饋：稍微閃爍一下 grid
+            const grid = document.getElementById('music-grid');
+            grid.style.opacity = '0.5';
+            setTimeout(() => grid.style.opacity = '1', 200);
+        }
+
+        function resetFilter() {
+            displayList = [...musicLibrary];
+            document.querySelector('.search-input').value = '';
+            renderMusicGrid();
+        }
+
+        // --- 4. 讀取 JSON 日誌 ---
         async function loadChangelogData() {
             try {
                 const response = await fetch('./changelog.json');
-                const data = await response.json();
-                updateLogs = data;
-                
-                // 抓第一筆當作最新版本
-                if (updateLogs.length > 0) {
-                    currentVersion = updateLogs[0].version;
-                }
-            } catch (error) {
-                console.error("讀取日誌失敗 (請確認 changelog.json 是否存在)", error);
-            }
+                updateLogs = await response.json();
+                if (updateLogs.length > 0) currentVersion = updateLogs[0].version;
+            } catch (error) { console.error("Log Error", error); }
         }
 
-        // --- 4. 使用者系統 ---
+        // --- 5. 登入與系統 ---
         function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
-            if(user) {
-                localStorage.setItem('astra_user', user);
-                loginSuccess(user);
-            }
+            if(user) { localStorage.setItem('astra_user', user); loginSuccess(user); }
         }
 
         function loginSuccess(user) {
             document.getElementById('login-view').classList.add('hidden');
             document.getElementById('app-view').classList.remove('hidden');
             document.getElementById('greeting').innerText = `歡迎回來，${user}`;
-            
-            checkUpdateLog(); // 檢查更新
+            checkUpdateLog();
         }
 
         function handleLogout() {
@@ -406,66 +427,59 @@
             location.reload();
         }
 
-        // --- 5. 深色模式邏輯 ---
         function toggleTheme() {
             const isDark = document.getElementById('theme-toggle').checked;
-            if (isDark) {
-                document.body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('astra_theme', 'dark');
-            } else {
-                document.body.removeAttribute('data-theme');
-                localStorage.setItem('astra_theme', 'light');
-            }
+            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            localStorage.setItem('astra_theme', isDark ? 'dark' : 'light');
         }
 
-        // --- 6. 更新日誌顯示邏輯 ---
+        // --- 6. 全螢幕視窗控制 (修改版) ---
+        function openSettings() {
+            document.getElementById('setting-ver-text').innerText = `v${currentVersion} >`;
+            document.getElementById('settings-view').classList.add('active');
+        }
+        function closeSettings() {
+            document.getElementById('settings-view').classList.remove('active');
+        }
+
+        function openChangelog() {
+            renderChangelogList();
+            document.getElementById('changelog-view').classList.add('active');
+        }
+        function closeChangelog() {
+            document.getElementById('changelog-view').classList.remove('active');
+        }
+
         function checkUpdateLog() {
             const lastSeenVersion = localStorage.getItem('astra_version');
-            // 如果版本不同，跳出提示
             if (currentVersion !== '0.0.0' && lastSeenVersion !== currentVersion) {
-                showChangelog(false);
+                openChangelog(); // 直接打開全螢幕日誌
                 localStorage.setItem('astra_version', currentVersion);
             }
         }
 
-        function showChangelog(isManual) {
+        function renderChangelogList() {
             const list = document.getElementById('changelog-content');
             list.innerHTML = '';
-            
             updateLogs.forEach(log => {
                 const li = document.createElement('li');
                 li.className = 'changelog-item';
                 li.innerHTML = `
                     <span class="ver-badge">v${log.version}</span> 
-                    <span style="font-size:0.8rem; color:var(--text-secondary)">${log.date}</span>
-                    <p class="ver-content">${log.content}</p>
+                    <span style="font-size:0.9rem; color:var(--text-secondary); margin-left: 10px;">${log.date}</span>
+                    <p class="ver-content" style="margin-top:10px;">${log.content}</p>
                 `;
                 list.appendChild(li);
             });
-            document.getElementById('changelog-modal').classList.add('active');
         }
 
-        function closeChangelog() {
-            document.getElementById('changelog-modal').classList.remove('active');
-        }
-
-        // --- 7. UI 控制 ---
-        function openSettings() {
-            // 在設定頁顯示版本號
-            const verLink = document.querySelector('#settings-modal .setting-item span[style*="font-size"]');
-            if(verLink) verLink.innerText = `v${currentVersion} >`;
-            
-            document.getElementById('settings-modal').classList.add('active');
-        }
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.remove('active');
-        }
-
-        // --- 8. 音樂播放功能 ---
+        // --- 7. 音樂渲染與播放 ---
         function renderMusicGrid() {
             const grid = document.getElementById('music-grid');
             grid.innerHTML = '';
-            musicLibrary.forEach(song => {
+            
+            // 使用 displayList 而不是 musicLibrary，因為要支援搜尋和打亂
+            displayList.forEach(song => {
                 const card = document.createElement('div');
                 card.className = 'music-card';
                 card.onclick = () => playSong(song);
@@ -497,8 +511,7 @@
 
         function togglePlay() {
             if (audioPlayer.src) {
-                if (isPlaying) audioPlayer.pause();
-                else audioPlayer.play();
+                if (isPlaying) audioPlayer.pause(); else audioPlayer.play();
                 isPlaying = !isPlaying;
                 updatePlayBtn();
             }
@@ -510,4 +523,3 @@
     </script>
 </body>
 </html>
-
