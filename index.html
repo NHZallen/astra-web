@@ -185,34 +185,46 @@
         .horizontal-row::-webkit-scrollbar { display: none; }
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
-        /* --- Artist Detail Specific Styles (New & Updated) --- */
-        .artist-song-row {
-            display: flex;
+        /* --- Artist Detail Specific Styles (UPDATED) --- */
+        .artist-song-container-scroll {
+            display: grid;
+            grid-auto-flow: column; /* Fill top-to-bottom, then move right (all rows slide together) */
+            grid-template-rows: repeat(3, 1fr); /* Desktop: 3 rows */
+            gap: 12px;
             overflow-x: auto;
-            gap: 10px;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             scroll-snap-type: x mandatory;
         }
-        .artist-song-row::-webkit-scrollbar { display: none; }
-        
-        /* Desktop: 3 items per row */
-        .artist-song-row .song-list-item {
-            min-width: calc((100% - 20px) / 3); /* 3 items */
-            width: calc((100% - 20px) / 3);
-            scroll-snap-align: start;
-            flex-shrink: 0;
-            margin-bottom: 0;
-        }
-        
-        /* Mobile: 1 item per row (full width) */
+        .artist-song-container-scroll::-webkit-scrollbar { display: none; }
+
+        /* Mobile overrides for Artist Songs: 4 Rows */
         @media (max-width: 768px) {
-            .artist-song-row .song-list-item {
-                min-width: calc(100% - 10px); /* Show 1 item mostly */
-                width: calc(100% - 10px);
-                margin-right: 5px;
+            .artist-song-container-scroll {
+                grid-template-rows: repeat(4, 1fr); /* Mobile: 4 rows */
             }
         }
+
+        .artist-song-item {
+            /* Fixed width for horizontal scrolling items */
+            width: 280px; 
+            scroll-snap-align: start;
+            /* Flex layout for the item itself (Long bar style) */
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 12px;
+            background: transparent;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .artist-song-item {
+                width: 85vw; /* Wider on mobile for better view */
+            }
+        }
+        
+        .artist-song-item:hover { background: var(--input-bg); }
         
         /* Artist Album Grid (Responsive) */
         .artist-album-grid {
@@ -235,12 +247,25 @@
         /* General Music Card */
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
         .music-card:hover { transform: translateY(-4px); }
-        .cover-art { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; background-size: cover; background-position: center; }
-        [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
+        .cover-art { 
+            width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; 
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5); 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: var(--shadow-sm); position: relative; overflow: hidden; 
+            background-size: cover; background-position: center; 
+        }
+        
+        /* DARK MODE FIX: Don't use 'background:' shorthand as it resets size */
+        [data-theme="dark"] .cover-art { 
+            background-image: linear-gradient(135deg, #2C2C2E, #3A3A3C); 
+            background-size: cover; /* Force cover */
+            background-position: center;
+        }
+        
         .add-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: 0.2s; z-index: 5; color: black; }
         .music-card:hover .add-btn { opacity: 1; }
 
-        /* Song List Row (Long Bar Style) */
+        /* Song List Row (Long Bar Style - General) */
         .song-list-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; cursor: pointer; background: transparent; overflow: hidden; }
         .song-list-item:hover { background: var(--input-bg); }
         .song-row-img { width: 44px; height: 44px; border-radius: 8px; margin-right: 10px; background-size: cover; background-position: center; flex-shrink: 0; background-color: #eee; }
@@ -450,7 +475,6 @@
             <!-- B. Search -->
             <div id="page-search" class="page-section">
                 <div class="search-container">
-                    <!-- Changed onkeydown to oninput for real-time search -->
                     <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." onfocus="showSearchHistory()" oninput="handleSearchInput(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
                     <div id="search-history-dropdown" class="search-history-dropdown"></div>
                 </div>
@@ -469,6 +493,7 @@
             <div id="page-database" class="page-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <h2>我的播放清單</h2>
+                    <!-- Fixed Button also in Header -->
                     <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
                 </div>
                 <div id="playlists-container" class="grid-container"></div>
@@ -577,7 +602,7 @@
     <audio id="audio-player"></audio>
 
     <script>
-        // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
+        // --- 1. 定義歌手與專輯圖片對照表 ---
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
         };
@@ -794,9 +819,7 @@
             }
         }
 
-        // --- Search System (New: Real-time & History Logic) ---
-        
-        // 1. Handle Real-time Input
+        // --- Search System ---
         function handleSearchInput(e) {
             const val = e.target.value.trim();
             if(val) performSearch(val);
@@ -808,7 +831,6 @@
             const dropdown = document.getElementById('search-history-dropdown');
             if(history.length === 0) dropdown.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">無搜尋紀錄</div>';
             else {
-                // Modified rendering for object-based history
                 dropdown.innerHTML = history.map(item => `
                     <div class="history-item" onclick="handleHistoryItemClick('${item.type}', '${item.title}', '${item.id || ''}')">
                         <div class="history-left">
@@ -822,7 +844,6 @@
             dropdown.classList.add('active');
         }
 
-        // Helper to click history item and perform action
         function handleHistoryItemClick(type, title, id) {
             document.getElementById('search-history-dropdown').classList.remove('active');
             if(type === 'artist') openArtistDetail(title);
@@ -830,7 +851,6 @@
             else if(type === 'song' && id) playSong(parseInt(id));
         }
 
-        // Perform search (Display only, NO saving history here)
         async function performSearch(keyword) {
             document.getElementById('search-history-dropdown').classList.remove('active');
             const area = document.getElementById('search-results-area');
@@ -841,7 +861,6 @@
             
             let html = '';
             
-            // Artist Section
             if(matchedArtists.length > 0) {
                 html += `<div class="search-section-title">歌手</div><div class="horizontal-row">`;
                 html += matchedArtists.map(artist => {
@@ -855,7 +874,6 @@
                 html += `</div>`;
             }
             
-            // Album Section
             if(matchedAlbums.length > 0) {
                 html += `<div class="search-section-title">專輯</div><div class="horizontal-row">`;
                 html += matchedAlbums.map(album => {
@@ -870,12 +888,10 @@
                 html += `</div>`;
             }
             
-            // Song Section
             if(matchedSongs.length > 0) {
                 html += `<div class="search-section-title">歌曲</div><div class="grid-container">`; 
                 html += matchedSongs.map(song => {
                     const img = getSongCover(song);
-                    // Create wrapper onclick to save history AND play
                     return `<div class="music-card" onclick="handleSearchResultClick('song', '${song.title}', '${img}', ${song.id})">
                         <div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
                     </div>`;
@@ -887,24 +903,15 @@
             area.innerHTML = html;
         }
 
-        // New function to handle Click -> Save History -> Open Content
         async function handleSearchResultClick(type, title, img, id) {
-            // 1. Add to history
             const newItem = { type, title, img, id: id || null, timestamp: Date.now() };
             let history = currentUserData.search_history || [];
-            
-            // Remove exact duplicates to bring latest to top
             history = history.filter(h => !(h.title === title && h.type === type));
-            
             history.unshift(newItem);
-            
-            // Limit to 30
             if(history.length > 30) history = history.slice(0, 30);
-            
             currentUserData.search_history = history;
             saveUserToDB(currentUserData);
 
-            // 2. Perform Action
             if(type === 'artist') openArtistDetail(title);
             else if(type === 'album') openAlbumDetail(title);
             else if(type === 'song') playSong(id);
@@ -922,12 +929,16 @@
 
         // --- Detail Views Logic ---
 
-        // 1. Artist Detail: 
-        // Mobile: 4 Rows, 1 item visible (~95% width)
-        // Desktop: 3 Rows, 3 items visible (~33% width)
+        // 1. Artist Detail: Unified Grid Scrolling with Chunk Shuffle
         function openArtistDetail(artistName) {
-            currentPlaylistId = null; // Reset context
-            const songs = musicLibrary.filter(s => s.artist === artistName).sort((a, b) => b.id - a.id);
+            currentPlaylistId = null;
+            
+            // Step 1: Sort by ID Descending (Newest First)
+            let songs = musicLibrary.filter(s => s.artist === artistName).sort((a, b) => b.id - a.id);
+            
+            // Step 2: "Semi-Randomize" - Shuffle small chunks to keep general order but add variety
+            songs = semiRandomize(songs);
+
             const albums = [...new Set(songs.map(s => s.album))];
 
             document.getElementById('cd-nav-title').innerText = artistName;
@@ -939,25 +950,10 @@
 
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3>`;
             
-            // Logic to determine rows
-            const isMobile = window.innerWidth <= 768;
-            const numRows = isMobile ? 4 : 3;
-            
-            // Distribute songs into rows
-            const rows = Array.from({length: numRows}, () => []);
-            songs.forEach((song, index) => {
-                rows[index % numRows].push(song);
-            });
-
-            // Render rows
-            html += `<div class="artist-song-container">`;
-            rows.forEach(rowSongs => {
-                if(rowSongs.length > 0) {
-                    html += `<div class="artist-song-row">`;
-                    html += rowSongs.map(s => createSongRowHTML(s, false)).join(''); // Use Row (List) HTML
-                    html += `</div>`;
-                }
-            });
+            // Render: All songs in one grid container that scrolls horizontally
+            // Rows defined by CSS Grid (3 for desktop, 4 for mobile)
+            html += `<div class="artist-song-container-scroll">`;
+            html += songs.map(s => createSongItemHTML(s)).join('');
             html += `</div>`;
 
             // Album Grid
@@ -977,6 +973,31 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
+        // Helper: Semi-Randomize (Chunk Shuffle)
+        function semiRandomize(arr) {
+            let result = [];
+            const chunkSize = 6; // Group size for shuffling
+            for (let i = 0; i < arr.length; i += chunkSize) {
+                let chunk = arr.slice(i, i + chunkSize);
+                // Shuffle the chunk
+                chunk.sort(() => Math.random() - 0.5);
+                result = result.concat(chunk);
+            }
+            return result;
+        }
+
+        function createSongItemHTML(song) {
+            const img = getSongCover(song);
+            return `
+            <div class="artist-song-item" onclick="playSong(${song.id})">
+                <div class="song-row-img" style="background-image:url('${img}')"></div>
+                <div class="song-row-info">
+                    <div class="song-row-title">${song.title}</div>
+                    <div class="song-row-artist">${song.artist}</div>
+                </div>
+            </div>`;
+        }
+
         // 2. Album Detail
         function openAlbumDetail(albumName) {
             currentPlaylistId = null; 
@@ -989,7 +1010,7 @@
         function openPlaylistDetail(plId) {
             const pl = currentUserData.playlists.find(p => p.id === plId);
             if(!pl) return;
-            currentPlaylistId = plId; // Set context
+            currentPlaylistId = plId; 
             const songs = pl.songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
             openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs, true);
         }
@@ -1014,7 +1035,6 @@
             if (isPlaylist) {
                 btnHtml = `<button class="remove-btn" onclick="removeFromPlaylist(event, ${song.id})"><svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
             }
-
             return `
             <div class="song-list-item" onclick="playSong(${song.id})">
                 <div class="song-row-img" style="background-image:url('${img}')"></div>
@@ -1063,21 +1083,27 @@
             }
         }
 
-        // --- Render Playlists as Grid ---
+        // --- Render Playlists as Grid (UPDATED) ---
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
-            if(playlists.length === 0) { 
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; 
-                return; 
-            } 
-            container.innerHTML = playlists.map(pl => `
+            
+            // Fixed "Create New" Card added first
+            let html = `
+            <div class="music-card" onclick="openCreatePlaylistModal()" style="border: 2px dashed var(--divider); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px;">
+                 <div style="font-size:3rem; color:var(--text-secondary); margin-bottom:10px;">+</div>
+                 <div style="font-weight:bold; color:var(--text-secondary);">新建清單</div>
+            </div>`;
+
+            html += playlists.map(pl => `
                 <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
                     <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
             `).join(''); 
+            
+            container.innerHTML = html;
         }
 
         // --- Standard Functions (Login, Profile, Settings) ---
