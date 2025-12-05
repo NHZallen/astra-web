@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
+    <link rel="icon" href="./images/logo.png" type="image/png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FFFFFF" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -254,7 +255,7 @@
     <!-- Landing Page -->
     <section id="landing-page">
         <nav class="lp-nav">
-            <div style="font-size:1.5rem; font-weight:800; color:var(--accent-color);">ASTRA Music</div>
+            <img src="./images/logo.png" style="height: 40px; width: auto;">
             <button class="lp-btn" style="padding:8px 20px; font-size:0.9rem; opacity:1; animation:none;" onclick="openLoginModal()">登入</button>
         </nav>
         <div class="lp-hero">
@@ -286,7 +287,10 @@
     <!-- App View -->
     <section id="app-view" class="hidden">
         <nav class="sidebar">
-            <div class="sidebar-logo">ASTRA.</div>
+            <div class="sidebar-logo">
+    <img src="./images/logo.png" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+    ASTRA Music
+</div>
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
             <div class="nav-item" onclick="switchPage('search')" id="nav-search"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
             <div class="nav-item" onclick="switchPage('discovery')" id="nav-discovery"><svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>新發現</div>
@@ -781,3 +785,4 @@
     </script>
 </body>
 </html>
+
