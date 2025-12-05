@@ -185,22 +185,24 @@
         .horizontal-row::-webkit-scrollbar { display: none; }
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
-        /* --- Artist Detail Specific Styles (New) --- */
+        /* --- Artist Detail Specific Styles (New & Updated) --- */
         .artist-song-row {
             display: flex;
             overflow-x: auto;
-            gap: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 5px; /* space for hidden scrollbar to avoid cut-off */
+            gap: 10px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
             scroll-snap-type: x mandatory;
         }
         .artist-song-row::-webkit-scrollbar { display: none; }
-        /* Make sure exactly 3 items fit in viewport with gaps */
-        .artist-song-row .music-card {
-            min-width: calc((100% - 24px) / 3); /* 24px = gap(12) * 2 */
-            width: calc((100% - 24px) / 3);
+        
+        /* Force 3 items to fit in viewport width minus gaps */
+        .artist-song-row .song-list-item {
+            min-width: calc((100% - 20px) / 3); /* 20px = 10px gap * 2 */
+            width: calc((100% - 20px) / 3);
             scroll-snap-align: start;
             flex-shrink: 0;
+            margin-bottom: 0; /* Remove bottom margin for horizontal layout */
         }
         
         /* Artist Album Grid (Responsive) */
@@ -229,13 +231,13 @@
         .add-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: 0.2s; z-index: 5; color: black; }
         .music-card:hover .add-btn { opacity: 1; }
 
-        /* Song List Row (Inside Playlist/Detail) */
-        .song-list-item { display: flex; align-items: center; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; cursor: pointer; background: transparent; }
+        /* Song List Row (Long Bar Style) */
+        .song-list-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; cursor: pointer; background: transparent; overflow: hidden; }
         .song-list-item:hover { background: var(--input-bg); }
-        .song-row-img { width: 48px; height: 48px; border-radius: 8px; margin-right: 15px; background-size: cover; background-position: center; flex-shrink: 0; background-color: #eee; }
-        .song-row-info { flex: 1; overflow: hidden; }
-        .song-row-title { font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .song-row-artist { color: var(--text-secondary); font-size: 0.85rem; }
+        .song-row-img { width: 44px; height: 44px; border-radius: 8px; margin-right: 10px; background-size: cover; background-position: center; flex-shrink: 0; background-color: #eee; }
+        .song-row-info { flex: 1; overflow: hidden; min-width: 0; }
+        .song-row-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-row-artist { color: var(--text-secondary); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .remove-btn { width: 32px; height: 32px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; opacity: 0.5; }
         .remove-btn:hover { background: rgba(250, 45, 72, 0.1); color: var(--accent-color); opacity: 1; }
 
@@ -844,10 +846,13 @@
 
         // --- Detail Views Logic ---
 
-        // 1. Artist Detail: 3 Independent Rows for Songs, Grid for Albums
+        // 1. Artist Detail: 3 Independent Rows for Songs (List Items), Grid for Albums
         function openArtistDetail(artistName) {
             currentPlaylistId = null; // Reset context
-            const songs = musicLibrary.filter(s => s.artist === artistName);
+            // Sort Strategy:
+            // 1. Sort by ID descending (Simulates "Newest First" and keeps albums roughly together if added sequentially)
+            // Note: Since real dates are missing, ID descending is the best proxy for "Newest first".
+            const songs = musicLibrary.filter(s => s.artist === artistName).sort((a, b) => b.id - a.id);
             const albums = [...new Set(songs.map(s => s.album))];
 
             document.getElementById('cd-nav-title').innerText = artistName;
@@ -865,12 +870,12 @@
                 rows[index % 3].push(song);
             });
 
-            // Render 3 independent horizontal rows
+            // Render 3 independent horizontal rows using List Item Style (Long bar)
             html += `<div class="artist-song-container">`;
             rows.forEach(rowSongs => {
                 if(rowSongs.length > 0) {
                     html += `<div class="artist-song-row">`;
-                    html += rowSongs.map(s => createSongCardHTML(s)).join(''); // Use Card HTML
+                    html += rowSongs.map(s => createSongRowHTML(s, false)).join(''); // Use Row (List) HTML
                     html += `</div>`;
                 }
             });
