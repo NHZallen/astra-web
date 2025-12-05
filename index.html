@@ -65,30 +65,30 @@
         .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition: 0.2s; font-size: 1rem; }
         .btn-primary:hover { background: var(--accent-color-hover); transform: translateY(-1px); }
         
-        /* --- 修正 Sidebar LOGO 大小與換行 --- */
+        /* --- Sidebar Logo Fix (字體縮小與不換行) --- */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top));
             display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0;
         }
         .sidebar-logo { 
-            /* 修改字體大小，避免手機或窄螢幕切到 */
+            /* 修改處：字體改小，加上 nowrap 防止換行 */
             font-size: 1.25rem; 
             font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
             padding-left: 20px; display: flex; align-items: center;
-            white-space: nowrap; /* 強制不換行 */
+            white-space: nowrap; 
             overflow: hidden;
             text-overflow: ellipsis;
         }
         
-        /* --- Landing Page (Scrollable) --- */
+        /* --- Landing Page Redesign --- */
         #landing-page {
             height: 100vh; width: 100%; overflow-y: auto; overflow-x: hidden;
             background: #ffffff; color: #1d1d1f; z-index: 2000; position: relative;
             font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
-            scroll-behavior: smooth;
+            scroll-behavior: smooth; /* 平滑滾動 */
         }
         
-        /* Animated Background Blobs */
+        /* Animated Background */
         .landing-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
             background: #FAFAFA;
@@ -99,55 +99,47 @@
         }
         .blob-1 { top: -10%; right: -10%; width: 500px; height: 500px; background: #fa2d48; animation-delay: 0s; }
         .blob-2 { bottom: -10%; left: -10%; width: 400px; height: 400px; background: #6a11cb; animation-delay: -2s; }
-        .blob-3 { top: 40%; left: 40%; width: 300px; height: 300px; background: #2575fc; opacity: 0.4; animation-delay: -4s; }
-        @keyframes float { 
-            0% { transform: translate(0, 0) scale(1); } 
-            100% { transform: translate(20px, 40px) scale(1.1); } 
-        }
 
         .lp-nav {
             position: fixed; top: 0; width: 100%; padding: 20px 40px; padding-top: calc(20px + var(--safe-top));
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 100; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        
-        /* Hero Section */
+
         .lp-hero-container {
-            min-height: 95vh; display: flex; align-items: center; justify-content: center;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
             padding: 120px 20px 40px; max-width: 1200px; margin: 0 auto;
         }
+        
         .lp-content-wrapper {
             display: flex; flex-direction: column-reverse; align-items: center; width: 100%; gap: 60px;
         }
+        
         @media (min-width: 900px) {
             .lp-content-wrapper { flex-direction: row; justify-content: space-between; text-align: left; }
             .lp-text { width: 45%; text-align: left; }
-            .lp-visual { width: 45%; height: 500px; display: flex; align-items: center; justify-content: center; }
+            .lp-visual { width: 50%; height: 500px; }
         }
 
         .lp-text { text-align: center; z-index: 2; }
         .lp-badge { 
             display: inline-block; padding: 6px 16px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color);
             border-radius: 30px; font-weight: 700; font-size: 0.9rem; margin-bottom: 20px;
-            animation: fadeInUp 0.8s ease backwards;
         }
         .lp-title { 
             font-size: 3.5rem; line-height: 1.1; font-weight: 900; margin-bottom: 20px; letter-spacing: -1px;
             background: linear-gradient(135deg, #1d1d1f 0%, #434343 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: fadeInUp 0.8s ease 0.1s backwards;
         }
-        .lp-desc { 
-            font-size: 1.2rem; color: #666; margin-bottom: 40px; line-height: 1.6;
-            animation: fadeInUp 0.8s ease 0.2s backwards; 
-        }
-        .lp-btn-group { animation: fadeInUp 0.8s ease 0.3s backwards; }
+        .lp-desc { font-size: 1.2rem; color: #666; margin-bottom: 40px; line-height: 1.6; }
+        
         .lp-btn { 
             padding: 16px 48px; background: var(--accent-color); color: white; border-radius: 50px; 
             border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; 
             box-shadow: 0 10px 25px rgba(250, 45, 72, 0.4); transition: transform 0.2s, box-shadow 0.2s;
         }
         .lp-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 35px rgba(250, 45, 72, 0.5); }
+        
         .lp-btn-outline {
             padding: 16px 48px; background: transparent; color: var(--text-primary); border: 2px solid rgba(0,0,0,0.1);
             border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-left: 10px;
@@ -155,65 +147,56 @@
         }
         .lp-btn-outline:hover { border-color: var(--text-primary); background: rgba(0,0,0,0.02); }
 
-        /* Carousel Visual */
-        .lp-visual { position: relative; width: 100%; height: 350px; perspective: 1000px; display:flex; justify-content:center; align-items:center; }
-        .carousel-card {
-            width: 280px; height: 360px; background: white; border-radius: 24px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.12); padding: 20px;
-            display: flex; flex-direction: column; position: relative;
-            transform: rotate(-5deg); transition: transform 0.5s ease;
-            animation: floatCard 6s infinite ease-in-out;
+        /* --- 新增：動態音樂牆 (Music Wall) --- */
+        .lp-visual {
+            position: relative; overflow: hidden; border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            background: #fff;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
         }
-        .carousel-card:hover { transform: rotate(0deg) scale(1.02); }
+        .music-wall-wrapper {
+            display: flex; gap: 20px; justify-content: center;
+            transform: rotate(-5deg) scale(1.1); /* 稍微傾斜增加設計感 */
+        }
+        .wall-column {
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        .wall-column.up { animation: scrollUp 40s linear infinite; }
+        .wall-column.down { animation: scrollDown 45s linear infinite; }
         
-        .carousel-img { 
-            width: 100%; height: 240px; border-radius: 16px; 
-            background-color: #eee; background-size: cover; background-position: center; 
-            margin-bottom: 20px; transition: background-image 0.5s ease-in-out;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        .wall-item {
+            width: 160px; height: 160px; border-radius: 16px; background: #eee;
+            background-size: cover; background-position: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.3s;
         }
-        
-        .carousel-info { transition: opacity 0.3s ease; }
-        .carousel-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 5px; color:#1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .carousel-sub { font-size: 0.9rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .wall-item:hover { transform: scale(1.05); }
 
-        /* Background blur effect behind card */
-        .carousel-glow {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 250px; height: 300px; background: linear-gradient(135deg, #fa2d48, #6a11cb);
-            filter: blur(60px); opacity: 0.4; z-index: -1; border-radius: 50%;
-        }
+        @keyframes scrollUp { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+        @keyframes scrollDown { from { transform: translateY(-50%); } to { transform: translateY(0); } }
 
-        @keyframes floatCard { 
-            0%, 100% { transform: translateY(0) rotate(-5deg); } 
-            50% { transform: translateY(-15px) rotate(-5deg); } 
+        /* --- 新增：了解更多 (Feature Section) --- */
+        #lp-features {
+            padding: 100px 20px; background: #fff; position: relative; z-index: 2;
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Learn More Section --- */
-        #learn-more {
-            background: #fff; padding: 100px 20px; position: relative; z-index: 2;
+        .feature-container {
+            max-width: 1000px; margin: 0 auto;
         }
-        .section-header { text-align: center; margin-bottom: 80px; max-width: 800px; margin-left: auto; margin-right: auto; }
-        .section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; }
-        .section-desc { font-size: 1.1rem; color: #666; line-height: 1.6; }
-        
-        .features-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 40px; max-width: 1200px; margin: 0 auto;
+        .sec-title {
+            text-align: center; font-size: 2.5rem; font-weight: 800; margin-bottom: 60px;
         }
-        .feature-item { 
-            padding: 40px; background: #F9F9F9; border-radius: 24px; text-align: left; transition: 0.3s;
-            border: 1px solid transparent;
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px;
         }
-        .feature-item:hover { transform: translateY(-10px); background: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.05); }
-        .feature-icon { 
-            width: 60px; height: 60px; background: var(--bg-color); border-radius: 16px; 
-            display: flex; align-items: center; justify-content: center; margin-bottom: 25px;
-            color: var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 1.5rem;
+        .feat-card {
+            padding: 40px; background: #F9F9F9; border-radius: 24px; text-align: center;
+            transition: 0.3s;
         }
-        .feature-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
-        .feature-text { color: #666; line-height: 1.6; }
+        .feat-card:hover { transform: translateY(-10px); background: #F0F0F0; }
+        .feat-icon {
+            width: 60px; height: 60px; background: var(--accent-color-light); color: var(--accent-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+        }
 
         /* Login Modal Enhanced */
         #login-modal {
@@ -223,18 +206,15 @@
         }
         #login-modal.active { opacity: 1; pointer-events: auto; }
         .login-box {
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); width: 85%; max-width: 400px; 
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); width: 85%; max-width: 400px; 
             padding: 40px; border-radius: 30px; text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2); transform: scale(0.9) translateY(20px); transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
-            border: 1px solid rgba(255,255,255,0.5);
         }
         #login-modal.active .login-box { transform: scale(1) translateY(0); }
-        .login-logo { width: 60px; height: 60px; background: var(--accent-color); border-radius: 18px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 10px 20px rgba(250,45,72,0.3); }
-
-        /* App Interface Adjustments */
-        #app-view { display: flex; height: 100vh; width: 100%; }
 
         /* --- Rest of CSS (App Internal) --- */
+        #app-view { display: flex; height: 100vh; width: 100%; }
+
         .nav-item { 
             padding: 14px 20px; color: var(--text-secondary); font-weight: 600; cursor: pointer; 
             transition: 0.2s; font-size: 1rem; display: flex; align-items: center; border-radius: 12px; margin-bottom: 5px;
@@ -248,7 +228,6 @@
             padding-top: var(--header-height);
         }
 
-        /* Fixed Header */
         .content-header {
             position: fixed; top: 0; left: 260px; width: calc(100% - 260px); height: var(--header-height);
             padding: 0 30px; padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center;
@@ -266,7 +245,6 @@
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Search & Grid */
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg);
@@ -275,7 +253,6 @@
         }
         .search-history-dropdown.active { display: block; }
         .history-item { padding: 12px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; }
-        .history-item:hover { background: var(--input-bg); color: var(--text-primary); }
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; margin-top: 30px; color: var(--text-primary); }
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
@@ -304,7 +281,6 @@
         .playlist-row:hover { border-color: var(--accent-color); }
         .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
 
-        /* Player Bar */
         .player-bar {
             position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
@@ -317,7 +293,6 @@
             .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; }
         }
 
-        /* Fullscreen Modal */
         .fullscreen-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 300;
             transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column;
@@ -337,7 +312,6 @@
             color: white; border: 3px solid var(--card-bg); cursor: pointer;
         }
 
-        /* Mobile Nav */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -386,12 +360,11 @@
 </head>
 <body>
 
-    <!-- Enhanced Landing Page -->
+    <!-- Redesigned Landing Page -->
     <section id="landing-page">
         <div class="landing-bg">
             <div class="blob blob-1"></div>
             <div class="blob blob-2"></div>
-            <div class="blob blob-3"></div>
         </div>
         
         <nav class="lp-nav">
@@ -409,63 +382,73 @@
                     <p class="lp-desc">為音樂愛好者打造的終極播放器。<br>無損音質、雲端同步，重新定義你的聽覺體驗。</p>
                     <div class="lp-btn-group">
                         <button class="lp-btn" onclick="openLoginModal()">開始體驗</button>
+                        <!-- 點擊滑動到介紹區塊 -->
                         <button class="lp-btn-outline" onclick="scrollToFeatures()">了解更多</button>
                     </div>
                 </div>
                 
-                <!-- 新的右側輪播區 -->
+                <!-- Music Wall Visual (動態輪播封面牆) -->
                 <div class="lp-visual">
-                    <div class="carousel-glow"></div>
-                    <div class="carousel-card" id="landing-carousel-card">
-                        <div class="carousel-img" id="landing-carousel-img" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=600&q=80')"></div>
-                        <div class="carousel-info">
-                            <div class="carousel-title" id="landing-carousel-title">Daily Mix</div>
-                            <div class="carousel-sub" id="landing-carousel-sub">為您精選</div>
+                    <div class="music-wall-wrapper">
+                        <!-- 向下滾動 -->
+                        <div class="wall-column down">
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1459749411177-287ce3276916?w=400&q=80')"></div>
+                            <!-- 重複以確保無限循環 -->
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400&q=80')"></div>
+                        </div>
+                        <!-- 向上滾動 -->
+                        <div class="wall-column up">
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1514525253440-b393452e8d26?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1621360841012-78d2c4996919?w=400&q=80')"></div>
+                            <!-- 重複以確保無限循環 -->
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80')"></div>
+                            <div class="wall-item" style="background-image:url('https://images.unsplash.com/photo-1514525253440-b393452e8d26?w=400&q=80')"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 新增：功能特色區 (了解更多會跳轉到這) -->
-        <section id="learn-more">
-            <div class="section-header">
-                <h2 class="section-title">為什麼選擇 ASTRA ?</h2>
-                <p class="section-desc">我們將 IndexedDB 技術與現代化介面完美結合，打造出流暢、私密且強大的音樂體驗。</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon">💎</div>
-                    <h3 class="feature-title">無損音質體驗</h3>
-                    <p class="feature-text">支援高解析音訊格式，還原錄音室等級的細節，讓每一個音符都清晰可見，為您帶來極致的聽覺饗宴。</p>
+        <!-- Features Section (了解更多區塊) -->
+        <section id="lp-features">
+            <div class="feature-container">
+                <h2 class="sec-title">重新定義你的音樂生活</h2>
+                <div class="feature-grid">
+                    <div class="feat-card">
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"></path><path d="M2 12h20"></path><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg></div>
+                        <h3>IndexedDB 雲端庫</h3>
+                        <p style="color:#666; margin-top:10px;">資料儲存在本地與雲端，確保你的播放清單與喜好設定永遠不會遺失。</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></div>
+                        <h3>無損高解析音質</h3>
+                        <p style="color:#666; margin-top:10px;">支援 Hi-Res 音訊播放，還原錄音室等級的細節，讓每一個節拍都清晰可見。</p>
+                    </div>
+                    <div class="feat-card">
+                        <div class="feat-icon"><svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="none"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg></div>
+                        <h3>跨平台無縫體驗</h3>
+                        <p style="color:#666; margin-top:10px;">無論是在電腦、手機還是平板，介面自動適應，隨時隨地享受音樂。</p>
+                    </div>
                 </div>
-                <div class="feature-item">
-                    <div class="feature-icon">☁️</div>
-                    <h3 class="feature-title">私有雲端資料庫</h3>
-                    <p class="feature-text">您的播放清單與偏好設定直接儲存在瀏覽器資料庫中，不依賴第三方伺服器，資料完全由您掌控。</p>
-                </div>
-                <div class="feature-item">
-                    <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">跨裝置無縫同步</h3>
-                    <p class="feature-text">無論是手機、平板還是桌面電腦，響應式設計確保您在任何設備上都能獲得一致且流暢的操作體驗。</p>
+                <div style="text-align:center; margin-top:60px;">
+                    <button class="lp-btn" onclick="openLoginModal()">立即免費加入</button>
                 </div>
             </div>
-            <div style="text-align:center; padding-top:60px;">
-                <button class="lp-btn" onclick="openLoginModal()">立即加入我們</button>
-            </div>
-            <div style="text-align:center; padding:60px 20px; color:#888; font-size:0.8rem;">
+            <div style="text-align:center; padding-top:80px; color:#888; font-size:0.8rem;">
                 &copy; 2025 ASTRA Music Inc. All rights reserved.
             </div>
         </section>
-
     </section>
 
     <!-- Enhanced Login Modal -->
     <div id="login-modal">
         <div class="login-box">
-            <div class="login-logo">
-                <svg viewBox="0 0 24 24" width="30" height="30" stroke="currentColor" stroke-width="2.5" fill="none"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            </div>
             <h2 style="margin-bottom:10px; font-size:1.8rem;">歡迎回來</h2>
             <p style="color:var(--text-secondary); margin-bottom:30px;">登入以存取您的個人音樂庫</p>
             <form onsubmit="handleLogin(event)">
@@ -482,6 +465,7 @@
         <nav class="sidebar">
             <div class="sidebar-logo">
                 <img src="./images/logo.png" style="height: 36px; vertical-align: middle; margin-right: 10px;">
+                <!-- 修正字體大小與不換行 -->
                 <span>ASTRA Music</span>
             </div>
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
@@ -640,6 +624,7 @@
     <script>
         // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
         // 請在這裡填入圖片連結 (GitHub Pages 連結或外部網址)
+        // 範例: "BABYMONSTER": "./images/artist_bm.jpg"
         
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
@@ -662,11 +647,40 @@
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
         // --- Music Data ---
+        // cover 欄位現在如果留空，程式會嘗試自動去對應 albumImages，如果也沒有才用預設
         const musicLibrary = [
-            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
-            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
-            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
-            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
+            { 
+                id: 1, 
+                title: "WE GO UP", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song1.mp3",
+                cover: ""
+            },
+            { 
+                id: 2, 
+                title: "PSYCHO", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song2.mp3",
+                cover: ""
+            },
+            { 
+                id: 3, 
+                title: "SUPA DUPA LUV", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song3.mp3",
+                cover: ""
+            },
+            { 
+                id: 4, 
+                title: "WILD", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song4.mp3",
+                cover: ""
+            },
         ];
         
         let currentUserData = null; 
@@ -676,57 +690,8 @@
         let songToAdd = null; 
         let tempImgBase64 = null;
 
-        // --- Landing Page Carousel Logic ---
-        let carouselInterval;
-        const landingSlides = [
-            { img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80", title: "ASTRA Mix", sub: "為您精選" },
-            { img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80", title: "Trending Now", sub: "全球熱播" },
-            { img: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?auto=format&fit=crop&w=600&q=80", title: "Deep Focus", sub: "專注時刻" },
-        ];
-
-        function startLandingCarousel() {
-            // 加入 musicLibrary 裡的歌到輪播中
-            const librarySlides = musicLibrary.map(s => ({
-                img: getSongCover(s),
-                title: s.title,
-                sub: s.artist
-            })).slice(0, 3); // 取前3首
-
-            const allSlides = [...landingSlides, ...librarySlides];
-            let idx = 0;
-            
-            // 初始設定
-            updateSlide(allSlides[0]);
-
-            carouselInterval = setInterval(() => {
-                idx = (idx + 1) % allSlides.length;
-                updateSlide(allSlides[idx]);
-            }, 3500);
-        }
-
-        function updateSlide(slide) {
-            const imgEl = document.getElementById('landing-carousel-img');
-            const titleEl = document.getElementById('landing-carousel-title');
-            const subEl = document.getElementById('landing-carousel-sub');
-            
-            // 簡單的淡出效果模擬
-            imgEl.style.opacity = 0.5;
-            setTimeout(() => {
-                imgEl.style.backgroundImage = `url('${slide.img}')`;
-                titleEl.innerText = slide.title;
-                subEl.innerText = slide.sub;
-                imgEl.style.opacity = 1;
-            }, 250);
-        }
-
-        function scrollToFeatures() {
-            document.getElementById('learn-more').scrollIntoView({ behavior: 'smooth' });
-        }
-
         // --- Init ---
         window.onload = async function() {
-            startLandingCarousel(); // 啟動輪播
-
             const sessionUser = localStorage.getItem('current_session_user');
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
@@ -753,13 +718,18 @@
         };
 
         function initApp() {
-            if(carouselInterval) clearInterval(carouselInterval); // 停止 Landing page 動畫
             renderCards('home-grid', musicLibrary);
             renderCards('discovery-grid', [...musicLibrary].reverse());
             renderPlaylists();
             checkVersion();
             updateUIFromUserData();
             updateMobileNavActive('home');
+        }
+
+        // --- New Helper for Landing Page ---
+        function scrollToFeatures() {
+            const el = document.getElementById('lp-features');
+            if(el) el.scrollIntoView({behavior: 'smooth'});
         }
 
         function updateUIFromUserData() {
