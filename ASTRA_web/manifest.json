@@ -1,0 +1,15 @@
+{
+  "name": "ASTRA Music",
+  "short_name": "ASTRA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F5F5F7",
+  "theme_color": "#F5F5F7",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3208/3208703.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
