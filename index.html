@@ -65,24 +65,27 @@
         .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition: 0.2s; font-size: 1rem; }
         .btn-primary:hover { background: var(--accent-color-hover); transform: translateY(-1px); }
         
-        /* --- 修正後的 Sidebar --- */
+        /* --- 修正 Sidebar LOGO 大小與換行 --- */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top));
             display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0;
         }
         .sidebar-logo { 
-            font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
+            /* 修改字體大小，避免手機或窄螢幕切到 */
+            font-size: 1.25rem; 
+            font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
             padding-left: 20px; display: flex; align-items: center;
-            /* 關鍵修正：防止換行 */
-            white-space: nowrap; 
+            white-space: nowrap; /* 強制不換行 */
             overflow: hidden;
+            text-overflow: ellipsis;
         }
         
-        /* --- Landing Page (Redesigned) --- */
+        /* --- Landing Page (Scrollable) --- */
         #landing-page {
             height: 100vh; width: 100%; overflow-y: auto; overflow-x: hidden;
             background: #ffffff; color: #1d1d1f; z-index: 2000; position: relative;
             font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, sans-serif;
+            scroll-behavior: smooth;
         }
         
         /* Animated Background Blobs */
@@ -108,17 +111,19 @@
             background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             z-index: 100; border-bottom: 1px solid rgba(0,0,0,0.05);
         }
+        
+        /* Hero Section */
         .lp-hero-container {
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            min-height: 95vh; display: flex; align-items: center; justify-content: center;
             padding: 120px 20px 40px; max-width: 1200px; margin: 0 auto;
         }
         .lp-content-wrapper {
-            display: flex; flex-direction: column-reverse; align-items: center; width: 100%; gap: 40px;
+            display: flex; flex-direction: column-reverse; align-items: center; width: 100%; gap: 60px;
         }
         @media (min-width: 900px) {
             .lp-content-wrapper { flex-direction: row; justify-content: space-between; text-align: left; }
-            .lp-text { width: 50%; text-align: left; }
-            .lp-visual { width: 45%; }
+            .lp-text { width: 45%; text-align: left; }
+            .lp-visual { width: 45%; height: 500px; display: flex; align-items: center; justify-content: center; }
         }
 
         .lp-text { text-align: center; z-index: 2; }
@@ -150,34 +155,65 @@
         }
         .lp-btn-outline:hover { border-color: var(--text-primary); background: rgba(0,0,0,0.02); }
 
-        /* Floating Cards Animation */
-        .lp-visual { position: relative; height: 400px; width: 100%; display: flex; justify-content: center; align-items: center; perspective: 1000px; }
-        .float-card {
-            position: absolute; width: 220px; height: 280px; background: white; border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: flex; flex-direction: column; padding: 15px;
-            animation: floatCard 6s infinite ease-in-out; border: 1px solid rgba(255,255,255,0.8);
+        /* Carousel Visual */
+        .lp-visual { position: relative; width: 100%; height: 350px; perspective: 1000px; display:flex; justify-content:center; align-items:center; }
+        .carousel-card {
+            width: 280px; height: 360px; background: white; border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12); padding: 20px;
+            display: flex; flex-direction: column; position: relative;
+            transform: rotate(-5deg); transition: transform 0.5s ease;
+            animation: floatCard 6s infinite ease-in-out;
         }
-        .float-card-img { width: 100%; height: 180px; border-radius: 12px; background: #eee; margin-bottom: 15px; background-size: cover; background-position: center; }
-        .fc-line { height: 12px; background: #f0f0f0; border-radius: 6px; margin-bottom: 8px; width: 80%; }
-        .fc-line.short { width: 50%; }
+        .carousel-card:hover { transform: rotate(0deg) scale(1.02); }
         
-        .card-1 { transform: rotate(-10deg) translate(-80px, 20px); z-index: 1; animation-delay: 0s; }
-        .card-2 { transform: rotate(5deg) translate(80px, -20px); z-index: 2; animation-delay: -3s; }
-        .card-3 { transform: rotate(-2deg) translate(0, 50px); z-index: 3; animation-delay: -1.5s; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        .carousel-img { 
+            width: 100%; height: 240px; border-radius: 16px; 
+            background-color: #eee; background-size: cover; background-position: center; 
+            margin-bottom: 20px; transition: background-image 0.5s ease-in-out;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .carousel-info { transition: opacity 0.3s ease; }
+        .carousel-title { font-size: 1.2rem; font-weight: 800; margin-bottom: 5px; color:#1d1d1f; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .carousel-sub { font-size: 0.9rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Background blur effect behind card */
+        .carousel-glow {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 250px; height: 300px; background: linear-gradient(135deg, #fa2d48, #6a11cb);
+            filter: blur(60px); opacity: 0.4; z-index: -1; border-radius: 50%;
+        }
 
         @keyframes floatCard { 
-            0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 
-            50% { transform: translateY(-20px) rotate(var(--r, 0deg)); } 
+            0%, 100% { transform: translateY(0) rotate(-5deg); } 
+            50% { transform: translateY(-15px) rotate(-5deg); } 
         }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Marquee */
-        .marquee-container {
-            width: 100%; overflow: hidden; background: #111; padding: 20px 0; color: white; margin-top: 50px;
-            transform: rotate(-2deg) scale(1.05);
+        /* --- Learn More Section --- */
+        #learn-more {
+            background: #fff; padding: 100px 20px; position: relative; z-index: 2;
         }
-        .marquee-content { display: flex; gap: 40px; animation: marquee 20s linear infinite; white-space: nowrap; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .section-header { text-align: center; margin-bottom: 80px; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .section-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; }
+        .section-desc { font-size: 1.1rem; color: #666; line-height: 1.6; }
+        
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 40px; max-width: 1200px; margin: 0 auto;
+        }
+        .feature-item { 
+            padding: 40px; background: #F9F9F9; border-radius: 24px; text-align: left; transition: 0.3s;
+            border: 1px solid transparent;
+        }
+        .feature-item:hover { transform: translateY(-10px); background: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.05); }
+        .feature-icon { 
+            width: 60px; height: 60px; background: var(--bg-color); border-radius: 16px; 
+            display: flex; align-items: center; justify-content: center; margin-bottom: 25px;
+            color: var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 1.5rem;
+        }
+        .feature-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 15px; }
+        .feature-text { color: #666; line-height: 1.6; }
 
         /* Login Modal Enhanced */
         #login-modal {
@@ -336,7 +372,7 @@
             
             .lp-hero-container { padding-top: 100px; display: block; text-align: center; }
             .lp-title { font-size: 2.8rem; }
-            .lp-visual { height: 300px; margin-top: 40px; }
+            .lp-visual { height: 300px; margin-top: 40px; margin-bottom: 40px; width: 100%; }
         }
 
         .pill-toggle { background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer; width: 200px; height: 40px; }
@@ -373,39 +409,55 @@
                     <p class="lp-desc">為音樂愛好者打造的終極播放器。<br>無損音質、雲端同步，重新定義你的聽覺體驗。</p>
                     <div class="lp-btn-group">
                         <button class="lp-btn" onclick="openLoginModal()">開始體驗</button>
-                        <button class="lp-btn-outline" onclick="openLoginModal()">了解更多</button>
+                        <button class="lp-btn-outline" onclick="scrollToFeatures()">了解更多</button>
                     </div>
                 </div>
                 
+                <!-- 新的右側輪播區 -->
                 <div class="lp-visual">
-                    <div class="float-card card-3">
-                         <div class="float-card-img" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=400&q=80')"></div>
-                         <div class="fc-line"></div>
-                         <div class="fc-line short"></div>
-                    </div>
-                    <div class="float-card card-2">
-                        <div class="float-card-img" style="background-image:url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=400&q=80')"></div>
-                        <div class="fc-line"></div>
-                        <div class="fc-line short"></div>
-                    </div>
-                    <div class="float-card card-1" style="--r:-10deg">
-                        <div class="float-card-img" style="background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=400&q=80')"></div>
-                        <div style="font-weight:bold; font-size:1.1rem; margin-bottom:5px;">Now Playing</div>
-                        <div style="color:#888; font-size:0.9rem;">ASTRA Mix</div>
+                    <div class="carousel-glow"></div>
+                    <div class="carousel-card" id="landing-carousel-card">
+                        <div class="carousel-img" id="landing-carousel-img" style="background-image:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&w=600&q=80')"></div>
+                        <div class="carousel-info">
+                            <div class="carousel-title" id="landing-carousel-title">Daily Mix</div>
+                            <div class="carousel-sub" id="landing-carousel-sub">為您精選</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="marquee-container">
-            <div class="marquee-content">
-                <span>Lossless Audio</span> • <span>Cloud Sync</span> • <span>Offline Mode</span> • <span>Cross Platform</span> • <span>Smart Playlist</span> • <span>Social Share</span> • <span>Lossless Audio</span> • <span>Cloud Sync</span>
+        <!-- 新增：功能特色區 (了解更多會跳轉到這) -->
+        <section id="learn-more">
+            <div class="section-header">
+                <h2 class="section-title">為什麼選擇 ASTRA ?</h2>
+                <p class="section-desc">我們將 IndexedDB 技術與現代化介面完美結合，打造出流暢、私密且強大的音樂體驗。</p>
             </div>
-        </div>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">💎</div>
+                    <h3 class="feature-title">無損音質體驗</h3>
+                    <p class="feature-text">支援高解析音訊格式，還原錄音室等級的細節，讓每一個音符都清晰可見，為您帶來極致的聽覺饗宴。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">☁️</div>
+                    <h3 class="feature-title">私有雲端資料庫</h3>
+                    <p class="feature-text">您的播放清單與偏好設定直接儲存在瀏覽器資料庫中，不依賴第三方伺服器，資料完全由您掌控。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3 class="feature-title">跨裝置無縫同步</h3>
+                    <p class="feature-text">無論是手機、平板還是桌面電腦，響應式設計確保您在任何設備上都能獲得一致且流暢的操作體驗。</p>
+                </div>
+            </div>
+            <div style="text-align:center; padding-top:60px;">
+                <button class="lp-btn" onclick="openLoginModal()">立即加入我們</button>
+            </div>
+            <div style="text-align:center; padding:60px 20px; color:#888; font-size:0.8rem;">
+                &copy; 2025 ASTRA Music Inc. All rights reserved.
+            </div>
+        </section>
 
-        <div style="text-align:center; padding:60px 20px; color:#888; font-size:0.8rem; background:rgba(255,255,255,0.8);">
-            &copy; 2025 ASTRA Music Inc. All rights reserved.
-        </div>
     </section>
 
     <!-- Enhanced Login Modal -->
@@ -429,7 +481,7 @@
     <section id="app-view" class="hidden">
         <nav class="sidebar">
             <div class="sidebar-logo">
-                <img src="./images/logo.png" style="height: 40px; vertical-align: middle; margin-right: 10px;">
+                <img src="./images/logo.png" style="height: 36px; vertical-align: middle; margin-right: 10px;">
                 <span>ASTRA Music</span>
             </div>
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
@@ -450,7 +502,7 @@
                 <div class="hero-banner" style="height:300px; border-radius:24px; background:linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%); display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white; position:relative; overflow:hidden;">
                     <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.1);"></div>
                     <div style="z-index:1;">
-                        <h1 style="font-size:2.5rem; margin-bottom:10px;">New Era.</h1>
+                        <h1 style="font-size:2.5rem; margin-bottom:10px;">WE GO UP-EP</h1>
                         <p>BABYMONSTER 全新專輯</p>
                         <button onclick="openAlbumDetail('WE GO UP-EP')" style="margin-top:15px; padding:10px 20px; background:white; color:black; border:none; border-radius:20px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.2);">立即播放</button>
                     </div>
@@ -588,7 +640,6 @@
     <script>
         // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
         // 請在這裡填入圖片連結 (GitHub Pages 連結或外部網址)
-        // 範例: "BABYMONSTER": "./images/artist_bm.jpg"
         
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
@@ -611,40 +662,11 @@
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
         // --- Music Data ---
-        // cover 欄位現在如果留空，程式會嘗試自動去對應 albumImages，如果也沒有才用預設
         const musicLibrary = [
-            { 
-                id: 1, 
-                title: "WE GO UP", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song1.mp3",
-                cover: ""
-            },
-            { 
-                id: 2, 
-                title: "PSYCHO", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song2.mp3",
-                cover: ""
-            },
-            { 
-                id: 3, 
-                title: "SUPA DUPA LUV", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song3.mp3",
-                cover: ""
-            },
-            { 
-                id: 4, 
-                title: "WILD", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song4.mp3",
-                cover: ""
-            },
+            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
+            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
+            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
+            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
         ];
         
         let currentUserData = null; 
@@ -654,8 +676,57 @@
         let songToAdd = null; 
         let tempImgBase64 = null;
 
+        // --- Landing Page Carousel Logic ---
+        let carouselInterval;
+        const landingSlides = [
+            { img: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80", title: "ASTRA Mix", sub: "為您精選" },
+            { img: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=600&q=80", title: "Trending Now", sub: "全球熱播" },
+            { img: "https://images.unsplash.com/photo-1514525253440-b393452e8d26?auto=format&fit=crop&w=600&q=80", title: "Deep Focus", sub: "專注時刻" },
+        ];
+
+        function startLandingCarousel() {
+            // 加入 musicLibrary 裡的歌到輪播中
+            const librarySlides = musicLibrary.map(s => ({
+                img: getSongCover(s),
+                title: s.title,
+                sub: s.artist
+            })).slice(0, 3); // 取前3首
+
+            const allSlides = [...landingSlides, ...librarySlides];
+            let idx = 0;
+            
+            // 初始設定
+            updateSlide(allSlides[0]);
+
+            carouselInterval = setInterval(() => {
+                idx = (idx + 1) % allSlides.length;
+                updateSlide(allSlides[idx]);
+            }, 3500);
+        }
+
+        function updateSlide(slide) {
+            const imgEl = document.getElementById('landing-carousel-img');
+            const titleEl = document.getElementById('landing-carousel-title');
+            const subEl = document.getElementById('landing-carousel-sub');
+            
+            // 簡單的淡出效果模擬
+            imgEl.style.opacity = 0.5;
+            setTimeout(() => {
+                imgEl.style.backgroundImage = `url('${slide.img}')`;
+                titleEl.innerText = slide.title;
+                subEl.innerText = slide.sub;
+                imgEl.style.opacity = 1;
+            }, 250);
+        }
+
+        function scrollToFeatures() {
+            document.getElementById('learn-more').scrollIntoView({ behavior: 'smooth' });
+        }
+
         // --- Init ---
         window.onload = async function() {
+            startLandingCarousel(); // 啟動輪播
+
             const sessionUser = localStorage.getItem('current_session_user');
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
@@ -682,6 +753,7 @@
         };
 
         function initApp() {
+            if(carouselInterval) clearInterval(carouselInterval); // 停止 Landing page 動畫
             renderCards('home-grid', musicLibrary);
             renderCards('discovery-grid', [...musicLibrary].reverse());
             renderPlaylists();
