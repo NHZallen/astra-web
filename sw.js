@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = 'astra-music-v4';
+const CACHE_NAME = 'astra-music-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -42,4 +42,5 @@ self.addEventListener('activate', (event) => {
   );
 
 });
+
 
