@@ -185,11 +185,11 @@
         .horizontal-row::-webkit-scrollbar { display: none; }
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
-        /* --- Artist Detail Specific Styles (UPDATED) --- */
+        /* --- Artist Detail Specific Styles --- */
         .artist-song-container-scroll {
             display: grid;
-            grid-auto-flow: column; /* Fill top-to-bottom, then move right (all rows slide together) */
-            grid-template-rows: repeat(3, 1fr); /* Desktop: 3 rows */
+            grid-auto-flow: column; 
+            grid-template-rows: repeat(3, 1fr);
             gap: 12px;
             overflow-x: auto;
             padding-bottom: 10px;
@@ -198,18 +198,15 @@
         }
         .artist-song-container-scroll::-webkit-scrollbar { display: none; }
 
-        /* Mobile overrides for Artist Songs: 4 Rows */
         @media (max-width: 768px) {
             .artist-song-container-scroll {
-                grid-template-rows: repeat(4, 1fr); /* Mobile: 4 rows */
+                grid-template-rows: repeat(4, 1fr); 
             }
         }
 
         .artist-song-item {
-            /* Fixed width for horizontal scrolling items */
             width: 280px; 
             scroll-snap-align: start;
-            /* Flex layout for the item itself (Long bar style) */
             display: flex;
             align-items: center;
             padding: 8px;
@@ -220,7 +217,7 @@
         }
         @media (max-width: 768px) {
             .artist-song-item {
-                width: 85vw; /* Wider on mobile for better view */
+                width: 85vw;
             }
         }
         
@@ -230,12 +227,12 @@
         .artist-album-grid {
             display: grid;
             gap: 15px;
-            grid-template-columns: repeat(2, 1fr); /* Mobile: 2 items per row */
+            grid-template-columns: repeat(2, 1fr);
             margin-bottom: 30px;
         }
         @media (min-width: 769px) {
             .artist-album-grid {
-                grid-template-columns: repeat(5, 1fr); /* Desktop: 5 items per row */
+                grid-template-columns: repeat(5, 1fr);
             }
         }
 
@@ -255,17 +252,16 @@
             background-size: cover; background-position: center; 
         }
         
-        /* DARK MODE FIX: Don't use 'background:' shorthand as it resets size */
         [data-theme="dark"] .cover-art { 
             background-image: linear-gradient(135deg, #2C2C2E, #3A3A3C); 
-            background-size: cover; /* Force cover */
+            background-size: cover;
             background-position: center;
         }
         
         .add-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: 0.2s; z-index: 5; color: black; }
         .music-card:hover .add-btn { opacity: 1; }
 
-        /* Song List Row (Long Bar Style - General) */
+        /* Song List Row */
         .song-list-item { display: flex; align-items: center; padding: 8px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; cursor: pointer; background: transparent; overflow: hidden; }
         .song-list-item:hover { background: var(--input-bg); }
         .song-row-img { width: 44px; height: 44px; border-radius: 8px; margin-right: 10px; background-size: cover; background-position: center; flex-shrink: 0; background-color: #eee; }
@@ -308,7 +304,6 @@
         .search-history-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto; }
         .search-history-dropdown.active { display: block; }
         
-        /* Updated History Item Style */
         .history-item { padding: 10px 18px; border-bottom: 1px solid var(--divider); cursor: pointer; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
         .history-item:hover { background: var(--input-bg); }
         .history-left { display: flex; align-items: center; overflow: hidden; }
@@ -493,7 +488,7 @@
             <div id="page-database" class="page-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <h2>我的播放清單</h2>
-                    <!-- Fixed Button also in Header -->
+                    <!-- 保留上方新建按鈕 -->
                     <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
                 </div>
                 <div id="playlists-container" class="grid-container"></div>
@@ -592,7 +587,10 @@
                 <div id="cd-cover" style="width:180px; height:180px; margin:0 auto 20px; border-radius:20px; background:#eee; background-size:cover; background-position:center; box-shadow:var(--shadow-md);"></div>
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
                 <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
-                <button onclick="playCollectionAll()" style="margin-top:20px; padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>
+                <!-- 刪除清單按鈕將動態插入此處 -->
+                <div id="cd-action-area" style="margin-top:20px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+                    <button onclick="playCollectionAll()" style="padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>
+                </div>
             </div>
             <!-- Dynamic Content Area -->
             <div id="cd-content-area"></div>
@@ -646,7 +644,7 @@
         let currentQueue = []; 
         let currentSongIndex = -1;
         let currentCollectionSongs = [];
-        let currentPlaylistId = null; // Track playlist ID for deletion context
+        let currentPlaylistId = null; 
         let songToAdd = null; 
         let tempImgBase64 = null;
 
@@ -758,7 +756,10 @@
                 .then(() => {
                     isPlaying = true;
                     updatePlayBtn();
-                    document.getElementById('player-bar').classList.add('active');
+                    // 當播放開始時，確保播放器顯示（如果不在設定頁面）
+                    if(!document.getElementById('settings-modal').classList.contains('active') && !document.getElementById('profile-modal').classList.contains('active')){
+                         document.getElementById('player-bar').classList.add('active');
+                    }
                     setupMediaSession(song, coverImage);
                 })
                 .catch(err => console.log("播放被阻擋:", err));
@@ -929,16 +930,11 @@
 
         // --- Detail Views Logic ---
 
-        // 1. Artist Detail: Unified Grid Scrolling with Chunk Shuffle
+        // 1. Artist Detail
         function openArtistDetail(artistName) {
             currentPlaylistId = null;
-            
-            // Step 1: Sort by ID Descending (Newest First)
             let songs = musicLibrary.filter(s => s.artist === artistName).sort((a, b) => b.id - a.id);
-            
-            // Step 2: "Semi-Randomize" - Shuffle small chunks to keep general order but add variety
             songs = semiRandomize(songs);
-
             const albums = [...new Set(songs.map(s => s.album))];
 
             document.getElementById('cd-nav-title').innerText = artistName;
@@ -946,17 +942,17 @@
             document.getElementById('cd-subtitle').innerText = "歌手";
             document.getElementById('cd-cover').style.backgroundImage = `url(${getArtistImage(artistName)})`;
             
+            // 隱藏刪除按鈕，因為這是歌手頁面
+            const actionArea = document.getElementById('cd-action-area');
+            actionArea.innerHTML = `<button onclick="playCollectionAll()" style="padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>`;
+
             currentCollectionSongs = songs;
 
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3>`;
-            
-            // Render: All songs in one grid container that scrolls horizontally
-            // Rows defined by CSS Grid (3 for desktop, 4 for mobile)
             html += `<div class="artist-song-container-scroll">`;
             html += songs.map(s => createSongItemHTML(s)).join('');
             html += `</div>`;
 
-            // Album Grid
             if (albums.length > 0) {
                 html += `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:30px;">專輯</h3><div class="artist-album-grid">`;
                 html += albums.map(album => `
@@ -973,13 +969,11 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
-        // Helper: Semi-Randomize (Chunk Shuffle)
         function semiRandomize(arr) {
             let result = [];
-            const chunkSize = 6; // Group size for shuffling
+            const chunkSize = 6;
             for (let i = 0; i < arr.length; i += chunkSize) {
                 let chunk = arr.slice(i, i + chunkSize);
-                // Shuffle the chunk
                 chunk.sort(() => Math.random() - 0.5);
                 result = result.concat(chunk);
             }
@@ -1021,12 +1015,32 @@
             document.getElementById('cd-subtitle').innerText = subtitle;
             document.getElementById('cd-cover').style.backgroundImage = `url(${coverUrl})`;
             currentCollectionSongs = songs;
+
+            const actionArea = document.getElementById('cd-action-area');
+            let actionHtml = `<button onclick="playCollectionAll()" style="padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>`;
+            
+            // 如果是播放清單，加入刪除按鈕
+            if (isPlaylist) {
+                actionHtml += `<button onclick="deleteCurrentPlaylist()" style="padding:8px 24px; background:transparent; color:var(--text-secondary); border:1px solid var(--divider); border-radius:20px; font-size:0.9rem; cursor:pointer;">刪除清單</button>`;
+            }
+            actionArea.innerHTML = actionHtml;
             
             const area = document.getElementById('cd-content-area');
             area.innerHTML = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>` + 
                              songs.map(s => createSongRowHTML(s, isPlaylist)).join('');
             
             document.getElementById('collection-detail-modal').classList.add('active');
+        }
+
+        // 新增：刪除清單功能
+        async function deleteCurrentPlaylist() {
+            if (!currentPlaylistId) return;
+            if (confirm("確定要刪除此播放清單嗎？此動作無法復原。")) {
+                currentUserData.playlists = currentUserData.playlists.filter(p => p.id !== currentPlaylistId);
+                await saveUserToDB(currentUserData);
+                renderPlaylists();
+                closeCollectionDetail();
+            }
         }
 
         function createSongRowHTML(song, isPlaylist) {
@@ -1083,25 +1097,23 @@
             }
         }
 
-        // --- Render Playlists as Grid (UPDATED) ---
+        // --- Render Playlists as Grid (修改: 移除虛線新建卡片) ---
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
             
-            // Fixed "Create New" Card added first
-            let html = `
-            <div class="music-card" onclick="openCreatePlaylistModal()" style="border: 2px dashed var(--divider); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:180px;">
-                 <div style="font-size:3rem; color:var(--text-secondary); margin-bottom:10px;">+</div>
-                 <div style="font-weight:bold; color:var(--text-secondary);">新建清單</div>
-            </div>`;
-
-            html += playlists.map(pl => `
+            // 直接渲染清單，不加入虛線卡片
+            let html = playlists.map(pl => `
                 <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
                     <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
             `).join(''); 
+            
+            if (playlists.length === 0) {
+                html = `<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-secondary);">尚未建立任何清單</div>`;
+            }
             
             container.innerHTML = html;
         }
@@ -1111,24 +1123,70 @@
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         async function handleLogin(e) { e.preventDefault(); const u = document.getElementById('username').value; const p = document.getElementById('password').value; let user = await getUserFromDB(u); if(user){ if(user.password===p){ currentUserData=user; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); }else alert("密碼錯誤"); }else{ if(confirm("用戶不存在，是否立即註冊?")){ const n={username:u,password:p,avatar:null,playlists:[],theme:'light',search_history:[]}; await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); } } }
         function handleLogout() { localStorage.removeItem('current_session_user'); location.reload(); }
-        function openProfileModal() { document.getElementById('profile-modal').classList.add('active'); }
-        function closeProfileModal() { document.getElementById('profile-modal').classList.remove('active'); }
+        
+        // 修改：打開個人帳戶時隱藏播放器
+        function openProfileModal() { 
+            document.getElementById('profile-modal').classList.add('active'); 
+            document.getElementById('player-bar').classList.add('hidden');
+        }
+        // 修改：關閉個人帳戶時顯示播放器
+        function closeProfileModal() { 
+            document.getElementById('profile-modal').classList.remove('active'); 
+            document.getElementById('player-bar').classList.remove('hidden');
+        }
+        
         async function updateUsername() { const n = document.getElementById('edit-username').value; if(!n)return; const old=JSON.parse(JSON.stringify(currentUserData)); const ex=await getUserFromDB(n); if(ex)return alert("使用者名稱已存在"); const nw={...old,username:n}; await saveUserToDB(nw); const db=await openDB(); const tx=db.transaction(STORE_NAME,'readwrite'); tx.objectStore(STORE_NAME).delete(old.username); currentUserData=nw; localStorage.setItem('current_session_user',n); updateUIFromUserData(); alert("更新成功"); }
         async function updatePassword() { const o=document.getElementById('old-password').value; const n=document.getElementById('new-password').value; if(o!==currentUserData.password)return alert("舊密碼錯誤"); currentUserData.password=n; await saveUserToDB(currentUserData); alert("密碼已更新"); }
         function handleProfileUpload(i) { if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=async function(e){ currentUserData.avatar=e.target.result; await saveUserToDB(currentUserData); updateUIFromUserData(); }; r.readAsDataURL(i.files[0]); } }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
         function updateThemeUI(t) { const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } }
-        function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
-        function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+        
+        // 修改：打開設定時隱藏播放器
+        function openSettings() { 
+            document.getElementById('settings-modal').classList.add('active'); 
+            document.getElementById('player-bar').classList.add('hidden');
+        }
+        // 修改：關閉設定時顯示播放器
+        function closeSettings() { 
+            document.getElementById('settings-modal').classList.remove('active'); 
+            document.getElementById('player-bar').classList.remove('hidden');
+        }
+
         async function checkVersion() { try{const r=await fetch('./changelog.json');const l=await r.json();if(l.length)document.getElementById('setting-ver').innerText=`v${l[0].version} >`;}catch(e){} }
         async function showChangelog() { const c=document.getElementById('changelog-content'); c.innerHTML='Loading...'; document.getElementById('changelog-modal').classList.add('active'); try{const r=await fetch('./changelog.json');const l=await r.json();c.innerHTML=l.map(x=>`<div class="log-item"><div class="log-ver">v${x.version}</div><div>${x.date}</div><p>${x.content}</p></div>`).join('');}catch(e){} }
         function closeChangelog() { document.getElementById('changelog-modal').classList.remove('active'); }
         function openPlaylistSelector(e,sid){ e.stopPropagation(); songToAdd=sid; if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} const l=document.getElementById('playlist-selector-list'); l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); document.getElementById('select-playlist-modal').classList.add('active'); }
         function closePlaylistSelector(){ document.getElementById('select-playlist-modal').classList.remove('active'); }
+        
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
-        function closeCreatePlaylistModal(){ document.getElementById('create-playlist-modal').classList.remove('active'); }
+        
+        // 修改：關閉時讓 input blur，防止鍵盤將頁面卡在上方
+        function closeCreatePlaylistModal(){ 
+            document.getElementById('create-playlist-modal').classList.remove('active'); 
+            document.activeElement.blur();
+        }
+        
         function previewImage(i){ if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=function(e){ tempImgBase64=e.target.result; document.getElementById('img-preview').style.backgroundImage=`url(${tempImgBase64})`; }; r.readAsDataURL(i.files[0]); } }
-        async function confirmCreatePlaylist(){ const n=document.getElementById('new-playlist-name').value; if(!n)return alert("請輸入清單名稱"); const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; currentUserData.playlists.push(p); await saveUserToDB(currentUserData); renderPlaylists(); closeCreatePlaylistModal(); if(songToAdd)addToPlaylist(p.id); }
+        
+        // 修改：新增清單確認後的處理
+        async function confirmCreatePlaylist(){ 
+            const n=document.getElementById('new-playlist-name').value; 
+            if(!n)return alert("請輸入清單名稱"); 
+            const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; 
+            currentUserData.playlists.push(p); 
+            await saveUserToDB(currentUserData); 
+            
+            // 重新渲染清單
+            renderPlaylists(); 
+            
+            // 關閉視窗並強制 blur input，修正頁面往上捲的問題
+            closeCreatePlaylistModal(); 
+            document.getElementById('new-playlist-name').value = ''; // 清空輸入
+            document.activeElement.blur(); // 強制收起鍵盤與重置焦點
+
+            if(songToAdd) addToPlaylist(p.id); 
+        }
+
         async function addToPlaylist(pid){ const p=currentUserData.playlists.find(x=>x.id===pid); if(p&&!p.songs.includes(songToAdd)){ p.songs.push(songToAdd); await saveUserToDB(currentUserData); renderPlaylists(); alert("已加入清單"); }else alert("歌曲已存在於清單中"); closePlaylistSelector(); }
     </script>
 </body>
