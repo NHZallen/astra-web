@@ -179,62 +179,44 @@
         /* Grid and Flex Containers */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         
-        /* --- HORIZONTAL SCROLL STYLES (New) --- */
-        .horizontal-section-wrapper {
-            margin-bottom: 20px;
-        }
-        .horizontal-row {
-            display: flex;
-            overflow-x: auto;
-            gap: 16px;
-            padding-bottom: 20px; /* Space for scrollbar if any, though hidden */
-            margin-bottom: 20px;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
-        }
+        /* --- HORIZONTAL SCROLL STYLES --- */
+        .horizontal-section-wrapper { margin-bottom: 20px; }
+        .horizontal-row { display: flex; overflow-x: auto; gap: 16px; padding-bottom: 20px; margin-bottom: 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
         .horizontal-row::-webkit-scrollbar { display: none; }
-        
-        /* Song Cards in Horizontal Layout */
-        .horizontal-row .music-card {
-            flex: 0 0 auto; /* Don't shrink */
-            width: 18%; /* Desktop: approx 5 items */
-            min-width: 150px;
-            scroll-snap-align: start;
-        }
+        .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
         /* Artist Card Styles (Search) */
-        .artist-card {
-            display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s;
-            width: 120px; margin-right: 20px; flex-shrink: 0;
-        }
+        .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s; width: 120px; margin-right: 20px; flex-shrink: 0; }
         .artist-card:hover { transform: translateY(-4px); }
-        .artist-img {
-            width: 100px; height: 100px; border-radius: 50%; 
-            background-size: cover; background-position: center; 
-            margin-bottom: 10px; border: 2px solid var(--card-bg); 
-            box-shadow: var(--shadow-sm);
-        }
+        .artist-img { width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center; margin-bottom: 10px; border: 2px solid var(--card-bg); box-shadow: var(--shadow-sm); }
 
+        /* General Music Card */
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
         .music-card:hover { transform: translateY(-4px); }
         .cover-art { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; background-size: cover; background-position: center; }
         [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         .add-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: 0.2s; z-index: 5; color: black; }
         .music-card:hover .add-btn { opacity: 1; }
-        .playlist-row { display: flex; align-items: center; padding: 12px; background: var(--card-bg); border-radius: var(--radius-md); margin-bottom: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .playlist-row:hover { border-color: var(--accent-color); background: var(--input-bg); }
-        .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+        /* Song List Row (Inside Playlist/Detail) */
+        .song-list-item { display: flex; align-items: center; padding: 10px 15px; border-radius: 12px; margin-bottom: 8px; transition: 0.2s; cursor: pointer; background: transparent; }
+        .song-list-item:hover { background: var(--input-bg); }
+        .song-row-img { width: 48px; height: 48px; border-radius: 8px; margin-right: 15px; background-size: cover; background-position: center; flex-shrink: 0; background-color: #eee; }
+        .song-row-info { flex: 1; overflow: hidden; }
+        .song-row-title { font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-row-artist { color: var(--text-secondary); font-size: 0.85rem; }
+        .remove-btn { width: 32px; height: 32px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; opacity: 0.5; }
+        .remove-btn:hover { background: rgba(250, 45, 72, 0.1); color: var(--accent-color); opacity: 1; }
+
         .player-bar { position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); transform: translateY(200%); opacity: 0; }
         .player-bar.active { transform: translateY(0); opacity: 1; }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
         .fullscreen-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 300; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; padding-top: var(--safe-top); }
         .fullscreen-modal.active { transform: translateY(0); }
-        .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
-        .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
+        .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
         .mobile-nav { display: none; }
         
-        /* Updated Page Section Padding (Reduced left/right) */
         .page-section { padding: 20px 16px 120px 16px; display: none; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-top: 20px; margin-bottom: 15px; color: var(--text-primary); }
@@ -248,9 +230,7 @@
             .player-bar { bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
             .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
             .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
-            .page-section { padding: 10px 16px 120px 16px; } /* Reduced padding on mobile */
-            
-            /* Horizontal Scroll Mobile override: 2 items visible ~45% width */
+            .page-section { padding: 10px 16px 120px 16px; } 
             .horizontal-row .music-card { width: 45%; min-width: 130px; }
         }
 
@@ -415,7 +395,6 @@
                     <div style="position:absolute; right:-20px; bottom:-40px; font-size:15rem; opacity:0.1; font-weight:900; pointer-events:none;">BM</div>
                 </div>
                 <h2>為你推薦</h2>
-                <!-- 修改：使用新的容器 ID -->
                 <div id="home-horizontal-container" style="margin-top:20px;"></div>
             </div>
 
@@ -433,7 +412,6 @@
             <!-- C. Discovery -->
             <div id="page-discovery" class="page-section">
                 <h2 style="margin-bottom:20px;">最新發行</h2>
-                <!-- 修改：使用新的容器 ID -->
                 <div id="discovery-horizontal-container"></div>
             </div>
 
@@ -443,7 +421,7 @@
                     <h2>我的播放清單</h2>
                     <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
                 </div>
-                <div id="playlists-container"></div>
+                <div id="playlists-container" class="grid-container"></div>
             </div>
         </main>
 
@@ -534,14 +512,15 @@
             <div style="width:30px;"></div>
         </div>
         <div class="modal-body">
+            <!-- Header Info -->
             <div style="text-align:center; margin-bottom:30px;">
                 <div id="cd-cover" style="width:180px; height:180px; margin:0 auto 20px; border-radius:20px; background:#eee; background-size:cover; background-position:center; box-shadow:var(--shadow-md);"></div>
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
                 <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
                 <button onclick="playCollectionAll()" style="margin-top:20px; padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>
             </div>
-            <h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>
-            <div id="cd-songs-list"></div>
+            <!-- Dynamic Content Area -->
+            <div id="cd-content-area"></div>
         </div>
     </div>
 
@@ -569,14 +548,13 @@
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
         // --- Music Data (Demo Data) ---
-        // 生成更多假資料以測試換行效果
         const baseMusic = [
             { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
             { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
             { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
             { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
         ];
-        // 擴充 musicLibrary 到 30 首以測試 "滿20首換下一行"
+        // 擴充 musicLibrary
         let musicLibrary = [...baseMusic];
         for(let i=5; i<=30; i++) {
             musicLibrary.push({
@@ -593,22 +571,21 @@
         let currentQueue = []; 
         let currentSongIndex = -1;
         let currentCollectionSongs = [];
+        let currentPlaylistId = null; // Track playlist ID for deletion context
         let songToAdd = null; 
         let tempImgBase64 = null;
 
         // --- Init ---
         window.onload = async function() {
-            // Scroll Animation Trigger for Landing Page
+            // Scroll Animation
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
                 });
             }, { threshold: 0.1 });
             document.querySelectorAll('.feature-box').forEach(el => observer.observe(el));
 
-            // Logic to check login
+            // Login check
             const sessionUser = localStorage.getItem('current_session_user');
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
@@ -632,10 +609,8 @@
         };
 
         function initApp() {
-            // Render Horizontal Rows (Max 20 per row) for Home and Discovery
             renderHorizontalRows('home-horizontal-container', musicLibrary);
             renderHorizontalRows('discovery-horizontal-container', [...musicLibrary].reverse());
-            
             renderPlaylists();
             checkVersion();
             updateUIFromUserData();
@@ -790,7 +765,7 @@
             
             let html = '';
             
-            // 1. Artist Section (Avatar + Name)
+            // Artist Section
             if(matchedArtists.length > 0) {
                 html += `<div class="search-section-title">歌手</div><div class="horizontal-row">`;
                 html += matchedArtists.map(artist => `
@@ -802,7 +777,7 @@
                 html += `</div>`;
             }
             
-            // 2. Album Section
+            // Album Section
             if(matchedAlbums.length > 0) {
                 html += `<div class="search-section-title">專輯</div><div class="horizontal-row">`;
                 html += matchedAlbums.map(album => `
@@ -815,9 +790,9 @@
                 html += `</div>`;
             }
             
-            // 3. Song Section
+            // Song Section
             if(matchedSongs.length > 0) {
-                html += `<div class="search-section-title">歌曲</div><div class="grid-container">`; // Keep songs in grid or change to list if preferred
+                html += `<div class="search-section-title">歌曲</div><div class="grid-container">`; 
                 html += matchedSongs.map(song => createSongCardHTML(song)).join('');
                 html += `</div>`;
             }
@@ -836,21 +811,111 @@
         async function deleteHistory(e, item) { e.stopPropagation(); let history = currentUserData.search_history || []; history = history.filter(h => h !== item); currentUserData.search_history = history; await saveUserToDB(currentUserData); showSearchHistory(); }
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
 
-        // --- Detail Views & Helpers ---
-        function openCollectionDetail(title, subtitle, coverUrl, songs) {
+        // --- Detail Views Logic ---
+
+        // 1. Artist Detail: Shows Songs (List) TOP, then Albums (Grid) BOTTOM
+        function openArtistDetail(artistName) {
+            currentPlaylistId = null; // Reset context
+            const songs = musicLibrary.filter(s => s.artist === artistName);
+            const albums = [...new Set(songs.map(s => s.album))];
+
+            document.getElementById('cd-nav-title').innerText = artistName;
+            document.getElementById('cd-title').innerText = artistName;
+            document.getElementById('cd-subtitle').innerText = "歌手";
+            document.getElementById('cd-cover').style.backgroundImage = `url(${getArtistImage(artistName)})`;
+            
+            currentCollectionSongs = songs;
+
+            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3><div>`;
+            // Song List
+            html += songs.slice(0, 5).map(s => createSongRowHTML(s, false)).join(''); // Show top 5
+            html += `</div>`;
+
+            // Album Grid
+            if (albums.length > 0) {
+                html += `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:30px;">專輯</h3><div class="grid-container">`;
+                html += albums.map(album => `
+                    <div class="music-card" onclick="openAlbumDetail('${album}')">
+                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
+                        <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
+                    </div>
+                `).join('');
+                html += `</div>`;
+            }
+
+            document.getElementById('cd-content-area').innerHTML = html;
+            document.getElementById('collection-detail-modal').classList.add('active');
+        }
+
+        // 2. Album Detail: Standard List View
+        function openAlbumDetail(albumName) {
+            currentPlaylistId = null; 
+            const songs = musicLibrary.filter(s => s.album === albumName);
+            const artist = songs.length > 0 ? songs[0].artist : "Unknown";
+            openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs, false);
+        }
+
+        // 3. Playlist Detail: List View with Remove Buttons
+        function openPlaylistDetail(plId) {
+            const pl = currentUserData.playlists.find(p => p.id === plId);
+            if(!pl) return;
+            currentPlaylistId = plId; // Set context
+            // Filter songs preserving order
+            const songs = pl.songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
+            openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs, true);
+        }
+
+        // Generic List Renderer
+        function openCollectionDetail(title, subtitle, coverUrl, songs, isPlaylist) {
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
             document.getElementById('cd-cover').style.backgroundImage = `url(${coverUrl})`;
-            const list = document.getElementById('cd-songs-list');
-            list.innerHTML = songs.map(s => `<div class="playlist-row" onclick="playSong(${s.id})"><div style="font-weight:bold; flex:1;">${s.title}</div><div style="color:var(--text-secondary); font-size:0.9rem;">${s.artist}</div></div>`).join('');
-            currentCollectionSongs = songs; 
+            currentCollectionSongs = songs;
+            
+            const area = document.getElementById('cd-content-area');
+            area.innerHTML = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>` + 
+                             songs.map(s => createSongRowHTML(s, isPlaylist)).join('');
+            
             document.getElementById('collection-detail-modal').classList.add('active');
         }
+
+        function createSongRowHTML(song, isPlaylist) {
+            const img = getSongCover(song);
+            let btnHtml = '';
+            // Only add remove button if context is playlist
+            if (isPlaylist) {
+                btnHtml = `<button class="remove-btn" onclick="removeFromPlaylist(event, ${song.id})"><svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`;
+            }
+
+            return `
+            <div class="song-list-item" onclick="playSong(${song.id})">
+                <div class="song-row-img" style="background-image:url('${img}')"></div>
+                <div class="song-row-info">
+                    <div class="song-row-title">${song.title}</div>
+                    <div class="song-row-artist">${song.artist}</div>
+                </div>
+                ${btnHtml}
+            </div>`;
+        }
+
+        async function removeFromPlaylist(e, songId) {
+            e.stopPropagation();
+            if (!currentPlaylistId) return;
+            
+            if(!confirm("確定要從清單移除這首歌嗎？")) return;
+
+            const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
+            if (pl) {
+                pl.songs = pl.songs.filter(id => id !== songId); // Remove ID
+                await saveUserToDB(currentUserData);
+                renderPlaylists(); // Update main grid
+                openPlaylistDetail(currentPlaylistId); // Refresh modal
+            }
+        }
+
         function closeCollectionDetail() { document.getElementById('collection-detail-modal').classList.remove('active'); }
-        function openArtistDetail(artistName) { const songs = musicLibrary.filter(s => s.artist === artistName); openCollectionDetail(artistName, "歌手", getArtistImage(artistName), songs); }
-        function openAlbumDetail(albumName) { const songs = musicLibrary.filter(s => s.album === albumName); const artist = songs.length > 0 ? songs[0].artist : "Unknown"; openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs); }
-        function openPlaylistDetail(plId) { const pl = currentUserData.playlists.find(p => p.id === plId); if(!pl) return; const songs = musicLibrary.filter(s => pl.songs.includes(s.id)); openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs); }
         function playCollectionAll() { if(currentCollectionSongs.length > 0) { currentQueue = [...currentCollectionSongs]; currentSongIndex = 0; playSongObject(currentQueue[0]); } }
 
         function createSongCardHTML(song) {
@@ -858,33 +923,41 @@
             return `<div class="music-card" onclick="playSong(${song.id})"><div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div></div>`;
         }
 
-        // --- NEW: Horizontal Row Renderer (Chunking by 20) ---
         function renderHorizontalRows(containerId, songs) {
             const container = document.getElementById(containerId);
-            container.innerHTML = ''; // Clear existing content
-
-            const chunkSize = 20; // 20 songs per horizontal row (line)
+            container.innerHTML = ''; 
+            const chunkSize = 20; 
             for (let i = 0; i < songs.length; i += chunkSize) {
                 const chunk = songs.slice(i, i + chunkSize);
-                
-                // Wrapper for visual separation if needed
                 const wrapper = document.createElement('div');
                 wrapper.className = 'horizontal-section-wrapper';
-
-                // Horizontal scroll container
                 const row = document.createElement('div');
                 row.className = 'horizontal-row';
-                
-                // Add cards
-                const html = chunk.map(s => createSongCardHTML(s)).join('');
-                row.innerHTML = html;
-                
+                row.innerHTML = chunk.map(s => createSongCardHTML(s)).join('');
                 wrapper.appendChild(row);
                 container.appendChild(wrapper);
             }
         }
 
-        function renderPlaylists() { const container = document.getElementById('playlists-container'); const playlists = currentUserData.playlists || []; if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; } container.innerHTML = playlists.map(pl => `<div class="playlist-row" onclick="openPlaylistDetail(${pl.id})"><div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div><div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div></div>`).join(''); }
+        // --- Modified: Render Playlists as Grid ---
+        function renderPlaylists() { 
+            const container = document.getElementById('playlists-container'); 
+            const playlists = currentUserData.playlists || []; 
+            
+            if(playlists.length === 0) { 
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; 
+                return; 
+            } 
+            
+            // Generate Grid Cards for Playlists
+            container.innerHTML = playlists.map(pl => `
+                <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
+                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
+                    <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
+                </div>
+            `).join(''); 
+        }
 
         // --- Standard Functions (Login, Profile, Settings) ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
@@ -913,4 +986,3 @@
     </script>
 </body>
 </html>
-
