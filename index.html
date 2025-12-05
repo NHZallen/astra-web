@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
     <link rel="icon" href="./images/logo.png" type="image/png">
-    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#FFFFFF" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -33,9 +32,6 @@
             --safe-bottom: env(safe-area-inset-bottom, 20px);
             --header-height: 80px;
             --mobile-nav-height: 65px;
-            /* 調整內距變數 */
-            --page-padding-desktop: 20px; 
-            --page-padding-mobile: 15px;
         }
 
         [data-theme="dark"] {
@@ -114,11 +110,6 @@
         .phone-mockup { width: 320px; height: 640px; background: #FFF; border-radius: 45px; border: 12px solid #1D1D1F; position: relative; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.15); transform: rotateY(-10deg) rotateX(5deg); transition: 0.5s; }
         .phone-mockup:hover { transform: rotateY(0) rotateX(0) scale(1.02); }
         .screen-content { width: 100%; height: 100%; background: #F5F5F7; padding: 20px; display: flex; flex-direction: column; }
-        .mock-header { height: 40px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .mock-blob { width: 100%; height: 200px; border-radius: 20px; background: linear-gradient(135deg, #FA2D48, #FF9A9E); margin-bottom: 20px; box-shadow: 0 10px 20px rgba(250, 45, 72, 0.3); }
-        .mock-line { height: 12px; background: #E5E5E5; border-radius: 6px; margin-bottom: 10px; }
-        .mock-row { display: flex; gap: 10px; margin-top: 20px; }
-        .mock-square { width: 80px; height: 80px; border-radius: 12px; background: #E5E5E5; }
         .features-section { background: #F5F5F7; border-radius: 40px; margin: 40px 20px; }
         .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
         .feature-box { background: #FFFFFF; padding: 40px; border-radius: 24px; transition: 0.3s; display: flex; flex-direction: column; align-items: flex-start; border: 1px solid transparent; opacity: 0; transform: translateY(30px); }
@@ -133,32 +124,51 @@
             .lp-hero { padding: 120px 30px 60px 30px; }
             .lp-section { padding: 80px 30px; }
             .hero-title { font-size: 2.8rem; }
-            .hero-subtitle { font-size: 1.1rem; }
             .phone-mockup { width: 280px; height: 560px; transform: none; margin: 0 auto; border-width: 8px; }
             .hero-cta-group { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
             .btn-large { width: 100%; }
             .features-section { margin: 20px 10px; border-radius: 30px; padding: 40px 20px; }
-            .feature-box { padding: 30px 20px; }
         }
 
-        /* --- Login Modal --- */
-        #login-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.6); z-index: 2500; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); }
+        /* --- Existing Login Modal & App Styles --- */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.6); z-index: 2500;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        }
         #login-modal.active { opacity: 1; pointer-events: auto; }
-        .login-box { background: #FFFFFF; width: 85%; max-width: 380px; padding: 40px 30px; border-radius: 30px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.1); transform: scale(0.95); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); border: 1px solid rgba(0,0,0,0.05); }
+        .login-box {
+            background: #FFFFFF; width: 85%; max-width: 380px; padding: 40px 30px; border-radius: 30px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); transform: scale(0.95); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
         #login-modal.active .login-box { transform: scale(1); }
 
-        /* --- App Styles --- */
-        .sidebar-logo { font-size: 1.3rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); padding-left: 10px; display: flex; align-items: center; white-space: nowrap; overflow: hidden; }
+        /* App CSS */
+        .sidebar-logo { 
+            font-size: 1.3rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
+            padding-left: 10px; display: flex; align-items: center; white-space: nowrap; overflow: hidden;
+        }
         .profile-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 40px; }
-        .profile-avatar-large { width: 120px; height: 120px; border-radius: 50%; background: #eee; margin-bottom: 20px; background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 4px solid var(--card-bg); position: relative; }
-        .camera-icon-badge { position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; border: 3px solid var(--card-bg); cursor: pointer; }
-        .change-avatar-btn { margin-top: 15px; padding: 10px 24px; font-size: 0.9rem; background: var(--input-bg); border: none; border-radius: 20px; cursor: pointer; color: var(--text-primary); font-weight: 600; transition: 0.2s; }
+        .profile-avatar-large {
+            width: 120px; height: 120px; border-radius: 50%; background: #eee; margin-bottom: 20px;
+            background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 4px solid var(--card-bg); position: relative;
+        }
+        .camera-icon-badge {
+            position: absolute; bottom: 0; right: 0; width: 36px; height: 36px;
+            background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: white; border: 3px solid var(--card-bg); cursor: pointer;
+        }
+        .change-avatar-btn {
+            margin-top: 15px; padding: 10px 24px; font-size: 0.9rem; background: var(--input-bg); 
+            border: none; border-radius: 20px; cursor: pointer; color: var(--text-primary); font-weight: 600; transition: 0.2s;
+        }
         .change-avatar-btn:hover { background: #E5E5E5; }
         
         #app-view { display: flex; height: 100vh; width: 100%; }
         .sidebar { width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top)); display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0; }
         .main-content { flex: 1; overflow-y: auto; position: relative; display: flex; flex-direction: column; padding-top: var(--header-height); }
-        .content-header { position: fixed; top: 0; left: 260px; width: calc(100% - 260px); height: var(--header-height); padding: 0 var(--page-padding-desktop); padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center; z-index: 90; background: var(--bg-color); border-bottom: 1px solid transparent; transition: 0.3s; }
+        .content-header { position: fixed; top: 0; left: 260px; width: calc(100% - 260px); height: var(--header-height); padding: 0 30px; padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center; z-index: 90; background: var(--bg-color); border-bottom: 1px solid transparent; transition: 0.3s; }
         .content-header.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--divider); }
         [data-theme="dark"] .content-header.scrolled { background: rgba(0,0,0,0.8); }
         .nav-item { padding: 14px 20px; color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 1rem; display: flex; align-items: center; border-radius: 12px; margin-bottom: 5px; }
@@ -166,72 +176,86 @@
         .nav-item.active { background: var(--accent-color); color: white; box-shadow: 0 4px 15px var(--accent-color-light); }
         .nav-item svg { margin-right: 12px; flex-shrink: 0; }
         
-        /* Grid & Horizontal Scroll Styles */
+        /* Grid and Flex Containers */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         
-        .horizontal-scroll-row {
+        /* --- HORIZONTAL SCROLL STYLES (New) --- */
+        .horizontal-section-wrapper {
+            margin-bottom: 20px;
+        }
+        .horizontal-row {
             display: flex;
             overflow-x: auto;
-            gap: 20px;
-            padding-bottom: 15px;
+            gap: 16px;
+            padding-bottom: 20px; /* Space for scrollbar if any, though hidden */
+            margin-bottom: 20px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
             scroll-snap-type: x mandatory;
-            margin-bottom: 15px;
         }
-        .horizontal-scroll-row .music-card {
-            min-width: 180px; /* PC版顯示約5個 */
-            scroll-snap-align: start;
-            flex-shrink: 0;
-        }
+        .horizontal-row::-webkit-scrollbar { display: none; }
         
+        /* Song Cards in Horizontal Layout */
+        .horizontal-row .music-card {
+            flex: 0 0 auto; /* Don't shrink */
+            width: 18%; /* Desktop: approx 5 items */
+            min-width: 150px;
+            scroll-snap-align: start;
+        }
+
+        /* Artist Card Styles (Search) */
+        .artist-card {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s;
+            width: 120px; margin-right: 20px; flex-shrink: 0;
+        }
+        .artist-card:hover { transform: translateY(-4px); }
+        .artist-img {
+            width: 100px; height: 100px; border-radius: 50%; 
+            background-size: cover; background-position: center; 
+            margin-bottom: 10px; border: 2px solid var(--card-bg); 
+            box-shadow: var(--shadow-sm);
+        }
+
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
         .music-card:hover { transform: translateY(-4px); }
         .cover-art { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; background-size: cover; background-position: center; }
         [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         .add-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); opacity: 0; transition: 0.2s; z-index: 5; color: black; }
         .music-card:hover .add-btn { opacity: 1; }
-        
-        /* Search Artist Styles */
-        .artist-card { display: flex; flex-direction: column; align-items: center; margin-right: 15px; cursor: pointer; min-width: 100px; text-align: center; }
-        .artist-img { width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center; margin-bottom: 8px; box-shadow: var(--shadow-sm); border: 2px solid var(--card-bg); }
-        .section-header-title { font-size: 1.2rem; font-weight: 700; margin: 25px 0 15px 0; display: block; }
-        
         .playlist-row { display: flex; align-items: center; padding: 12px; background: var(--card-bg); border-radius: var(--radius-md); margin-bottom: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
         .playlist-row:hover { border-color: var(--accent-color); background: var(--input-bg); }
         .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        
         .player-bar { position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); transform: translateY(200%); opacity: 0; }
         .player-bar.active { transform: translateY(0); opacity: 1; }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
-        
         .fullscreen-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 300; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; padding-top: var(--safe-top); }
         .fullscreen-modal.active { transform: translateY(0); }
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
-        
         .mobile-nav { display: none; }
         
-        /* Layout Fixes */
-        .page-section { padding: 20px var(--page-padding-desktop) 120px var(--page-padding-desktop); display: none; animation: fadeIn 0.3s ease; }
-        .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
-        .user-profile-btn { width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer; background-size: cover; background-position: center; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg); }
+        /* Updated Page Section Padding (Reduced left/right) */
+        .page-section { padding: 20px 16px 120px 16px; display: none; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
+        .search-section-title { font-size: 1.2rem; font-weight: 700; margin-top: 20px; margin-bottom: 15px; color: var(--text-primary); }
 
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .content-header { left: 0; width: 100%; padding: 0 var(--page-padding-mobile); padding-top: calc(10px + var(--safe-top)); height: calc(60px + var(--safe-top)); }
+            .content-header { left: 0; width: 100%; padding: 0 20px; padding-top: calc(10px + var(--safe-top)); height: calc(60px + var(--safe-top)); }
             .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--mobile-nav-height) + var(--safe-bottom)); background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 120; justify-content: space-around; padding-bottom: var(--safe-bottom); align-items: center; }
             .mobile-nav-item { position: relative; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500; width: 20%; height: 100%; transition: color 0.3s; }
             .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
             .player-bar { bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
             .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
             .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
-            .page-section { padding: 10px var(--page-padding-mobile) 120px var(--page-padding-mobile); }
+            .page-section { padding: 10px 16px 120px 16px; } /* Reduced padding on mobile */
             
-            /* Mobile Horizontal Scroll: Show ~2 items */
-            .horizontal-scroll-row .music-card {
-                min-width: 44vw; 
-            }
+            /* Horizontal Scroll Mobile override: 2 items visible ~45% width */
+            .horizontal-row .music-card { width: 45%; min-width: 130px; }
         }
+
+        .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
+        .user-profile-btn { width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer; background-size: cover; background-position: center; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg); }
         
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto; }
@@ -293,11 +317,6 @@
                         <div class="mock-blob"></div>
                         <div class="mock-line" style="width: 60%;"></div>
                         <div class="mock-line" style="width: 40%;"></div>
-                        <div class="mock-row">
-                            <div class="mock-square"></div>
-                            <div class="mock-square"></div>
-                            <div class="mock-square"></div>
-                        </div>
                         <div class="mock-row">
                             <div class="mock-square"></div>
                             <div class="mock-square"></div>
@@ -384,7 +403,7 @@
                 <div class="user-profile-btn" id="header-avatar" onclick="openProfileModal()" style="background-image:url('https://cdn-icons-png.flaticon.com/512/847/847969.png')"></div>
             </header>
 
-            <!-- A. Home (Horizontal Scroll) -->
+            <!-- A. Home -->
             <div id="page-home" class="page-section active">
                 <div class="hero-banner" style="height:300px; border-radius:24px; background:linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white; position:relative; overflow:hidden;">
                     <div style="position:relative; z-index:2;">
@@ -396,8 +415,8 @@
                     <div style="position:absolute; right:-20px; bottom:-40px; font-size:15rem; opacity:0.1; font-weight:900; pointer-events:none;">BM</div>
                 </div>
                 <h2>為你推薦</h2>
-                <!-- 改為橫向滑動容器 -->
-                <div id="home-scroll-container"></div>
+                <!-- 修改：使用新的容器 ID -->
+                <div id="home-horizontal-container" style="margin-top:20px;"></div>
             </div>
 
             <!-- B. Search -->
@@ -411,10 +430,11 @@
                 </div>
             </div>
 
-            <!-- C. Discovery (Horizontal Scroll) -->
+            <!-- C. Discovery -->
             <div id="page-discovery" class="page-section">
                 <h2 style="margin-bottom:20px;">最新發行</h2>
-                <div id="discovery-scroll-container"></div>
+                <!-- 修改：使用新的容器 ID -->
+                <div id="discovery-horizontal-container"></div>
             </div>
 
             <!-- D. Database -->
@@ -528,7 +548,7 @@
     <audio id="audio-player"></audio>
 
     <script>
-        // --- 1. 定義歌手與專輯圖片對照表 ---
+        // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
         };
@@ -548,18 +568,26 @@
         async function saveUserToDB(userObj) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(userObj); tx.oncomplete = () => res(); tx.onerror = () => rej(); }); }
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
-        // --- Music Data ---
-        const musicLibrary = [
+        // --- Music Data (Demo Data) ---
+        // 生成更多假資料以測試換行效果
+        const baseMusic = [
             { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
             { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
             { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
             { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
-            // Add more dummy data to test scroll limit
-            { id: 5, title: "Batter Up", artist: "BABYMONSTER", album: "Single", filename: "song5.mp3", cover: "" },
-            { id: 6, title: "Stuck In The Middle", artist: "BABYMONSTER", album: "Single", filename: "song6.mp3", cover: "" },
-            { id: 7, title: "Sheesh", artist: "BABYMONSTER", album: "BABYMONS7ER", filename: "song7.mp3", cover: "" },
-            { id: 8, title: "Like That", artist: "BABYMONSTER", album: "BABYMONS7ER", filename: "song8.mp3", cover: "" },
         ];
+        // 擴充 musicLibrary 到 30 首以測試 "滿20首換下一行"
+        let musicLibrary = [...baseMusic];
+        for(let i=5; i<=30; i++) {
+            musicLibrary.push({
+                id: i,
+                title: `Demo Song ${i}`,
+                artist: i % 2 === 0 ? "BABYMONSTER" : "Various Artist",
+                album: "Demo Album",
+                filename: "song1.mp3",
+                cover: ""
+            });
+        }
         
         let currentUserData = null; 
         let currentQueue = []; 
@@ -570,6 +598,7 @@
 
         // --- Init ---
         window.onload = async function() {
+            // Scroll Animation Trigger for Landing Page
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -579,6 +608,7 @@
             }, { threshold: 0.1 });
             document.querySelectorAll('.feature-box').forEach(el => observer.observe(el));
 
+            // Logic to check login
             const sessionUser = localStorage.getItem('current_session_user');
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
@@ -602,9 +632,9 @@
         };
 
         function initApp() {
-            // Render Horizontal Scroll Sections (Max 20 per row logic)
-            renderHorizontalSection('home-scroll-container', musicLibrary);
-            renderHorizontalSection('discovery-scroll-container', [...musicLibrary].reverse());
+            // Render Horizontal Rows (Max 20 per row) for Home and Discovery
+            renderHorizontalRows('home-horizontal-container', musicLibrary);
+            renderHorizontalRows('discovery-horizontal-container', [...musicLibrary].reverse());
             
             renderPlaylists();
             checkVersion();
@@ -620,40 +650,13 @@
             document.getElementById('profile-username-display').innerText = currentUserData.username;
         }
 
+        // --- Helper: Get Images ---
         function getArtistImage(name) { return artistImages[name] || DEFAULT_ARTIST_IMG; }
         function getAlbumImage(name) { return albumImages[name] || DEFAULT_ALBUM_IMG; }
         function getSongCover(song) {
             if(song.cover) return song.cover;
             if(song.album && albumImages[song.album]) return albumImages[song.album];
             return DEFAULT_ALBUM_IMG;
-        }
-
-        // --- Rendering Logic (Horizontal Scroll) ---
-        function renderHorizontalSection(containerId, songs) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-            
-            // 邏輯：每 20 首切成一個橫向區塊
-            const chunkSize = 20;
-            for (let i = 0; i < songs.length; i += chunkSize) {
-                const chunk = songs.slice(i, i + chunkSize);
-                const row = document.createElement('div');
-                row.className = 'horizontal-scroll-row';
-                
-                chunk.forEach(song => {
-                    row.innerHTML += createSongCardHTML(song);
-                });
-                container.appendChild(row);
-                
-                // 如果只想要顯示「最多」20首然後就沒有了，可以用 break;
-                // 如果要顯示全部，每20首換行，則保留迴圈。
-                // 根據您的描述 "最多20首就要換下一行"，保留迴圈。
-            }
-        }
-
-        function createSongCardHTML(song) {
-            const img = getSongCover(song);
-            return `<div class="music-card" onclick="playSong(${song.id})"><div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div></div>`;
         }
 
         // --- Navigation ---
@@ -766,7 +769,7 @@
             }
         }
 
-        // --- Search System (Enhanced) ---
+        // --- Search System ---
         function showSearchHistory() {
             const history = currentUserData.search_history || [];
             const dropdown = document.getElementById('search-history-dropdown');
@@ -787,38 +790,38 @@
             
             let html = '';
             
-            // 1. Artists Section (Avatar Style)
+            // 1. Artist Section (Avatar + Name)
             if(matchedArtists.length > 0) {
-                html += `<span class="section-header-title">歌手</span><div class="horizontal-scroll-row">`;
-                html += matchedArtists.map(artist => 
-                    `<div class="artist-card" onclick="openArtistDetail('${artist}')">
+                html += `<div class="search-section-title">歌手</div><div class="horizontal-row">`;
+                html += matchedArtists.map(artist => `
+                    <div class="artist-card" onclick="openArtistDetail('${artist}')">
                         <div class="artist-img" style="background-image:url('${getArtistImage(artist)}')"></div>
-                        <div style="font-weight:bold; font-size:0.9rem;">${artist}</div>
-                     </div>`
-                ).join('');
-                html += `</div>`;
-            }
-
-            // 2. Albums Section
-            if(matchedAlbums.length > 0) {
-                html += `<span class="section-header-title">專輯</span><div class="grid-container">`;
-                html += matchedAlbums.map(album => 
-                    `<div class="music-card" onclick="openAlbumDetail('${album}')">
-                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
-                        <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
-                     </div>`
-                ).join('');
-                html += `</div>`;
-            }
-
-            // 3. Songs Section
-            if(matchedSongs.length > 0) {
-                html += `<span class="section-header-title">歌曲</span><div class="grid-container">`;
-                html += matchedSongs.map(song => createSongCardHTML(song)).join('');
+                        <div style="font-weight:bold; font-size:0.95rem;">${artist}</div>
+                    </div>
+                `).join('');
                 html += `</div>`;
             }
             
+            // 2. Album Section
+            if(matchedAlbums.length > 0) {
+                html += `<div class="search-section-title">專輯</div><div class="horizontal-row">`;
+                html += matchedAlbums.map(album => `
+                    <div class="music-card" onclick="openAlbumDetail('${album}')">
+                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
+                        <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
+                    </div>
+                `).join('');
+                html += `</div>`;
+            }
+            
+            // 3. Song Section
+            if(matchedSongs.length > 0) {
+                html += `<div class="search-section-title">歌曲</div><div class="grid-container">`; // Keep songs in grid or change to list if preferred
+                html += matchedSongs.map(song => createSongCardHTML(song)).join('');
+                html += `</div>`;
+            }
+
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center; padding-top:40px;">找不到 "${keyword}" 的結果</div>`;
             area.innerHTML = html;
 
@@ -849,6 +852,37 @@
         function openAlbumDetail(albumName) { const songs = musicLibrary.filter(s => s.album === albumName); const artist = songs.length > 0 ? songs[0].artist : "Unknown"; openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs); }
         function openPlaylistDetail(plId) { const pl = currentUserData.playlists.find(p => p.id === plId); if(!pl) return; const songs = musicLibrary.filter(s => pl.songs.includes(s.id)); openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs); }
         function playCollectionAll() { if(currentCollectionSongs.length > 0) { currentQueue = [...currentCollectionSongs]; currentSongIndex = 0; playSongObject(currentQueue[0]); } }
+
+        function createSongCardHTML(song) {
+            const img = getSongCover(song);
+            return `<div class="music-card" onclick="playSong(${song.id})"><div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div></div>`;
+        }
+
+        // --- NEW: Horizontal Row Renderer (Chunking by 20) ---
+        function renderHorizontalRows(containerId, songs) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear existing content
+
+            const chunkSize = 20; // 20 songs per horizontal row (line)
+            for (let i = 0; i < songs.length; i += chunkSize) {
+                const chunk = songs.slice(i, i + chunkSize);
+                
+                // Wrapper for visual separation if needed
+                const wrapper = document.createElement('div');
+                wrapper.className = 'horizontal-section-wrapper';
+
+                // Horizontal scroll container
+                const row = document.createElement('div');
+                row.className = 'horizontal-row';
+                
+                // Add cards
+                const html = chunk.map(s => createSongCardHTML(s)).join('');
+                row.innerHTML = html;
+                
+                wrapper.appendChild(row);
+                container.appendChild(wrapper);
+            }
+        }
 
         function renderPlaylists() { const container = document.getElementById('playlists-container'); const playlists = currentUserData.playlists || []; if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; } container.innerHTML = playlists.map(pl => `<div class="playlist-row" onclick="openPlaylistDetail(${pl.id})"><div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div><div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div></div>`).join(''); }
 
