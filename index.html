@@ -5,25 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#F5F5F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" default">
 
     <style>
-        /* --- 核心變數 --- */
+        /* --- CSS 變數 --- */
         :root {
-            --bg-color: #F5F5F7;
-            --sidebar-bg: #FFFFFF;
+            --bg-color: #FFFFFF;
+            --sidebar-bg: #F5F5F7;
             --card-bg: #FFFFFF;
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --accent-color: #FA2D48;
             --divider: #E5E5E5;
             --player-bg: rgba(255, 255, 255, 0.85);
-            --modal-bg: #F5F5F7;
-            --input-bg: #EAEAEA;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-            --radius-lg: 18px;
+            --modal-bg: #FFFFFF;
+            --input-bg: #F0F0F0;
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+            --shadow-md: 0 12px 32px rgba(0,0,0,0.1);
+            --radius-lg: 24px;
+            --radius-md: 16px;
         }
 
         [data-theme="dark"] {
@@ -36,7 +38,8 @@
             --player-bg: rgba(28, 28, 30, 0.85);
             --modal-bg: #000000;
             --input-bg: #1C1C1E;
-            --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+            --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-md: 0 12px 32px rgba(0,0,0,0.6);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -45,339 +48,376 @@
             background-color: var(--bg-color); color: var(--text-primary); 
             overflow: hidden; height: 100vh; transition: background 0.3s, color 0.3s;
         }
+        
         .hidden { display: none !important; }
+        .icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* --- 1. 全新 Landing Page (官網首頁) --- */
-        #landing-view {
-            height: 100vh; width: 100%; overflow-y: auto; overflow-x: hidden;
-            background: #000; color: #fff; position: relative; z-index: 2000;
+        /* --- 1. 全新 Landing Page (登陸首頁) --- */
+        #landing-page {
+            height: 100vh; overflow-y: auto; background: var(--bg-color); z-index: 2000; position: relative;
             scroll-behavior: smooth;
         }
         
-        /* 導航列 */
         .lp-nav {
-            position: fixed; top: 0; width: 100%; padding: 20px 40px;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10; backdrop-filter: blur(10px); background: rgba(0,0,0,0.3);
+            position: fixed; top: 0; width: 100%; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0); backdrop-filter: blur(10px); z-index: 100; transition: 0.3s;
         }
-        .lp-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -1px; color: #fff; }
-        .lp-btn { 
-            padding: 10px 24px; background: #fff; color: #000; border-radius: 30px; 
-            font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: 0.3s;
+        [data-theme="dark"] .lp-nav { background: rgba(0,0,0,0.5); }
+        .lp-logo { font-size: 1.5rem; font-weight: 800; color: var(--accent-color); letter-spacing: -1px; }
+        
+        .lp-hero {
+            height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px;
+            background: radial-gradient(circle at 50% 30%, rgba(250, 45, 72, 0.15) 0%, transparent 70%);
         }
-        .lp-btn:hover { transform: scale(1.05); }
+        .lp-title {
+            font-size: 5rem; font-weight: 800; line-height: 1; margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            opacity: 0; animation: fadeUp 1s ease forwards;
+        }
+        .lp-subtitle {
+            font-size: 1.5rem; color: var(--text-secondary); max-width: 600px; margin-bottom: 40px;
+            opacity: 0; animation: fadeUp 1s ease 0.3s forwards;
+        }
+        .lp-btn {
+            padding: 18px 48px; font-size: 1.2rem; background: var(--accent-color); color: white; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(250, 45, 72, 0.4);
+            opacity: 0; animation: fadeUp 1s ease 0.6s forwards;
+        }
+        .lp-btn:hover { transform: scale(1.05); box-shadow: 0 15px 40px rgba(250, 45, 72, 0.6); }
 
-        /* Hero 區域 */
-        .hero-section {
-            height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px;
-            background: radial-gradient(circle at center, #2a0845 0%, #6441A5 50%, #000000 100%);
-            position: relative;
+        .lp-features { padding: 100px 40px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .feature-card {
+            padding: 40px; background: var(--sidebar-bg); border-radius: var(--radius-lg);
+            transform: translateY(50px); opacity: 0; transition: 0.6s ease;
         }
-        .hero-title {
-            font-size: 5rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px;
-            background: linear-gradient(to right, #fff, #b3b3b3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            animation: fadeUp 1s ease forwards; opacity: 0; transform: translateY(30px);
-        }
-        .hero-sub {
-            font-size: 1.5rem; color: rgba(255,255,255,0.7); margin-bottom: 40px; max-width: 600px;
-            animation: fadeUp 1s ease 0.3s forwards; opacity: 0; transform: translateY(30px);
-        }
-        .hero-cta {
-            padding: 18px 40px; font-size: 1.2rem; background: var(--accent-color); color: white; border: none;
-            border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 10px 30px rgba(250, 45, 72, 0.4);
-            animation: fadeUp 1s ease 0.6s forwards; opacity: 0; transform: translateY(30px); transition: 0.3s;
-        }
-        .hero-cta:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 40px rgba(250, 45, 72, 0.6); }
+        .feature-card.visible { transform: translateY(0); opacity: 1; }
+        .feature-icon { margin-bottom: 20px; color: var(--accent-color); }
+        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 浮動星球動畫 */
-        .planet {
-            position: absolute; border-radius: 50%; opacity: 0.6; filter: blur(40px);
-            animation: float 10s infinite ease-in-out;
+        /* --- 登入模態窗 (Login Modal) --- */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2500;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(5px);
         }
-        .p1 { width: 300px; height: 300px; background: #FA2D48; top: -50px; left: -50px; animation-delay: 0s; }
-        .p2 { width: 200px; height: 200px; background: #4158D0; bottom: 100px; right: -50px; animation-delay: 2s; }
-
-        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        /* Login Modal (覆蓋在 Landing Page 上) */
-        .login-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center; z-index: 3000;
-            opacity: 0; pointer-events: none; transition: 0.3s;
+        #login-modal.active { opacity: 1; pointer-events: auto; }
+        .login-box {
+            background: var(--card-bg); width: 90%; max-width: 400px; padding: 40px; border-radius: var(--radius-lg); text-align: center;
+            box-shadow: var(--shadow-md); transform: scale(0.9); transition: 0.3s;
         }
-        .login-modal.active { opacity: 1; pointer-events: auto; }
-        .login-card {
-            background: #1C1C1E; width: 90%; max-width: 350px; padding: 40px; border-radius: 20px;
-            text-align: center; border: 1px solid #333;
-        }
-
-        /* --- 2. 主程式介面 (App View) --- */
+        #login-modal.active .login-box { transform: scale(1); }
+        
+        /* --- 2. App 介面 --- */
         #app-view { display: flex; height: 100vh; width: 100%; }
 
         .sidebar {
-            width: 260px; background: var(--sidebar-bg); padding: 30px 20px; display: flex; flex-direction: column;
+            width: 280px; background: var(--sidebar-bg); padding: 40px 20px; display: flex; flex-direction: column;
             border-right: 1px solid var(--divider); flex-shrink: 0;
         }
-        .sidebar-logo { font-size: 1.8rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); padding-left: 10px; }
-        
-        .nav-item {
-            padding: 12px 16px; margin-bottom: 5px; border-radius: 12px;
-            color: var(--text-secondary); font-weight: 600; cursor: pointer; transition: 0.2s;
-            display: flex; align-items: center; gap: 15px; font-size: 1rem;
+        .sidebar-logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); padding-left: 20px; }
+        .nav-item { 
+            padding: 16px 20px; color: var(--text-secondary); font-weight: 600; cursor: pointer; 
+            transition: 0.2s; font-size: 1rem; display: flex; align-items: center; border-radius: 12px; margin-bottom: 5px;
         }
         .nav-item:hover { background: rgba(0,0,0,0.05); color: var(--text-primary); }
-        .nav-item.active { background: rgba(250, 45, 72, 0.1); color: var(--accent-color); }
-        .nav-svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; }
+        [data-theme="dark"] .nav-item:hover { background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(250, 45, 72, 0.3); }
+        .nav-item svg { margin-right: 15px; }
 
-        /* 內容區 */
-        .main-content { flex: 1; overflow-y: auto; padding: 0; position: relative; }
+        .main-content { flex: 1; overflow-y: auto; position: relative; }
         .page-section { padding: 40px; padding-bottom: 120px; display: none; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 網格與卡片 */
-        .section-header { font-size: 1.8rem; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); }
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; }
-        
-        .music-card { position: relative; cursor: pointer; transition: 0.3s; group:hover; }
-        .music-card:hover .cover-art { transform: scale(1.03); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        /* 首頁 Banner */
+        .hero-banner {
+            height: 350px; border-radius: var(--radius-lg); margin-bottom: 40px; position: relative; overflow: hidden;
+            background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); display: flex; align-items: flex-end; padding: 40px;
+            box-shadow: var(--shadow-md); transition: 0.3s;
+        }
+        [data-theme="dark"] .hero-banner { background: linear-gradient(120deg, #434343 0%, #000000 100%); }
+        .hero-text h1 { font-size: 3rem; font-weight: 800; color: white; margin-bottom: 10px; }
+        .hero-text p { color: rgba(255,255,255,0.8); font-size: 1.1rem; }
+
+        /* 卡片系統 */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 24px; }
+        .music-card { position: relative; cursor: pointer; transition: 0.3s; group; }
+        .music-card:hover { transform: translateY(-5px); }
         .cover-art {
-            width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-lg); margin-bottom: 12px;
-            background: linear-gradient(135deg, #e0e0e0, #f5f5f5); position: relative; overflow: hidden;
-            display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #888;
-            transition: 0.3s;
+            width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 12px;
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center;
+            box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
         }
-        [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); color: #555; }
+        [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         
-        /* 收藏按鈕 */
+        /* 添加按鈕 (+) */
         .add-btn {
-            position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; color: white;
-            border: none; cursor: pointer; z-index: 2; transition: 0.2s;
+            position: absolute; bottom: 10px; right: 10px; width: 32px; height: 32px; background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 0; transition: 0.2s; z-index: 5; color: black;
         }
-        .add-btn:hover { background: var(--accent-color); transform: scale(1.1); }
-        .add-btn svg { width: 16px; height: 16px; stroke-width: 3; }
-
-        /* 搜尋框 */
-        .search-bar-container { position: sticky; top: 0; background: var(--bg-color); z-index: 10; padding-bottom: 20px; }
-        .search-input {
-            width: 100%; padding: 16px 24px; font-size: 1.1rem; border: none;
-            background: var(--input-bg); color: var(--text-primary); border-radius: 50px; outline: none;
-        }
-
+        .music-card:hover .add-btn { opacity: 1; }
+        
         /* 播放器 */
         .player-bar {
-            position: fixed; height: 80px; background: var(--player-bg); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
+            position: fixed; height: 90px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; 
             z-index: 100; transition: 0.3s ease;
         }
         @media (min-width: 769px) { 
-            .player-bar {
-                bottom: 30px; right: 40px; width: calc(100% - 260px - 80px); 
-                border-radius: var(--radius-lg); box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            }
+            .player-bar { bottom: 30px; right: 30px; width: calc(100% - 280px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
         }
-        .track-info { display: flex; align-items: center; width: 30%; overflow: hidden; }
-        .track-thumb { width: 48px; height: 48px; background: #eee; border-radius: 8px; margin-right: 12px; flex-shrink: 0; }
-        .controls { display: flex; align-items: center; gap: 20px; }
-        .play-btn { width: 45px; height: 45px; background: var(--text-primary); color: var(--bg-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; cursor: pointer; }
+        
+        /* 藥丸型切換器 (Pill Toggle) */
+        .pill-toggle {
+            background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer;
+            width: 200px; height: 44px; margin-top: 10px;
+        }
+        .pill-bg {
+            position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: 36px;
+            background: var(--bg-color); border-radius: 20px; transition: 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pill-option {
+            flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600;
+            color: var(--text-secondary); transition: 0.3s;
+        }
+        .pill-option.active { color: var(--text-primary); }
+        .pill-toggle[data-state="dark"] .pill-bg { transform: translateX(100%); }
 
         /* 全螢幕視窗 */
         .fullscreen-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--modal-bg); z-index: 300;
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 300;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column;
         }
         .fullscreen-modal.active { transform: translateY(0); }
-        .modal-nav { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
+        .modal-nav { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-body { flex: 1; overflow-y: auto; padding: 40px; max-width: 800px; margin: 0 auto; width: 100%; }
 
-        /* RWD */
+        /* 資料庫 (我的播放清單) */
+        .playlist-row {
+            display: flex; align-items: center; padding: 15px; background: var(--card-bg); border-radius: var(--radius-md);
+            margin-bottom: 15px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
+        }
+        .playlist-row:hover { border-color: var(--accent-color); transform: scale(1.01); }
+        .playlist-icon { width: 50px; height: 50px; background: var(--input-bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 20px; }
+        
+        /* 手機版適配 */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
-            .hero-title { font-size: 3rem; }
-            .page-section { padding: 20px; padding-top: 50px; padding-bottom: 140px; }
-            .player-bar { 
-                bottom: 80px; left: 50%; transform: translateX(-50%); width: 92%; 
-                border-radius: 16px; height: 65px; 
-            }
+            .lp-title { font-size: 3rem; }
+            .lp-features { padding: 60px 20px; }
             .mobile-nav {
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: 70px;
-                background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); z-index: 110;
-                justify-content: space-around; align-items: center; border-top: 1px solid var(--divider);
+                background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 110; justify-content: space-around; align-items: center;
             }
-            [data-theme="dark"] .mobile-nav { background: rgba(20,20,20,0.9); }
-            .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); }
+            .mobile-nav-item { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
             .mobile-nav-item.active { color: var(--accent-color); }
+            .player-bar { bottom: 80px; left: 50%; transform: translateX(-50%); width: 95%; border-radius: 20px; height: 70px; padding: 0 20px; }
+            .main-content { padding-bottom: 160px; }
+            .page-section { padding: 20px; padding-top: 60px; }
+            .modal-nav { padding: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. 酷炫 Landing Page -->
-    <section id="landing-view">
+    <!-- 1. 全新滾動式登陸頁面 -->
+    <section id="landing-page">
         <nav class="lp-nav">
             <div class="lp-logo">ASTRA.</div>
-            <button class="lp-btn" onclick="openLoginModal()">Login</button>
+            <button class="lp-btn" style="padding: 10px 25px; font-size: 1rem; opacity: 1; animation: none;" onclick="openLoginModal()">登入</button>
         </nav>
 
-        <div class="hero-section">
-            <div class="planet p1"></div>
-            <div class="planet p2"></div>
-            
-            <h1 class="hero-title">Music for<br>the Stars.</h1>
-            <p class="hero-sub">探索無限音頻宇宙，建立屬於你的星際播放清單。<br>極致簡約，專為音樂而生。</p>
-            <button class="hero-cta" onclick="openLoginModal()">開始聆聽</button>
+        <div class="lp-hero">
+            <h1 class="lp-title">探索<br>無限音頻宇宙</h1>
+            <p class="lp-subtitle">ASTRA Music 帶您進入前所未有的聽覺盛宴。建立您的專屬資料庫，發現新的節奏。</p>
+            <button class="lp-btn" onclick="openLoginModal()">立即開始體驗</button>
         </div>
 
-        <!-- 登入彈窗 -->
-        <div id="login-overlay" class="login-modal">
-            <div class="login-card">
-                <h2 style="color:#fff; margin-bottom:10px;">Welcome Back</h2>
-                <p style="color:#aaa; margin-bottom:30px;">登入 ASTRA 帳號</p>
-                <form onsubmit="handleLogin(event)">
-                    <input type="text" id="username" class="search-input" style="background:#333; color:white; margin-bottom:15px; border-radius:12px;" placeholder="帳號" required>
-                    <input type="password" id="password" class="search-input" style="background:#333; color:white; margin-bottom:20px; border-radius:12px;" placeholder="密碼" required>
-                    <button type="submit" class="hero-cta" style="width:100%; font-size:1rem; padding:12px;">進入系統</button>
-                </form>
-                <button onclick="closeLoginModal()" style="background:none; border:none; color:#666; margin-top:15px; cursor:pointer;">取消</button>
+        <div class="lp-features" id="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                </div>
+                <h3>無損音質</h3>
+                <p style="color:var(--text-secondary)">如同身臨其境的頂級音效體驗，捕捉每一個細節。</p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                </div>
+                <h3>個人資料庫</h3>
+                <p style="color:var(--text-secondary)">自由創建播放清單，管理屬於您的音樂收藏。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="10 8 16 12 10 16 10 8"></polygon></svg>
+                </div>
+                <h3>跨平台串流</h3>
+                <p style="color:var(--text-secondary)">無論在電腦還是手機，隨時隨地無縫銜接。</p>
+            </div>
+        </div>
+        
+        <div style="text-align:center; padding: 50px; color: var(--text-secondary);">
+            &copy; 2025 ASTRA Music Inc.
         </div>
     </section>
 
-    <!-- 2. 主程式介面 -->
+    <!-- 登入模態窗 -->
+    <div id="login-modal">
+        <div class="login-box">
+            <h2 style="font-size:2rem; margin-bottom:10px;">歡迎回來</h2>
+            <p style="color:var(--text-secondary); margin-bottom:30px;">請登入您的 ASTRA 帳號</p>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="username" style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none;" placeholder="用戶名" required autocomplete="off">
+                <input type="password" id="password" style="width:100%; padding:15px; margin-bottom:20px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none;" placeholder="密碼" required>
+                <button type="submit" style="width:100%; padding:15px; border-radius:12px; border:none; background:var(--accent-color); color:white; font-weight:bold; cursor:pointer;">登入</button>
+            </form>
+            <button onclick="closeLoginModal()" style="margin-top:15px; background:none; border:none; color:var(--text-secondary); cursor:pointer;">取消</button>
+        </div>
+    </div>
+
+    <!-- 2. App 主介面 -->
     <section id="app-view" class="hidden">
         
+        <!-- SVG 圖標的側邊欄 -->
         <nav class="sidebar">
             <div class="sidebar-logo">ASTRA.</div>
             
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home">
-                <svg class="nav-svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                 首頁
             </div>
             <div class="nav-item" onclick="switchPage('search')" id="nav-search">
-                <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 搜尋
             </div>
             <div class="nav-item" onclick="switchPage('discovery')" id="nav-discovery">
-                <svg class="nav-svg" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                <svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                 新發現
             </div>
             <div class="nav-item" onclick="switchPage('database')" id="nav-database">
-                <svg class="nav-svg" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
                 資料庫
             </div>
+
             <div class="nav-item" style="margin-top:auto" onclick="openSettings()">
-                <svg class="nav-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                 設定
             </div>
         </nav>
 
         <main class="main-content">
+            
             <!-- A. 首頁 -->
             <div id="page-home" class="page-section active">
-                <div class="section-header">Welcome, User</div>
-                <!-- 這裡可以放一些靜態的 Banner -->
-                <div style="width:100%; height:250px; background:linear-gradient(45deg, #FF9A9E, #FECFEF); border-radius:18px; display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white;">
-                    <div>
-                        <div style="font-size:0.9rem; opacity:0.8;">NEW RELEASE</div>
-                        <div style="font-size:2.5rem; font-weight:800;">Summer Vibes</div>
+                <div class="hero-banner">
+                    <div class="hero-text">
+                        <h1>New Era.</h1>
+                        <p>BABYMONSTER 全新專輯現已上線</p>
+                        <button style="margin-top:20px; padding:10px 24px; border-radius:20px; border:none; font-weight:bold; cursor:pointer; background:white; color:black;" onclick="playSong(musicLibrary[0])">立即聆聽</button>
                     </div>
                 </div>
-                <div class="section-header">熱門推薦</div>
+                <h2 style="margin-bottom:20px;">為你推薦</h2>
                 <div class="grid-container" id="home-grid"></div>
             </div>
 
             <!-- B. 搜尋 -->
             <div id="page-search" class="page-section">
-                <div class="search-bar-container">
-                    <div class="section-header">搜尋音樂</div>
-                    <input type="text" class="search-input" placeholder="輸入歌曲或藝人..." oninput="handleSearch(this.value)">
-                </div>
-                <div class="grid-container" id="search-results">
-                    <div style="color:var(--text-secondary);">試著搜尋 "Baby"...</div>
-                </div>
+                <input type="text" placeholder="搜尋藝人、歌曲..." style="width:100%; padding:20px; border-radius:15px; border:none; background:var(--input-bg); font-size:1.1rem; color:var(--text-primary); outline:none; margin-bottom:30px;" oninput="handleSearch(this.value)">
+                <div class="grid-container" id="search-grid"></div>
             </div>
 
             <!-- C. 新發現 -->
             <div id="page-discovery" class="page-section">
-                <div class="section-header">每週新發現</div>
+                <h2 style="margin-bottom:20px;">每週新發現</h2>
                 <div class="grid-container" id="discovery-grid"></div>
             </div>
 
-            <!-- D. 資料庫 (使用者自己建立) -->
+            <!-- D. 資料庫 (我的音樂庫) -->
             <div id="page-database" class="page-section">
-                <div class="section-header">我的資料庫</div>
-                <div style="color:var(--text-secondary); margin-bottom:20px;">從搜尋或新發現中點擊 + 加入音樂</div>
-                <div class="grid-container" id="database-grid">
-                    <!-- 這裡只會顯示使用者加入的歌 -->
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                    <h2>我的資料庫</h2>
+                    <button onclick="createNewPlaylist()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
+                </div>
+                <div id="playlists-container">
+                    <!-- 播放清單列表 -->
                 </div>
             </div>
-        </main>
 
-        <footer class="player-bar">
-            <div class="track-info">
-                <div class="track-thumb" id="p-thumb"></div>
-                <div>
-                    <h4 id="p-title" style="font-size:0.9rem; font-weight:bold;">未播放</h4>
-                    <p id="p-artist" style="font-size:0.8rem; color:var(--text-secondary);">--</p>
-                </div>
-            </div>
-            <div class="controls">
-                <div class="play-btn" onclick="togglePlay()" id="playBtn">▶</div>
-            </div>
-        </footer>
+        </main>
 
         <!-- 手機底部導航 -->
         <div class="mobile-nav">
-            <div class="mobile-nav-item active" onclick="switchPage('home')">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
-            </div>
-            <div class="mobile-nav-item" onclick="switchPage('search')">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </div>
-            <div class="mobile-nav-item" onclick="switchPage('database')">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
-            </div>
-            <div class="mobile-nav-item" onclick="openSettings()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            </div>
+            <div class="mobile-nav-item" onclick="switchPage('home')"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
+            <div class="mobile-nav-item" onclick="switchPage('search')"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
+            <div class="mobile-nav-item" onclick="switchPage('database')"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>資料庫</div>
+            <div class="mobile-nav-item" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
         </div>
+
+        <footer class="player-bar">
+            <div style="display:flex; align-items:center;">
+                <div id="p-thumb" style="width:50px; height:50px; background:#ccc; border-radius:10px; margin-right:15px;"></div>
+                <div>
+                    <h4 id="p-title" style="margin:0; font-size:0.95rem;">未播放</h4>
+                    <p id="p-artist" style="margin:0; font-size:0.8rem; color:var(--text-secondary);">ASTRA Music</p>
+                </div>
+            </div>
+            <div style="display:flex; gap:20px; align-items:center;">
+                <button onclick="togglePlay()" id="playBtn" style="width:40px; height:40px; border-radius:50%; background:var(--text-primary); color:var(--bg-color); border:none; cursor:pointer;">▶</button>
+            </div>
+        </footer>
+
     </section>
 
-    <!-- 設定全螢幕 -->
+    <!-- 設定全螢幕頁 -->
     <div id="settings-modal" class="fullscreen-modal">
         <div class="modal-nav">
             <h2 style="font-size:1.5rem;">設定</h2>
-            <button onclick="closeSettings()" style="background:#ddd; border:none; padding:8px 20px; border-radius:20px;">完成</button>
+            <button onclick="closeSettings()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer; color:var(--text-primary);">完成</button>
         </div>
-        <div style="padding:40px;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-                <span>深色模式</span>
-                <input type="checkbox" id="theme-toggle" onchange="toggleTheme()">
+        <div class="modal-body">
+            <div style="margin-bottom:30px;">
+                <p style="margin-bottom:10px; font-weight:bold;">外觀主題</p>
+                <div class="pill-toggle" id="theme-pill" onclick="toggleThemePill()" data-state="light">
+                    <div class="pill-bg"></div>
+                    <div class="pill-option active" id="pill-light">淺色</div>
+                    <div class="pill-option" id="pill-dark">深色</div>
+                </div>
             </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:30px;" onclick="showChangelog()">
-                <span>更新日誌</span>
-                <span id="ver-text" style="color:gray;">v1.0.0 ></span>
+
+            <div style="padding:20px 0; border-bottom:1px solid var(--divider); cursor:pointer;" onclick="showChangelog()">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>更新日誌</span>
+                    <span style="color:var(--text-secondary);">v1.0.0 ></span>
+                </div>
             </div>
-            <button onclick="handleLogout()" style="width:100%; padding:15px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-size:1rem;">登出</button>
+
+            <button onclick="handleLogout()" style="margin-top:40px; width:100%; padding:15px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">登出系統</button>
         </div>
     </div>
-
-    <!-- 更新日誌全螢幕 -->
+    
+    <!-- 日誌全螢幕頁 -->
     <div id="changelog-modal" class="fullscreen-modal" style="z-index:310;">
         <div class="modal-nav">
             <h2>更新日誌</h2>
-            <button onclick="document.getElementById('changelog-modal').classList.remove('active')" style="background:#ddd; border:none; padding:8px 20px; border-radius:20px;">關閉</button>
+            <button onclick="closeChangelog()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button>
         </div>
-        <div id="changelog-list" style="padding:40px;"></div>
+        <div class="modal-body" id="changelog-content">
+            <!-- JS 內容 -->
+        </div>
+    </div>
+
+    <!-- 選擇清單模態窗 (新增歌曲用) -->
+    <div id="select-playlist-modal" class="fullscreen-modal" style="z-index:320; background: rgba(0,0,0,0.8); backdrop-filter:blur(5px);">
+        <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:20px;">
+            <h3 style="margin-bottom:20px;">添加到播放清單</h3>
+            <div id="playlist-selector-list" style="max-height:300px; overflow-y:auto;"></div>
+            <button onclick="closePlaylistSelector()" style="width:100%; padding:12px; margin-top:20px; background:var(--input-bg); border:none; border-radius:10px; cursor:pointer;">取消</button>
+        </div>
     </div>
 
     <audio id="audio-player"></audio>
@@ -390,165 +430,225 @@
             { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", filename: "song3.mp3" },
             { id: 4, title: "WILD", artist: "BABYMONSTER", filename: "song4.mp3" },
         ];
-        
-        // 使用者資料庫 (只存 ID)
-        let userLibraryIds = [];
-        let currentVersion = '0.0.0'; 
-        let updateLogs = [];
 
-        // --- 初始化 ---
-        window.onload = async function() {
-            // 讀取日誌
-            try {
-                let res = await fetch('./changelog.json');
-                let data = await res.json();
-                updateLogs = data;
-                if(data.length) currentVersion = data[0].version;
-                document.getElementById('ver-text').innerText = `v${currentVersion} >`;
-            } catch(e){}
+        let myPlaylists = JSON.parse(localStorage.getItem('astra_playlists')) || [];
+        let songToAdd = null; // 暫存要加入的歌曲
 
-            // 讀取使用者資料
-            const savedUser = localStorage.getItem('astra_user');
-            const savedTheme = localStorage.getItem('astra_theme');
-            const savedLib = localStorage.getItem('astra_library');
-            
-            if(savedLib) userLibraryIds = JSON.parse(savedLib);
-            if(savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                document.getElementById('theme-toggle').checked = true;
-            }
+        // --- 初始化 Landing Page 動畫 ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        });
+        document.querySelectorAll('.feature-card').forEach(card => observer.observe(card));
 
-            if(savedUser) {
-                // 已登入：直接進 App
-                document.getElementById('landing-view').classList.add('hidden');
-                document.getElementById('app-view').classList.remove('hidden');
-                renderAllPages();
-                checkUpdateLog();
-            } else {
-                // 未登入：顯示 Landing Page
-            }
-        }
-
-        // --- Landing Page 邏輯 ---
-        function openLoginModal() { document.getElementById('login-overlay').classList.add('active'); }
-        function closeLoginModal() { document.getElementById('login-overlay').classList.remove('active'); }
+        // --- 登入邏輯 ---
+        function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
+        function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('username').value;
-            localStorage.setItem('astra_user', u);
+            const user = document.getElementById('username').value;
+            localStorage.setItem('astra_user', user);
+            document.getElementById('landing-page').classList.add('hidden');
+            document.getElementById('app-view').classList.remove('hidden');
             closeLoginModal();
-            // 轉場
-            document.getElementById('landing-view').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('landing-view').classList.add('hidden');
+            initApp();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('astra_user');
+            location.reload();
+        }
+
+        window.onload = function() {
+            const user = localStorage.getItem('astra_user');
+            if(user) {
+                document.getElementById('landing-page').classList.add('hidden');
                 document.getElementById('app-view').classList.remove('hidden');
-                renderAllPages();
-            }, 500);
-        }
-
-        // --- 資料庫管理功能 ---
-        function addToLibrary(e, songId) {
-            e.stopPropagation(); // 阻止冒泡播放
-            if (!userLibraryIds.includes(songId)) {
-                userLibraryIds.push(songId);
-                localStorage.setItem('astra_library', JSON.stringify(userLibraryIds));
-                alert('已加入資料庫！');
-                renderDatabase(); // 重繪資料庫頁面
-            } else {
-                alert('這首歌已經在你的資料庫囉');
+                initApp();
             }
+            // 深色模式檢查
+            if(localStorage.getItem('astra_theme') === 'dark') {
+                updateThemeUI('dark');
+            }
+        };
+
+        function initApp() {
+            renderCards('home-grid', musicLibrary);
+            renderCards('discovery-grid', [...musicLibrary].reverse());
+            renderPlaylists();
         }
 
-        // --- 渲染頁面 ---
-        function createCard(song, showAddBtn = true) {
-            const songStr = JSON.stringify(song).replace(/"/g, '&quot;');
-            return `
-                <div class="music-card" onclick="playSong(${songStr})">
+        // --- 核心：渲染卡片 (含加入按鈕) ---
+        function renderCards(containerId, songs) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = songs.map(song => `
+                <div class="music-card" onclick="playSong(${song.id})">
                     <div class="cover-art">
-                        ♫
-                        ${showAddBtn ? `<button class="add-btn" onclick="addToLibrary(event, ${song.id})"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></button>` : ''}
+                        <svg class="icon" viewBox="0 0 24 24" style="width:40px; height:40px; opacity:0.5;"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+                        <div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </div>
                     </div>
-                    <div style="font-weight:bold; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${song.title}</div>
+                    <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
                 </div>
-            `;
+            `).join('');
         }
 
-        function renderAllPages() {
-            // 首頁
-            document.getElementById('home-grid').innerHTML = musicLibrary.slice(0, 2).map(s => createCard(s, false)).join('');
-            // 新發現 (顯示所有歌，有+號)
-            document.getElementById('discovery-grid').innerHTML = musicLibrary.map(s => createCard(s, true)).join('');
-            // 資料庫 (只顯示 User 的歌)
-            renderDatabase();
+        // --- 資料庫邏輯 (播放清單) ---
+        function renderPlaylists() {
+            const container = document.getElementById('playlists-container');
+            if(myPlaylists.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立任何播放清單</div>';
+                return;
+            }
+            container.innerHTML = myPlaylists.map(pl => `
+                <div class="playlist-row" onclick="openPlaylistDetail(${pl.id})">
+                    <div class="playlist-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path></svg></div>
+                    <div>
+                        <div style="font-weight:bold;">${pl.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function renderDatabase() {
-            const userSongs = musicLibrary.filter(s => userLibraryIds.includes(s.id));
-            const container = document.getElementById('database-grid');
-            if (userSongs.length === 0) {
-                container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-secondary);">你的資料庫是空的<br>去「新發現」或「搜尋」加入歌曲吧！</div>`;
-            } else {
-                // 資料庫裡就不顯示 + 按鈕了
-                container.innerHTML = userSongs.map(s => createCard(s, false)).join('');
+        function createNewPlaylist() {
+            const name = prompt("輸入清單名稱：", "我的最愛");
+            if(name) {
+                const newPl = { id: Date.now(), name: name, songs: [] };
+                myPlaylists.push(newPl);
+                savePlaylists();
+                renderPlaylists();
             }
         }
 
-        function handleSearch(val) {
-            const res = document.getElementById('search-results');
-            if(!val) { res.innerHTML = ''; return; }
-            const hits = musicLibrary.filter(s => s.title.toLowerCase().includes(val.toLowerCase()) || s.artist.toLowerCase().includes(val.toLowerCase()));
-            res.innerHTML = hits.length ? hits.map(s => createCard(s, true)).join('') : '找不到歌曲';
+        function savePlaylists() {
+            localStorage.setItem('astra_playlists', JSON.stringify(myPlaylists));
         }
 
-        // --- 播放器 ---
-        const audio = document.getElementById('audio-player');
+        // --- 加入歌曲到清單 ---
+        function openPlaylistSelector(e, songId) {
+            e.stopPropagation(); // 阻止播放
+            songToAdd = songId;
+            const list = document.getElementById('playlist-selector-list');
+            if(myPlaylists.length === 0) {
+                alert("請先到資料庫建立一個播放清單！");
+                return;
+            }
+            list.innerHTML = myPlaylists.map(pl => `
+                <div onclick="addToPlaylist(${pl.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">
+                    ${pl.name}
+                </div>
+            `).join('');
+            document.getElementById('select-playlist-modal').classList.add('active');
+        }
+
+        function addToPlaylist(plId) {
+            const pl = myPlaylists.find(p => p.id === plId);
+            if(pl && !pl.songs.includes(songToAdd)) {
+                pl.songs.push(songToAdd);
+                savePlaylists();
+                renderPlaylists(); // 更新資料庫顯示
+                alert(`已加入 "${pl.name}"`);
+            } else {
+                alert("歌曲已在清單中");
+            }
+            closePlaylistSelector();
+        }
+
+        function closePlaylistSelector() {
+            document.getElementById('select-playlist-modal').classList.remove('active');
+            songToAdd = null;
+        }
+
+        // --- 播放邏輯 ---
+        const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
-        function playSong(song) {
-            audio.src = `./music/${song.filename}`;
+
+        function playSong(idOrObj) {
+            let song;
+            if (typeof idOrObj === 'object') song = idOrObj;
+            else song = musicLibrary.find(s => s.id === idOrObj);
+
+            if(!song) return;
+
+            audioPlayer.src = `./music/${song.filename}`;
             document.getElementById('p-title').innerText = song.title;
             document.getElementById('p-artist').innerText = song.artist;
-            document.getElementById('p-thumb').style.background = `hsl(${Math.random()*360},60%,70%)`;
-            audio.play(); isPlaying = true; updatePlayBtn();
-            if('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: song.title, artist: song.artist });
+            document.getElementById('p-thumb').style.background = `hsl(${Math.random()*360}, 60%, 70%)`;
+            audioPlayer.play();
+            isPlaying = true;
+            document.getElementById('playBtn').innerText = "||";
         }
+
         function togglePlay() {
-            if(audio.src) { isPlaying ? audio.pause() : audio.play(); isPlaying = !isPlaying; updatePlayBtn(); }
+            if(audioPlayer.src) {
+                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
+                isPlaying = !isPlaying;
+                document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶";
+            }
         }
-        function updatePlayBtn() { document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶"; }
 
         // --- 頁面切換 ---
         function switchPage(pid) {
-            document.querySelectorAll('.page-section').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+pid).classList.add('active');
-            // Nav 狀態
-            document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-item, .mobile-nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('nav-'+pid)) document.getElementById('nav-'+pid).classList.add('active');
-            // 手機版也要亮
-            // (略: 簡單處理)
         }
-        
+
+        function handleSearch(val) {
+            const res = musicLibrary.filter(s => s.title.toLowerCase().includes(val.toLowerCase()) || s.artist.toLowerCase().includes(val.toLowerCase()));
+            renderCards('search-grid', res);
+        }
+
+        // --- 設定與主題 (藥丸按鈕) ---
         function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
-        function handleLogout() { localStorage.removeItem('astra_user'); location.reload(); }
-        function toggleTheme() {
-            if(document.getElementById('theme-toggle').checked) {
-                document.body.setAttribute('data-theme','dark'); localStorage.setItem('astra_theme','dark');
+
+        function toggleThemePill() {
+            const pill = document.getElementById('theme-pill');
+            const isDark = pill.getAttribute('data-state') === 'dark';
+            updateThemeUI(isDark ? 'light' : 'dark');
+        }
+
+        function updateThemeUI(theme) {
+            const pill = document.getElementById('theme-pill');
+            const pLight = document.getElementById('pill-light');
+            const pDark = document.getElementById('pill-dark');
+            
+            if(theme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                pill.setAttribute('data-state', 'dark');
+                pLight.classList.remove('active');
+                pDark.classList.add('active');
+                localStorage.setItem('astra_theme', 'dark');
             } else {
-                document.body.removeAttribute('data-theme'); localStorage.setItem('astra_theme','light');
+                document.body.removeAttribute('data-theme');
+                pill.setAttribute('data-state', 'light');
+                pDark.classList.remove('active');
+                pLight.classList.add('active');
+                localStorage.setItem('astra_theme', 'light');
             }
         }
-        function checkUpdateLog() {
-             const last = localStorage.getItem('astra_version');
-             if(currentVersion !== '0.0.0' && last !== currentVersion) {
-                 showChangelog(); localStorage.setItem('astra_version', currentVersion);
-             }
-        }
+
+        // --- 日誌 ---
         function showChangelog() {
-            document.getElementById('changelog-list').innerHTML = updateLogs.map(l => `<h3>v${l.version}</h3><p>${l.date}</p><p>${l.content}</p><hr>`).join('');
+            // 這裡簡化讀取，實際應fetch json
+            document.getElementById('changelog-content').innerHTML = `
+                <div style="margin-bottom:20px;">
+                    <h3>v1.0.0</h3>
+                    <p style="color:var(--text-secondary)">2025-12-05</p>
+                    <p>全新首頁、使用者自定義資料庫上線。</p>
+                </div>
+            `;
             document.getElementById('changelog-modal').classList.add('active');
         }
+        function closeChangelog() { document.getElementById('changelog-modal').classList.remove('active'); }
+
     </script>
 </body>
 </html>
