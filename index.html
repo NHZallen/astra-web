@@ -185,6 +185,37 @@
         .horizontal-row::-webkit-scrollbar { display: none; }
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
+        /* --- Artist Detail Specific Styles (New) --- */
+        .artist-song-row {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 5px; /* space for hidden scrollbar to avoid cut-off */
+            scroll-snap-type: x mandatory;
+        }
+        .artist-song-row::-webkit-scrollbar { display: none; }
+        /* Make sure exactly 3 items fit in viewport with gaps */
+        .artist-song-row .music-card {
+            min-width: calc((100% - 24px) / 3); /* 24px = gap(12) * 2 */
+            width: calc((100% - 24px) / 3);
+            scroll-snap-align: start;
+            flex-shrink: 0;
+        }
+        
+        /* Artist Album Grid (Responsive) */
+        .artist-album-grid {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(2, 1fr); /* Mobile: 2 items per row */
+            margin-bottom: 30px;
+        }
+        @media (min-width: 769px) {
+            .artist-album-grid {
+                grid-template-columns: repeat(5, 1fr); /* Desktop: 5 items per row */
+            }
+        }
+
         /* Artist Card Styles (Search) */
         .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s; width: 120px; margin-right: 20px; flex-shrink: 0; }
         .artist-card:hover { transform: translateY(-4px); }
@@ -813,7 +844,7 @@
 
         // --- Detail Views Logic ---
 
-        // 1. Artist Detail: Shows Songs (List) TOP, then Albums (Grid) BOTTOM
+        // 1. Artist Detail: 3 Independent Rows for Songs, Grid for Albums
         function openArtistDetail(artistName) {
             currentPlaylistId = null; // Reset context
             const songs = musicLibrary.filter(s => s.artist === artistName);
@@ -826,14 +857,28 @@
             
             currentCollectionSongs = songs;
 
-            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3><div>`;
-            // Song List
-            html += songs.slice(0, 5).map(s => createSongRowHTML(s, false)).join(''); // Show top 5
+            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:20px;">熱門歌曲</h3>`;
+            
+            // Distribute songs into 3 independent rows equally
+            const rows = [[], [], []];
+            songs.forEach((song, index) => {
+                rows[index % 3].push(song);
+            });
+
+            // Render 3 independent horizontal rows
+            html += `<div class="artist-song-container">`;
+            rows.forEach(rowSongs => {
+                if(rowSongs.length > 0) {
+                    html += `<div class="artist-song-row">`;
+                    html += rowSongs.map(s => createSongCardHTML(s)).join(''); // Use Card HTML
+                    html += `</div>`;
+                }
+            });
             html += `</div>`;
 
-            // Album Grid
+            // Album Grid (2 per row mobile, 5 per row desktop)
             if (albums.length > 0) {
-                html += `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:30px;">專輯</h3><div class="grid-container">`;
+                html += `<h3 style="margin-bottom:15px; font-size:1.1rem; margin-top:30px;">專輯</h3><div class="artist-album-grid">`;
                 html += albums.map(album => `
                     <div class="music-card" onclick="openAlbumDetail('${album}')">
                         <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
@@ -939,7 +984,7 @@
             }
         }
 
-        // --- Modified: Render Playlists as Grid ---
+        // --- Render Playlists as Grid ---
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
