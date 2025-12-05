@@ -19,15 +19,14 @@
             --text-primary: #1D1D1F;
             --text-secondary: #86868B;
             --accent-color: #FA2D48;
-            --accent-color-hover: #D42038;
+            --accent-color-hover: #D41E36;
             --accent-color-light: rgba(250, 45, 72, 0.1);
             --divider: #E5E5E5;
-            --player-bg: rgba(255, 255, 255, 0.85);
+            --player-bg: rgba(255, 255, 255, 0.98);
             --modal-bg: #FFFFFF;
             --input-bg: #F0F0F0;
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
             --shadow-md: 0 12px 32px rgba(0,0,0,0.1);
-            --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
             --radius-lg: 24px;
             --radius-md: 16px;
             --safe-top: env(safe-area-inset-top, 20px);
@@ -44,12 +43,11 @@
             --text-secondary: #A1A1A6;
             --accent-color-light: rgba(250, 45, 72, 0.2);
             --divider: #333333;
-            --player-bg: rgba(28, 28, 30, 0.85);
+            --player-bg: rgba(28, 28, 30, 0.98);
             --modal-bg: #000000;
             --input-bg: #1C1C1E;
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
             --shadow-md: 0 12px 32px rgba(0,0,0,0.6);
-            --shadow-lg: 0 20px 50px rgba(0,0,0,0.8);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -62,115 +60,129 @@
         
         .hidden { display: none !important; }
         .icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        .input-style { width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none; font-size: 1rem; transition: 0.2s; }
-        .input-style:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px var(--accent-color-light); }
-        .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition: 0.2s; font-size: 1rem; }
-        .btn-primary:hover { background: var(--accent-color-hover); transform: scale(1.02); }
+        .input-style { width:100%; padding:14px; margin-bottom:12px; border-radius:12px; border:1px solid var(--divider); background:var(--input-bg); color:var(--text-primary); outline:none; font-size: 1rem; }
+        .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition: 0.2s; }
         .btn-primary:active { transform: scale(0.98); }
         
-        /* --- Landing Page (Rich Design) --- */
+        /* --- Landing Page (Rich Version) --- */
         #landing-page {
-            height: 100vh; overflow-y: auto; overflow-x: hidden; position: relative; z-index: 2000;
-            background: #000; /* Fallback */
-            color: #fff;
-            scroll-behavior: smooth;
-        }
-
-        /* Dynamic Animated Background */
-        .landing-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1a0b16);
+            height: 100vh; overflow-y: auto; overflow-x: hidden; z-index: 2000; position: relative;
+            scroll-behavior: smooth; 
+            /* 動態漸層背景 */
+            background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #FA2D48);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
+            color: #ffffff;
         }
-        .landing-blob {
-            position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.6;
-            animation: floatBlob 10s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
-        }
-        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: #fa2d48; animation-duration: 25s; }
-        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: #4f46e5; animation-duration: 30s; animation-direction: alternate-reverse; }
-        .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: #c026d3; animation-duration: 20s; opacity: 0.4; }
 
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes floatBlob { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(30px, 50px) scale(1.1); } }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 漂浮裝飾 */
+        .floating-shape {
+            position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.6; z-index: 0;
+            animation: float 10s infinite ease-in-out;
+        }
+        .shape-1 { top: -10%; left: -10%; width: 300px; height: 300px; background: #FA2D48; animation-delay: 0s; }
+        .shape-2 { bottom: 10%; right: -5%; width: 400px; height: 400px; background: #4a00e0; animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 50px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .lp-content-wrapper { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; }
 
         .lp-nav {
             position: fixed; top: 0; width: 100%; padding: 20px 40px; padding-top: calc(20px + var(--safe-top));
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
             z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
+        
         .lp-hero { 
-            min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; 
-            padding-top: 80px;
+            min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; padding: 20px; 
         }
         
         .lp-title { 
-            font-size: clamp(3rem, 8vw, 6rem); line-height: 1.1; font-weight: 900; margin-bottom: 25px; 
-            opacity: 0; animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards; letter-spacing: -2px;
-            background: linear-gradient(to right, #fff, #babbc0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 4.5rem; font-weight: 800; margin-bottom: 20px; line-height: 1.1; letter-spacing: -1px;
+            opacity: 0; animation: fadeUp 1s ease forwards; text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #fff, #f0f0f0); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         
         .lp-subtitle {
-            font-size: clamp(1.1rem, 2vw, 1.5rem); color: rgba(255,255,255,0.8); max-width: 600px; margin-bottom: 40px;
-            opacity: 0; animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.4s forwards; line-height: 1.6;
+            font-size: 1.2rem; color: rgba(255,255,255,0.8); max-width: 600px; margin-bottom: 40px;
+            opacity: 0; animation: fadeUp 1s ease 0.3s forwards;
         }
 
         .lp-btn { 
-            padding: 18px 48px; background: var(--accent-color); color: white; border-radius: 50px; 
-            border: none; font-size: 1.1rem; font-weight: bold; cursor: pointer; 
-            opacity: 0; animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.6s forwards; 
-            box-shadow: 0 10px 40px rgba(250, 45, 72, 0.4); transition: 0.3s;
+            padding: 16px 45px; background: #FA2D48; color: white; border-radius: 50px; border: none; 
+            font-size: 1.1rem; font-weight: bold; cursor: pointer; opacity: 0; 
+            animation: fadeUp 1s ease 0.5s forwards; box-shadow: 0 10px 30px rgba(250, 45, 72, 0.4); 
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .lp-btn:hover { transform: translateY(-3px); box-shadow: 0 15px 50px rgba(250, 45, 72, 0.6); background: #ff405a; }
+        .lp-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(250, 45, 72, 0.6); }
+
+        .lp-btn-outline {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px);
+            margin-left: 15px; box-shadow: none;
+        }
+        .lp-btn-outline:hover { background: rgba(255,255,255,0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
 
         .lp-features { 
-            padding: 100px 20px; max-width: 1200px; margin: 0 auto; 
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; 
+            padding: 80px 20px; max-width: 1100px; margin: 0 auto; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; 
         }
         
         .feature-card { 
-            padding: 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 30px; opacity: 0; transform: translateY(30px); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); 
-            backdrop-filter: blur(10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        .feature-card:hover { transform: translateY(-10px); background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
-        .feature-card h3 { font-size: 1.5rem; margin-bottom: 15px; color: #fff; }
-        .feature-card p { color: rgba(255,255,255,0.6); line-height: 1.6; }
-        .feature-card.visible { opacity: 1; transform: translateY(0); }
-        
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- Login Modal (Glassmorphism) --- */
-        #login-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500;
-            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; 
+            padding: 40px 30px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px; 
+            opacity: 0; transform: translateY(30px); transition: 0.6s; 
+            text-align: left;
+        }
+        .feature-card:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
+        .feature-card.visible { opacity: 1; transform: translateY(0); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 768px) {
+            .lp-title { font-size: 3rem; }
+            .shape-1, .shape-2 { width: 200px; height: 200px; }
+        }
+
+        /* --- Login Modal --- */
+        #login-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2500;
+            display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; 
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
         #login-modal.active { opacity: 1; pointer-events: auto; }
         .login-box {
-            background: rgba(255,255,255,0.8); width: 85%; max-width: 400px; padding: 40px; 
-            border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.5);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3); transform: scale(0.95) translateY(20px); transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--card-bg); width: 85%; max-width: 380px; padding: 40px 30px; border-radius: var(--radius-lg); text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2); transform: scale(0.9); transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        [data-theme="dark"] .login-box { background: rgba(30,30,30,0.8); border: 1px solid rgba(255,255,255,0.1); }
-        #login-modal.active .login-box { transform: scale(1) translateY(0); }
+        #login-modal.active .login-box { transform: scale(1); }
 
         /* --- App Interface --- */
         #app-view { display: flex; height: 100vh; width: 100%; }
 
-        /* Sidebar Fix: Added white-space and flex alignment */
+        /* Sidebar (Fixed Issue) */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top));
             display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0;
         }
         .sidebar-logo { 
-            font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); 
-            padding-left: 10px; display: flex; align-items: center; 
-            white-space: nowrap; /* 修正換行問題 */
-            overflow: hidden; text-overflow: ellipsis;
+            font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); padding-left: 20px; 
+            /* 修正換行問題的核心代碼 */
+            display: flex; align-items: center; white-space: nowrap; overflow: hidden;
         }
         .nav-item { 
             padding: 14px 20px; color: var(--text-secondary); font-weight: 600; cursor: pointer; 
@@ -178,7 +190,7 @@
         }
         .nav-item:hover { color: var(--text-primary); background: rgba(0,0,0,0.03); }
         .nav-item.active { background: var(--accent-color); color: white; box-shadow: 0 4px 15px var(--accent-color-light); }
-        .nav-item svg { margin-right: 12px; min-width: 24px; } /* 防止 icon 被壓縮 */
+        .nav-item svg { margin-right: 12px; flex-shrink: 0; }
 
         .main-content { 
             flex: 1; overflow-y: auto; position: relative; display: flex; flex-direction: column;
@@ -191,17 +203,16 @@
             padding: 0 30px; padding-top: var(--safe-top); display: flex; justify-content: space-between; align-items: center;
             z-index: 90; background: var(--bg-color); border-bottom: 1px solid transparent; transition: 0.3s;
         }
-        .content-header.scrolled { background: rgba(255,255,255,0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--divider); }
+        .content-header.scrolled { background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--divider); }
         [data-theme="dark"] .content-header.scrolled { background: rgba(0,0,0,0.8); }
-        .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.5px; }
+        .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
         .user-profile-btn {
-            width: 42px; height: 42px; border-radius: 50%; background: #eee; cursor: pointer;
+            width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer;
             background-size: cover; background-position: center; transition: 0.2s;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg);
         }
-        .user-profile-btn:hover { transform: scale(1.05); }
 
-        .page-section { padding: 20px 30px 120px 30px; display: none; animation: fadeIn 0.4s ease; }
+        .page-section { padding: 20px 30px 120px 30px; display: none; animation: fadeIn 0.3s ease; }
         .page-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -209,7 +220,7 @@
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown {
             position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg);
-            border-radius: 12px; box-shadow: var(--shadow-lg); z-index: 20; display: none; 
+            border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; 
             border: 1px solid var(--divider); max-height: 300px; overflow-y: auto;
         }
         .search-history-dropdown.active { display: block; }
@@ -218,76 +229,66 @@
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; margin-top: 30px; color: var(--text-primary); }
 
         /* Cards */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 24px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
-        .music-card:hover { transform: translateY(-6px); }
+        .music-card:hover { transform: translateY(-4px); }
         .cover-art {
-            width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 12px;
+            width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px;
             background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center;
             box-shadow: var(--shadow-sm); position: relative; overflow: hidden; background-size: cover; background-position: center;
-            transition: box-shadow 0.3s;
         }
-        .music-card:hover .cover-art { box-shadow: var(--shadow-md); }
         [data-theme="dark"] .cover-art { background: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
-        
         .add-btn {
-            position: absolute; bottom: 10px; right: 10px; width: 36px; height: 36px; background: rgba(255,255,255,0.9); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            opacity: 0; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5; color: black;
+            position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0; transition: 0.2s; z-index: 5; color: black;
         }
-        .music-card:hover .add-btn { opacity: 1; transform: scale(1); }
-        .add-btn:hover { background: var(--accent-color); color: white; }
+        .music-card:hover .add-btn { opacity: 1; }
 
         .artist-card { text-align: center; cursor: pointer; transition: 0.3s; }
-        .artist-card:hover { transform: translateY(-5px); }
-        .artist-img { width: 150px; height: 150px; border-radius: 50%; background: #eee; margin: 0 auto 15px; background-size: cover; background-position: center; box-shadow: var(--shadow-sm); border: 4px solid var(--card-bg); transition: 0.3s; }
-        .artist-card:hover .artist-img { box-shadow: var(--shadow-md); border-color: var(--accent-color-light); }
+        .artist-card:hover { opacity: 0.8; }
+        .artist-img { width: 140px; height: 140px; border-radius: 50%; background: #eee; margin: 0 auto 10px; background-size: cover; background-position: center; box-shadow: var(--shadow-sm); }
         
         .playlist-row {
-            display: flex; align-items: center; padding: 16px; background: var(--card-bg); border-radius: var(--radius-md);
-            margin-bottom: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; box-shadow: var(--shadow-sm);
+            display: flex; align-items: center; padding: 12px; background: var(--card-bg); border-radius: var(--radius-md);
+            margin-bottom: 12px; cursor: pointer; transition: 0.2s; border: 1px solid transparent;
         }
-        .playlist-row:hover { border-color: var(--accent-color); transform: scale(1.01); box-shadow: var(--shadow-md); }
-        .playlist-cover-small { width: 60px; height: 60px; border-radius: 12px; margin-right: 20px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; }
+        .playlist-row:hover { border-color: var(--accent-color); background: var(--input-bg); }
+        .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-        /* --- Player Bar --- */
+        /* --- Player Bar (Top Priority) --- */
         .player-bar {
-            position: fixed; height: 90px; background: var(--player-bg); 
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255,255,255,0.1); 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 30px; 
-            z-index: 2000;
+            position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
+            z-index: 2000; /* 最高層級 */
             transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom);
             transform: translateY(200%); opacity: 0;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
         }
-        [data-theme="dark"] .player-bar { border-top: 1px solid rgba(255,255,255,0.05); }
         .player-bar.active { transform: translateY(0); opacity: 1; }
 
         @media (min-width: 769px) { 
-            .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding-bottom: 0; }
+            .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; }
         }
 
         /* Fullscreen Modal */
         .fullscreen-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 300;
-            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1); display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column;
             padding-top: var(--safe-top);
         }
         .fullscreen-modal.active { transform: translateY(0); }
-        .modal-nav { padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 120px; }
+        .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
+        .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
 
         .profile-avatar-large {
-            width: 130px; height: 130px; border-radius: 50%; background: #eee; margin: 0 auto 20px;
-            background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 5px solid var(--card-bg); position: relative;
+            width: 120px; height: 120px; border-radius: 50%; background: #eee; margin: 0 auto 15px;
+            background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 4px solid var(--card-bg); position: relative;
         }
         .camera-icon-badge {
-            position: absolute; bottom: 5px; right: 5px; width: 40px; height: 40px;
+            position: absolute; bottom: 0; right: 0; width: 36px; height: 36px;
             background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            color: white; border: 4px solid var(--card-bg); cursor: pointer; transition: 0.2s;
+            color: white; border: 3px solid var(--card-bg); cursor: pointer;
         }
-        .camera-icon-badge:hover { transform: scale(1.1); }
 
         /* Mobile Navigation */
         .mobile-nav { display: none; }
@@ -299,9 +300,7 @@
                 display: flex; position: fixed; bottom: 0; left: 0; width: 100%; height: calc(var(--mobile-nav-height) + var(--safe-bottom));
                 background: var(--modal-bg); border-top: 1px solid var(--divider); z-index: 120; 
                 justify-content: space-around; padding-bottom: var(--safe-bottom); align-items: center;
-                backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: rgba(255,255,255,0.85);
             }
-            [data-theme="dark"] .mobile-nav { background: rgba(20,20,20,0.85); }
             .mobile-nav-item {
                 position: relative; color: var(--text-secondary); display: flex; flex-direction: column; 
                 align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 500;
@@ -309,7 +308,7 @@
             }
             .mobile-nav-item::before {
                 content: ''; position: absolute; top: 5px; left: 50%; transform: translateX(-50%) scale(0);
-                width: 50px; height: 32px; background: var(--accent-color-light);
+                width: 45px; height: 32px; background: var(--accent-color-light);
                 border-radius: 20px; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: -1;
             }
             .mobile-nav-item.active { color: var(--accent-color); font-weight: 700; }
@@ -317,96 +316,85 @@
             
             .player-bar {
                 bottom: calc(var(--mobile-nav-height) + var(--safe-bottom) + 12px); 
-                left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 20px; height: 64px; padding: 0 15px; padding-bottom:0;
-                box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+                left: 50%; transform: translateX(-50%) translateY(200%); width: 92%; border-radius: 18px; height: 60px; padding: 0 15px; padding-bottom:0;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             }
             .player-bar.active { transform: translateX(-50%) translateY(0); opacity: 1; }
             .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
             .page-section { padding: 10px 20px 120px 20px; }
-            
-            /* Mobile Landing Page Tweaks */
-            .lp-title { font-size: 3rem; }
-            .lp-nav { padding: 15px 20px; }
-            .lp-features { gap: 20px; padding: 60px 20px; }
-            .feature-card { padding: 25px; }
         }
 
-        /* Toggle & Misc */
-        .pill-toggle { background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer; width: 200px; height: 44px; }
-        .pill-bg { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: 36px; background: var(--bg-color); border-radius: 20px; transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .pill-toggle { background: var(--input-bg); padding: 4px; border-radius: 30px; display: inline-flex; position: relative; cursor: pointer; width: 200px; height: 40px; }
+        .pill-bg { position: absolute; top: 4px; left: 4px; width: calc(50% - 4px); height: 32px; background: var(--bg-color); border-radius: 20px; transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .pill-toggle[data-state="dark"] .pill-bg { transform: translateX(100%); }
-        .pill-option { flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; font-weight: 600; color: var(--text-secondary); transition: 0.3s; }
+        .pill-option { flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
         .pill-option.active { color: var(--text-primary); }
+        .log-item { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid var(--divider); }
+        .log-ver { display: inline-block; background: var(--accent-color); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- Landing Page (Redesigned) -->
+    <!-- Landing Page (Upgraded) -->
     <section id="landing-page">
-        <div class="landing-bg">
-            <div class="landing-blob blob-1"></div>
-            <div class="landing-blob blob-2"></div>
-            <div class="landing-blob blob-3"></div>
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        
+        <div class="lp-content-wrapper">
+            <nav class="lp-nav">
+                <div style="font-weight: 800; font-size: 1.5rem; letter-spacing: 1px;">ASTRA</div>
+                <button class="lp-btn" style="padding:10px 24px; font-size:0.9rem; opacity:1; animation:none; background:rgba(255,255,255,0.2); backdrop-filter:blur(5px); box-shadow:none; border:1px solid rgba(255,255,255,0.3);" onclick="openLoginModal()">登入</button>
+            </nav>
+            <div class="lp-hero">
+                <h1 class="lp-title">探索<br>無限音頻宇宙</h1>
+                <p class="lp-subtitle">建立您的專屬資料庫，體驗無損音質與無縫跨平台同步的極致享受。</p>
+                <div>
+                    <button class="lp-btn" onclick="openLoginModal()">立即開始體驗</button>
+                    <button class="lp-btn lp-btn-outline" onclick="document.querySelector('.lp-features').scrollIntoView({behavior:'smooth'})">了解更多</button>
+                </div>
+            </div>
+            <div class="lp-features">
+                <div class="feature-card visible">
+                    <span class="feature-icon">🎧</span>
+                    <h3 style="margin-bottom:10px; font-size:1.4rem;">無損音質</h3>
+                    <p style="color:rgba(255,255,255,0.7); line-height:1.6;">還原錄音室等級的聽覺饗宴，每一個細節都清晰可見，讓您沉浸在純粹的音樂中。</p>
+                </div>
+                <div class="feature-card visible" style="transition-delay: 0.2s;">
+                    <span class="feature-icon">📂</span>
+                    <h3 style="margin-bottom:10px; font-size:1.4rem;">雲端資料庫</h3>
+                    <p style="color:rgba(255,255,255,0.7); line-height:1.6;">採用先進的 IndexedDB 技術儲存，您的播放清單與偏好設定將永久保存，不隨裝置遺失。</p>
+                </div>
+                <div class="feature-card visible" style="transition-delay: 0.4s;">
+                    <span class="feature-icon">📱</span>
+                    <h3 style="margin-bottom:10px; font-size:1.4rem;">跨平台同步</h3>
+                    <p style="color:rgba(255,255,255,0.7); line-height:1.6;">無論是手機、平板還是電腦，登入即可無縫接續播放，音樂隨身帶著走。</p>
+                </div>
+            </div>
+            <div style="text-align:center; padding:40px; color:rgba(255,255,255,0.5); font-size:0.8rem; z-index:2;">
+                &copy; 2025 ASTRA Music. All Rights Reserved.
+            </div>
         </div>
-        
-        <nav class="lp-nav">
-            <div style="display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.2rem;">
-                <img src="./images/logo.png" style="height: 36px; width: auto;">
-                <span>ASTRA Music</span>
-            </div>
-            <button class="lp-btn" style="padding:10px 24px; font-size:0.9rem; opacity:1; animation:none; background:rgba(255,255,255,0.2); backdrop-filter:blur(10px);" onclick="openLoginModal()">登入</button>
-        </nav>
-        
-        <div class="lp-hero">
-            <h1 class="lp-title">感受<br>音樂的維度</h1>
-            <p class="lp-subtitle">超越傳統串流體驗。無損音質、雲端同步、極致流暢。<br>您的專屬音樂宇宙，由此展開。</p>
-            <button class="lp-btn" onclick="openLoginModal()">立即開始體驗</button>
-        </div>
-        
-        <div class="lp-features">
-            <div class="feature-card">
-                <div style="font-size:3rem; margin-bottom:20px;">🎧</div>
-                <h3>無損音質</h3>
-                <p>支援高解析度音訊格式，還原錄音室等級的細節，讓每一個音符都觸動心弦。</p>
-            </div>
-            <div class="feature-card" style="transition-delay: 0.1s;">
-                <div style="font-size:3rem; margin-bottom:20px;">☁️</div>
-                <h3>私有雲端</h3>
-                <p>使用先進的 IndexedDB 技術與雲端同步，您的播放清單與偏好設定永遠跟隨您。</p>
-            </div>
-            <div class="feature-card" style="transition-delay: 0.2s;">
-                <div style="font-size:3rem; margin-bottom:20px;">⚡</div>
-                <h3>極致效能</h3>
-                <p>原生應用般的流暢體驗，零延遲切換歌曲，支援 iOS 媒體控制中心與鎖定畫面。</p>
-            </div>
-        </div>
-        
-        <footer style="text-align:center; padding:40px; color:rgba(255,255,255,0.4); font-size:0.85rem; border-top:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.2);">
-            &copy; 2025 ASTRA Music. All rights reserved.
-        </footer>
     </section>
 
     <!-- Login Modal -->
     <div id="login-modal">
         <div class="login-box">
-            <img src="./images/logo.png" style="height: 60px; margin-bottom: 20px;">
-            <h2 style="margin-bottom:10px; color:var(--text-primary);">歡迎回來</h2>
-            <p style="color:var(--text-secondary); margin-bottom:30px; font-size:0.9rem;">登入以存取您的音樂庫</p>
+            <h2 style="margin-bottom:10px; font-size:1.8rem;">歡迎回來</h2>
+            <p style="color:var(--text-secondary); margin-bottom:30px;">請輸入您的帳戶資訊以繼續</p>
             <form onsubmit="handleLogin(event)">
-                <input type="text" id="username" class="input-style" placeholder="用戶名" required autocomplete="off" style="background:rgba(0,0,0,0.05);">
-                <input type="password" id="password" class="input-style" placeholder="密碼 (預設: 123)" required style="background:rgba(0,0,0,0.05);">
-                <button type="submit" class="btn-primary" style="margin-top:10px; box-shadow: 0 5px 15px var(--accent-color-light);">登入 / 註冊</button>
+                <input type="text" id="username" class="input-style" placeholder="用戶名" required autocomplete="off" style="background:var(--input-bg);">
+                <input type="password" id="password" class="input-style" placeholder="密碼 (預設: 123)" required style="background:var(--input-bg);">
+                <button type="submit" class="btn-primary" style="margin-top:10px;">登入 / 註冊</button>
             </form>
-            <button onclick="closeLoginModal()" style="margin-top:20px; background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.9rem;">稍後再說</button>
+            <button onclick="closeLoginModal()" style="margin-top:20px; background:none; border:none; color:var(--text-secondary); cursor:pointer; font-size:0.9rem;">暫不登入</button>
         </div>
     </div>
 
     <!-- App View -->
     <section id="app-view" class="hidden">
         <nav class="sidebar">
-            <!-- 修正：加入 white-space: nowrap 防止換行 -->
             <div class="sidebar-logo">
-                <img src="./images/logo.png" style="height: 32px; width:auto; vertical-align: middle; margin-right: 12px;">
+                <img src="./images/logo.png" style="height: 40px; vertical-align: middle; margin-right: 12px; flex-shrink: 0;">
                 ASTRA Music
             </div>
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
@@ -424,13 +412,14 @@
 
             <!-- A. Home -->
             <div id="page-home" class="page-section active">
-                <div class="hero-banner" style="height:320px; border-radius:24px; background:linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%); display:flex; align-items:flex-end; padding:40px; margin-bottom:40px; color:white; box-shadow: 0 10px 30px rgba(132, 250, 176, 0.3); position:relative; overflow:hidden;">
-                    <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=2070&auto=format&fit=crop') no-repeat center/cover; opacity:0.3; mix-blend-mode:overlay;"></div>
+                <div class="hero-banner" style="height:300px; border-radius:24px; background:linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white; position:relative; overflow:hidden;">
                     <div style="position:relative; z-index:2;">
-                        <h1 style="font-size:3rem; margin-bottom:10px; font-weight:800; text-shadow:0 2px 10px rgba(0,0,0,0.2);">New Era.</h1>
-                        <p style="font-size:1.1rem; opacity:0.9;">BABYMONSTER 全新專輯現已上線</p>
-                        <button onclick="openAlbumDetail('New Era.')" style="margin-top:20px; padding:12px 30px; background:white; color:black; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.1); transition:0.2s;">立即播放</button>
+                        <span style="background:rgba(0,0,0,0.2); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:bold; backdrop-filter:blur(5px);">NEW RELEASE</span>
+                        <h1 style="font-size:2.8rem; margin:10px 0;">New Era.</h1>
+                        <p style="opacity:0.9;">BABYMONSTER 全新專輯</p>
+                        <button onclick="openAlbumDetail('WE GO UP-EP')" style="margin-top:15px; padding:12px 25px; background:white; color:black; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.2);">立即播放</button>
                     </div>
+                    <div style="position:absolute; right:-20px; bottom:-40px; font-size:15rem; opacity:0.1; font-weight:900; pointer-events:none;">BM</div>
                 </div>
                 <h2>為你推薦</h2>
                 <div class="grid-container" id="home-grid" style="margin-top:20px;"></div>
@@ -443,15 +432,13 @@
                     <div id="search-history-dropdown" class="search-history-dropdown"></div>
                 </div>
                 <div id="search-results-area">
-                    <div style="color:var(--text-secondary); text-align:center; padding-top:40px; opacity:0.6;">
-                        <svg class="icon" style="width:48px; height:48px; margin-bottom:10px;" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <p>輸入關鍵字並按下 Enter 搜尋</p>
-                    </div>
+                    <div style="color:var(--text-secondary); text-align:center; padding-top:20px;">輸入關鍵字並按下 Enter 搜尋</div>
                 </div>
             </div>
 
             <!-- C. Discovery -->
             <div id="page-discovery" class="page-section">
+                <h2 style="margin-bottom:20px;">最新發行</h2>
                 <div class="grid-container" id="discovery-grid"></div>
             </div>
 
@@ -459,7 +446,7 @@
             <div id="page-database" class="page-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <h2>我的播放清單</h2>
-                    <button onclick="openCreatePlaylistModal()" style="padding:10px 20px; background:var(--accent-color); color:white; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px var(--accent-color-light);">+ 新建清單</button>
+                    <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
                 </div>
                 <div id="playlists-container"></div>
             </div>
@@ -475,17 +462,17 @@
         </div>
 
         <footer class="player-bar" id="player-bar">
-            <div style="display:flex; align-items:center; width: 60%; overflow:hidden;">
-                <div id="p-thumb" style="width:54px; height:54px; background:#ccc; border-radius:12px; margin-right:15px; background-size:cover; flex-shrink:0;"></div>
-                <div style="overflow:hidden; mask-image: linear-gradient(to right, black 80%, transparent 100%);">
-                    <h4 id="p-title" style="margin:0; font-size:1rem; white-space:nowrap;">未播放</h4>
-                    <p id="p-artist" style="margin:0; font-size:0.8rem; color:var(--text-secondary);">ASTRA</p>
+            <div style="display:flex; align-items:center; width: 55%;">
+                <div id="p-thumb" style="width:48px; height:48px; background:#ccc; border-radius:10px; margin-right:12px; background-size:cover;"></div>
+                <div style="overflow:hidden;">
+                    <h4 id="p-title" style="margin:0; font-size:0.9rem; white-space:nowrap;">未播放</h4>
+                    <p id="p-artist" style="margin:0; font-size:0.75rem; color:var(--text-secondary);">ASTRA</p>
                 </div>
             </div>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <button onclick="togglePlay()" id="playBtn" style="width:48px; height:48px; border-radius:50%; background:var(--text-primary); color:var(--bg-color); border:none; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15);">▶</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button onclick="togglePlay()" id="playBtn" style="width:40px; height:40px; border-radius:50%; background:var(--text-primary); color:var(--bg-color); border:none; cursor:pointer; font-size:1.2rem;">▶</button>
                 <button onclick="playNext()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">
-                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="currentColor"><path d="M5 4l10 8-10 8V4z"></path><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                    <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="currentColor"><path d="M5 4l10 8-10 8V4z"></path><line x1="19" y1="5" x2="19" y2="19"></line></svg>
                 </button>
             </div>
         </footer>
@@ -493,15 +480,15 @@
 
     <!-- Modals (Profile, Settings, etc.) -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
-        <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer; font-weight:600;">關閉</button></div>
+        <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button></div>
         <div class="modal-body">
             <div class="profile-header">
                 <input type="file" id="profile-upload" accept="image/*" style="display:none;" onchange="handleProfileUpload(this)">
                 <div id="profile-preview-large" class="profile-avatar-large" onclick="document.getElementById('profile-upload').click()">
-                    <div class="camera-icon-badge"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                    <div class="camera-icon-badge"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
                 </div>
-                <h2 id="profile-username-display" style="margin-bottom:10px;">User</h2>
-                <button onclick="document.getElementById('profile-upload').click()" style="margin-bottom:30px; padding:8px 20px; font-size:0.9rem; background:var(--input-bg); border:none; border-radius:20px; cursor:pointer; color:var(--text-primary); font-weight:600;">更換頭像</button>
+                <h2 id="profile-username-display">User</h2>
+                <button onclick="document.getElementById('profile-upload').click()" style="margin-top:10px; padding:6px 16px; font-size:0.85rem; background:var(--input-bg); border:none; border-radius:15px; cursor:pointer; color:var(--text-primary);">更換頭像</button>
             </div>
             <div style="margin-bottom:30px;"><input type="text" id="edit-username" class="input-style" placeholder="新使用者名稱"><button class="btn-primary" onclick="updateUsername()">更新名稱</button></div>
             <div style="margin-bottom:30px; border-top:1px solid var(--divider); padding-top:20px;"><input type="password" id="old-password" class="input-style" placeholder="舊密碼"><input type="password" id="new-password" class="input-style" placeholder="新密碼"><button class="btn-primary" style="background:#333;" onclick="updatePassword()">更新密碼</button></div>
@@ -509,11 +496,11 @@
     </div>
 
     <div id="settings-modal" class="fullscreen-modal">
-        <div class="modal-nav"><h2>設定</h2><button onclick="closeSettings()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer; font-weight:600;">完成</button></div>
+        <div class="modal-nav"><h2>設定</h2><button onclick="closeSettings()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">完成</button></div>
         <div class="modal-body">
-            <div style="margin-bottom:30px;"><p style="margin-bottom:15px; font-weight:700;">外觀主題</p><div class="pill-toggle" id="theme-pill" onclick="toggleThemePill()"><div class="pill-bg"></div><div class="pill-option active" id="pill-light">淺色</div><div class="pill-option" id="pill-dark">深色</div></div></div>
+            <div style="margin-bottom:30px;"><p style="margin-bottom:10px; font-weight:600;">外觀主題</p><div class="pill-toggle" id="theme-pill" onclick="toggleThemePill()"><div class="pill-bg"></div><div class="pill-option active" id="pill-light">淺色</div><div class="pill-option" id="pill-dark">深色</div></div></div>
             <div style="padding:20px 0; border-bottom:1px solid var(--divider); cursor:pointer;" onclick="showChangelog()"><div style="display:flex; justify-content:space-between;"><span>更新日誌</span><span style="color:var(--text-secondary);" id="setting-ver">v1.1.0 ></span></div></div>
-            <button onclick="handleLogout()" style="margin-top:40px; width:100%; padding:15px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px var(--accent-color-light);">登出系統</button>
+            <button onclick="handleLogout()" style="margin-top:40px; width:100%; padding:15px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">登出系統</button>
         </div>
     </div>
 
@@ -522,22 +509,22 @@
         <div class="modal-body" id="changelog-content"></div>
     </div>
 
-    <div id="select-playlist-modal" class="fullscreen-modal" style="z-index:320; background:rgba(0,0,0,0.6); backdrop-filter:blur(15px);">
-        <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px; box-shadow:var(--shadow-lg);">
+    <div id="select-playlist-modal" class="fullscreen-modal" style="z-index:320; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
+        <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px;">
             <h3 style="margin-bottom:20px;">添加到播放清單</h3>
             <div id="playlist-selector-list" style="max-height:300px; overflow-y:auto;"></div>
-            <button onclick="closePlaylistSelector()" style="width:100%; padding:12px; margin-top:20px; background:var(--input-bg); border:none; border-radius:12px; cursor:pointer; color:var(--text-primary); font-weight:bold;">取消</button>
+            <button onclick="closePlaylistSelector()" style="width:100%; padding:12px; margin-top:20px; background:var(--input-bg); border:none; border-radius:12px; cursor:pointer; color:var(--text-primary);">取消</button>
         </div>
     </div>
 
-    <div id="create-playlist-modal" class="fullscreen-modal" style="z-index:330; background:rgba(0,0,0,0.6); backdrop-filter:blur(15px);">
-        <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px; box-shadow:var(--shadow-lg);">
+    <div id="create-playlist-modal" class="fullscreen-modal" style="z-index:330; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
+        <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px;">
             <h3 style="margin-bottom:20px;">建立新清單</h3>
             <input type="text" id="new-playlist-name" class="input-style" placeholder="清單名稱">
             <div style="margin-bottom:20px;">
                 <p style="margin-bottom:8px; font-size:0.9rem; color:var(--text-secondary);">封面圖片 (選填)</p>
                 <input type="file" id="new-playlist-img" accept="image/*" style="display:none;" onchange="previewImage(this)">
-                <div onclick="document.getElementById('new-playlist-img').click()" id="img-preview" style="width:120px; height:120px; background:var(--input-bg); border-radius:16px; display:flex; align-items:center; justify-content:center; cursor:pointer; background-size:cover; background-position:center; margin:0 auto;"><span style="font-size:2rem; color:var(--text-secondary);">+</span></div>
+                <div onclick="document.getElementById('new-playlist-img').click()" id="img-preview" style="width:100px; height:100px; background:var(--input-bg); border-radius:12px; display:flex; align-items:center; justify-content:center; cursor:pointer; background-size:cover; background-position:center;"><span style="font-size:2rem; color:var(--text-secondary);">+</span></div>
             </div>
             <button onclick="confirmCreatePlaylist()" class="btn-primary">建立</button>
             <button onclick="closeCreatePlaylistModal()" style="width:100%; margin-top:10px; padding:10px; background:none; border:none; color:var(--text-secondary); cursor:pointer;">取消</button>
@@ -547,18 +534,18 @@
     <!-- Collection Detail Modal (Artist/Album/Playlist) -->
     <div id="collection-detail-modal" class="fullscreen-modal" style="z-index:305;">
         <div class="modal-nav">
-            <button onclick="closeCollectionDetail()" style="background:var(--input-bg); border:none; width:40px; height:40px; border-radius:50%; font-size:1.2rem; cursor:pointer; color:var(--text-primary); display:flex; align-items:center; justify-content:center;">←</button>
-            <h2 id="cd-nav-title" style="font-size:1.1rem; opacity:0.8;">Title</h2>
-            <div style="width:40px;"></div>
+            <button onclick="closeCollectionDetail()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">←</button>
+            <h2 id="cd-nav-title" style="font-size:1.2rem;">Title</h2>
+            <div style="width:30px;"></div>
         </div>
         <div class="modal-body">
-            <div style="text-align:center; margin-bottom:40px;">
-                <div id="cd-cover" style="width:200px; height:200px; margin:0 auto 25px; border-radius:24px; background:#eee; background-size:cover; background-position:center; box-shadow:var(--shadow-lg);"></div>
-                <h1 id="cd-title" style="font-size:2rem; margin-bottom:8px; font-weight:800;">Name</h1>
-                <p id="cd-subtitle" style="color:var(--text-secondary); font-size:1rem;">Subtitle</p>
-                <button onclick="playCollectionAll()" style="margin-top:25px; padding:14px 50px; background:var(--accent-color); color:white; border-radius:40px; border:none; font-weight:bold; cursor:pointer; box-shadow:0 8px 20px var(--accent-color-light); font-size:1.1rem; transition:0.2s;">播放全部</button>
+            <div style="text-align:center; margin-bottom:30px;">
+                <div id="cd-cover" style="width:180px; height:180px; margin:0 auto 20px; border-radius:20px; background:#eee; background-size:cover; background-position:center; box-shadow:var(--shadow-md);"></div>
+                <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
+                <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
+                <button onclick="playCollectionAll()" style="margin-top:20px; padding:12px 40px; background:var(--accent-color); color:white; border-radius:30px; border:none; font-weight:bold; cursor:pointer;">播放全部</button>
             </div>
-            <h3 style="margin-bottom:20px; font-size:1.2rem; font-weight:bold;">歌曲列表</h3>
+            <h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>
             <div id="cd-songs-list"></div>
         </div>
     </div>
@@ -566,13 +553,19 @@
     <audio id="audio-player"></audio>
 
     <script>
-        // --- 1. 定義歌手與專輯圖片對照表 ---
+        // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
+        // 請在這裡填入圖片連結 (GitHub Pages 連結或外部網址)
+        // 範例: "BABYMONSTER": "./images/artist_bm.jpg"
+        
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
         };
+
         const albumImages = {
             "WE GO UP-EP": "./images/albums/we_go_up_ep.jpg"
         };
+
+        // 預設圖片 (當找不到對應圖片時顯示)
         const DEFAULT_ARTIST_IMG = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
         const DEFAULT_ALBUM_IMG = "https://cdn-icons-png.flaticon.com/512/3208/3208703.png";
 
@@ -585,11 +578,40 @@
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
         // --- Music Data ---
+        // cover 欄位現在如果留空，程式會嘗試自動去對應 albumImages，如果也沒有才用預設
         const musicLibrary = [
-            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
-            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
-            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
-            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
+            { 
+                id: 1, 
+                title: "WE GO UP", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song1.mp3",
+                cover: ""
+            },
+            { 
+                id: 2, 
+                title: "PSYCHO", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song2.mp3",
+                cover: ""
+            },
+            { 
+                id: 3, 
+                title: "SUPA DUPA LUV", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song3.mp3",
+                cover: ""
+            },
+            { 
+                id: 4, 
+                title: "WILD", 
+                artist: "BABYMONSTER", 
+                album: "WE GO UP-EP", 
+                filename: "song4.mp3",
+                cover: ""
+            },
         ];
         
         let currentUserData = null; 
@@ -601,23 +623,6 @@
 
         // --- Init ---
         window.onload = async function() {
-            // Animate landing elements on load if staying on landing page
-            setTimeout(() => {
-                const els = document.querySelectorAll('.lp-title, .lp-subtitle, .lp-btn');
-                els.forEach(el => el.style.animationPlayState = 'running');
-                
-                // Stagger features
-                const features = document.querySelectorAll('.feature-card');
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if(entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                        }
-                    });
-                }, { threshold: 0.1 });
-                features.forEach(f => observer.observe(f));
-            }, 100);
-
             const sessionUser = localStorage.getItem('current_session_user');
             if(sessionUser) {
                 currentUserData = await getUserFromDB(sessionUser);
@@ -629,10 +634,15 @@
                 } else localStorage.removeItem('current_session_user');
             }
             
+            // --- 播放器事件監聽 (關鍵修正) ---
             const player = document.getElementById('audio-player');
-            player.addEventListener('ended', playNext); 
+            player.addEventListener('ended', playNext); // 自動下一首
+            
+            // 監聽時間更新，同步給 iOS 系統
             if ('mediaSession' in navigator) {
+                // 當歌曲載入完成，告訴系統總長度
                 player.addEventListener('loadedmetadata', updateIOSPositionState);
+                // 當播放/暫停/跳轉時，更新系統狀態
                 player.addEventListener('play', updateIOSPositionState);
                 player.addEventListener('pause', updateIOSPositionState);
                 player.addEventListener('ratechange', updateIOSPositionState);
@@ -692,7 +702,7 @@
             else header.classList.remove('scrolled');
         }
 
-        // --- Player Logic ---
+        // --- Player Logic (大幅優化 iOS 支援) ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
 
@@ -716,7 +726,7 @@
                     isPlaying = true;
                     updatePlayBtn();
                     document.getElementById('player-bar').classList.add('active');
-                    setupMediaSession(song, coverImage);
+                    setupMediaSession(song, coverImage); // 設定鎖定畫面
                 })
                 .catch(err => console.log("播放被阻擋:", err));
         }
@@ -730,9 +740,7 @@
         }
 
         function updatePlayBtn() {
-            document.getElementById('playBtn').innerHTML = isPlaying ? 
-                '<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>' : 
-                '▶';
+            document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶";
         }
 
         function playNext() {
@@ -747,27 +755,35 @@
             }
         }
 
+        // --- 核心：iOS 鎖定畫面與進度條控制 ---
         function setupMediaSession(song, coverImage) {
             if ('mediaSession' in navigator) {
+                // 1. 設定基本資訊 (標題、封面)
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
                     artist: song.artist,
                     album: song.album,
                     artwork: [{ src: coverImage, sizes: '512x512', type: 'image/png' }]
                 });
+
+                // 2. 設定按鈕動作
                 navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
+                
+                // 3. 關鍵：設定進度條拖曳 (Seek)
                 navigator.mediaSession.setActionHandler('seekto', (details) => {
                     if (details.seekTime || details.seekTime === 0) {
                         audioPlayer.currentTime = details.seekTime;
-                        updateIOSPositionState(); 
+                        updateIOSPositionState(); // 拖曳完馬上更新狀態
                     }
                 });
+                
                 updateIOSPositionState();
             }
         }
 
+        // 告訴 iOS 現在播到哪裡了
         function updateIOSPositionState() {
             if ('mediaSession' in navigator && audioPlayer.duration && !isNaN(audioPlayer.duration)) {
                 navigator.mediaSession.setPositionState({
@@ -783,7 +799,7 @@
             const history = currentUserData.search_history || [];
             const dropdown = document.getElementById('search-history-dropdown');
             if(history.length === 0) dropdown.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">無搜尋紀錄</div>';
-            else dropdown.innerHTML = history.map(item => `<div class="history-item" onclick="performSearch('${item}')"><span><span style="margin-right:8px;">🕒</span> ${item}</span><span onclick="deleteHistory(event, '${item}')" style="font-size:1.2rem;">×</span></div>`).join('');
+            else dropdown.innerHTML = history.map(item => `<div class="history-item" onclick="performSearch('${item}')"><span><span class="history-icon">🕒</span> ${item}</span><span onclick="deleteHistory(event, '${item}')" style="font-size:1.2rem;">×</span></div>`).join('');
             dropdown.classList.add('active');
         }
         function handleSearchKey(event) { if(event.key === 'Enter') { const val = event.target.value.trim(); if(val) performSearch(val); event.target.blur(); } }
@@ -851,15 +867,15 @@
         function renderCards(containerId, songs) { document.getElementById(containerId).innerHTML = songs.map(s => createSongCardHTML(s)).join(''); }
         function renderPlaylists() { const container = document.getElementById('playlists-container'); const playlists = currentUserData.playlists || []; if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; } container.innerHTML = playlists.map(pl => `<div class="playlist-row" onclick="openPlaylistDetail(${pl.id})"><div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div><div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div></div>`).join(''); }
 
-        // --- Standard Functions ---
+        // --- Standard Functions (Login, Profile, Settings) ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
-        async function handleLogin(e) { e.preventDefault(); const u = document.getElementById('username').value; const p = document.getElementById('password').value; let user = await getUserFromDB(u); if(user){ if(user.password===p){ currentUserData=user; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); }else alert("密碼錯誤"); }else{ if(confirm("用戶不存在，要註冊新帳號嗎?")){ const n={username:u,password:p,avatar:null,playlists:[],theme:'light',search_history:[]}; await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); } } }
+        async function handleLogin(e) { e.preventDefault(); const u = document.getElementById('username').value; const p = document.getElementById('password').value; let user = await getUserFromDB(u); if(user){ if(user.password===p){ currentUserData=user; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); }else alert("密碼錯誤"); }else{ if(confirm("用戶不存在，是否立即註冊?")){ const n={username:u,password:p,avatar:null,playlists:[],theme:'light',search_history:[]}; await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); } } }
         function handleLogout() { localStorage.removeItem('current_session_user'); location.reload(); }
         function openProfileModal() { document.getElementById('profile-modal').classList.add('active'); }
         function closeProfileModal() { document.getElementById('profile-modal').classList.remove('active'); }
-        async function updateUsername() { const n = document.getElementById('edit-username').value; if(!n)return; const old=JSON.parse(JSON.stringify(currentUserData)); const ex=await getUserFromDB(n); if(ex)return alert("用戶名已存在"); const nw={...old,username:n}; await saveUserToDB(nw); const db=await openDB(); const tx=db.transaction(STORE_NAME,'readwrite'); tx.objectStore(STORE_NAME).delete(old.username); currentUserData=nw; localStorage.setItem('current_session_user',n); updateUIFromUserData(); alert("更新成功"); }
-        async function updatePassword() { const o=document.getElementById('old-password').value; const n=document.getElementById('new-password').value; if(o!==currentUserData.password)return alert("舊密碼錯誤"); currentUserData.password=n; await saveUserToDB(currentUserData); alert("更新成功"); }
+        async function updateUsername() { const n = document.getElementById('edit-username').value; if(!n)return; const old=JSON.parse(JSON.stringify(currentUserData)); const ex=await getUserFromDB(n); if(ex)return alert("使用者名稱已存在"); const nw={...old,username:n}; await saveUserToDB(nw); const db=await openDB(); const tx=db.transaction(STORE_NAME,'readwrite'); tx.objectStore(STORE_NAME).delete(old.username); currentUserData=nw; localStorage.setItem('current_session_user',n); updateUIFromUserData(); alert("更新成功"); }
+        async function updatePassword() { const o=document.getElementById('old-password').value; const n=document.getElementById('new-password').value; if(o!==currentUserData.password)return alert("舊密碼錯誤"); currentUserData.password=n; await saveUserToDB(currentUserData); alert("密碼已更新"); }
         function handleProfileUpload(i) { if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=async function(e){ currentUserData.avatar=e.target.result; await saveUserToDB(currentUserData); updateUIFromUserData(); }; r.readAsDataURL(i.files[0]); } }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
         function updateThemeUI(t) { const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } }
@@ -868,13 +884,13 @@
         async function checkVersion() { try{const r=await fetch('./changelog.json');const l=await r.json();if(l.length)document.getElementById('setting-ver').innerText=`v${l[0].version} >`;}catch(e){} }
         async function showChangelog() { const c=document.getElementById('changelog-content'); c.innerHTML='Loading...'; document.getElementById('changelog-modal').classList.add('active'); try{const r=await fetch('./changelog.json');const l=await r.json();c.innerHTML=l.map(x=>`<div class="log-item"><div class="log-ver">v${x.version}</div><div>${x.date}</div><p>${x.content}</p></div>`).join('');}catch(e){} }
         function closeChangelog() { document.getElementById('changelog-modal').classList.remove('active'); }
-        function openPlaylistSelector(e,sid){ e.stopPropagation(); songToAdd=sid; if(!currentUserData.playlists.length){if(confirm("尚未建立清單，要新建一個嗎?"))openCreatePlaylistModal();return;} const l=document.getElementById('playlist-selector-list'); l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); document.getElementById('select-playlist-modal').classList.add('active'); }
+        function openPlaylistSelector(e,sid){ e.stopPropagation(); songToAdd=sid; if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} const l=document.getElementById('playlist-selector-list'); l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); document.getElementById('select-playlist-modal').classList.add('active'); }
         function closePlaylistSelector(){ document.getElementById('select-playlist-modal').classList.remove('active'); }
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
         function closeCreatePlaylistModal(){ document.getElementById('create-playlist-modal').classList.remove('active'); }
         function previewImage(i){ if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=function(e){ tempImgBase64=e.target.result; document.getElementById('img-preview').style.backgroundImage=`url(${tempImgBase64})`; }; r.readAsDataURL(i.files[0]); } }
-        async function confirmCreatePlaylist(){ const n=document.getElementById('new-playlist-name').value; if(!n)return alert("請輸入名稱"); const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; currentUserData.playlists.push(p); await saveUserToDB(currentUserData); renderPlaylists(); closeCreatePlaylistModal(); if(songToAdd)addToPlaylist(p.id); }
-        async function addToPlaylist(pid){ const p=currentUserData.playlists.find(x=>x.id===pid); if(p&&!p.songs.includes(songToAdd)){ p.songs.push(songToAdd); await saveUserToDB(currentUserData); renderPlaylists(); alert("已加入清單"); }else alert("已存在於清單中"); closePlaylistSelector(); }
+        async function confirmCreatePlaylist(){ const n=document.getElementById('new-playlist-name').value; if(!n)return alert("請輸入清單名稱"); const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; currentUserData.playlists.push(p); await saveUserToDB(currentUserData); renderPlaylists(); closeCreatePlaylistModal(); if(songToAdd)addToPlaylist(p.id); }
+        async function addToPlaylist(pid){ const p=currentUserData.playlists.find(x=>x.id===pid); if(p&&!p.songs.includes(songToAdd)){ p.songs.push(songToAdd); await saveUserToDB(currentUserData); renderPlaylists(); alert("已加入清單"); }else alert("歌曲已存在於清單中"); closePlaylistSelector(); }
     </script>
 </body>
 </html>
