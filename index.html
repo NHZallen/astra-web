@@ -52,6 +52,10 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
+        /* 全局隱藏捲軸 (修正需求：刪除拖拽條) */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
+
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: var(--bg-color); color: var(--text-primary); 
@@ -64,11 +68,10 @@
         .btn-primary { width:100%; padding:14px; background:var(--accent-color); color:white; border:none; border-radius:12px; font-weight:bold; cursor:pointer; transition: 0.2s; }
         .btn-primary:active { transform: scale(0.98); }
         
-        /* --- Landing Page (Rich Version) --- */
+        /* --- Landing Page --- */
         #landing-page {
             height: 100vh; overflow-y: auto; overflow-x: hidden; z-index: 2000; position: relative;
             scroll-behavior: smooth; 
-            /* 動態漸層背景 */
             background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #FA2D48);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
@@ -81,7 +84,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* 漂浮裝飾 */
         .floating-shape {
             position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.6; z-index: 0;
             animation: float 10s infinite ease-in-out;
@@ -150,7 +152,10 @@
         }
         .feature-card:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-5px); }
         .feature-card.visible { opacity: 1; transform: translateY(0); }
-        .feature-icon { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+        .feature-icon-svg { 
+            width: 48px; height: 48px; margin-bottom: 20px; display: block; 
+            stroke: #FA2D48; stroke-width: 1.5; fill: none;
+        }
         
         @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) {
@@ -174,15 +179,22 @@
         /* --- App Interface --- */
         #app-view { display: flex; height: 100vh; width: 100%; }
 
-        /* Sidebar (Fixed Issue) */
+        /* Sidebar (修正: 文字顯示不全) */
         .sidebar {
             width: 260px; background: var(--sidebar-bg); padding: 40px 20px; padding-top: calc(40px + var(--safe-top));
             display: flex; flex-direction: column; border-right: 1px solid var(--divider); flex-shrink: 0;
         }
         .sidebar-logo { 
-            font-size: 1.5rem; font-weight: 800; margin-bottom: 40px; color: var(--accent-color); padding-left: 20px; 
-            /* 修正換行問題的核心代碼 */
-            display: flex; align-items: center; white-space: nowrap; overflow: hidden;
+            /* 修正：字體改小一點，並強制不換行 */
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            margin-bottom: 40px; 
+            color: var(--accent-color); 
+            padding-left: 10px; /* 稍微減少左邊距 */
+            display: flex; 
+            align-items: center; 
+            white-space: nowrap; /* 核心：禁止換行 */
+            overflow: hidden;    /* 核心：超出隱藏 */
         }
         .nav-item { 
             padding: 14px 20px; color: var(--text-secondary); font-weight: 600; cursor: pointer; 
@@ -256,11 +268,11 @@
         .playlist-row:hover { border-color: var(--accent-color); background: var(--input-bg); }
         .playlist-cover-small { width: 56px; height: 56px; border-radius: 10px; margin-right: 15px; background: #eee; background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 
-        /* --- Player Bar (Top Priority) --- */
+        /* --- Player Bar --- */
         .player-bar {
             position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; 
-            z-index: 2000; /* 最高層級 */
+            z-index: 2000; 
             transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom);
             transform: translateY(200%); opacity: 0;
         }
@@ -280,8 +292,15 @@
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 800px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
 
+        .profile-header {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            margin-bottom: 40px; /* 增加底部間距 */
+        }
+
         .profile-avatar-large {
-            width: 120px; height: 120px; border-radius: 50%; background: #eee; margin: 0 auto 15px;
+            width: 120px; height: 120px; border-radius: 50%; background: #eee; margin-bottom: 20px;
             background-size: cover; background-position: center; box-shadow: var(--shadow-md); border: 4px solid var(--card-bg); position: relative;
         }
         .camera-icon-badge {
@@ -289,6 +308,21 @@
             background: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;
             color: white; border: 3px solid var(--card-bg); cursor: pointer;
         }
+        
+        /* 修正：更換頭像按鈕樣式 */
+        .change-avatar-btn {
+            margin-top: 15px; /* 增加與名稱的距離 */
+            padding: 8px 24px; /* 增加按鈕內部空間 */
+            font-size: 0.9rem; 
+            background: var(--input-bg); 
+            border: none; 
+            border-radius: 20px; 
+            cursor: pointer; 
+            color: var(--text-primary);
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .change-avatar-btn:hover { background: var(--divider); }
 
         /* Mobile Navigation */
         .mobile-nav { display: none; }
@@ -335,7 +369,7 @@
 </head>
 <body>
 
-    <!-- Landing Page (Upgraded) -->
+    <!-- Landing Page (Upgraded with SVGs and No Scrollbar) -->
     <section id="landing-page">
         <div class="floating-shape shape-1"></div>
         <div class="floating-shape shape-2"></div>
@@ -355,17 +389,28 @@
             </div>
             <div class="lp-features">
                 <div class="feature-card visible">
-                    <span class="feature-icon">🎧</span>
+                    <!-- SVG: Headphones (Replacing 🎧) -->
+                    <svg class="feature-icon-svg" viewBox="0 0 24 24">
+                        <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+                        <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+                    </svg>
                     <h3 style="margin-bottom:10px; font-size:1.4rem;">無損音質</h3>
                     <p style="color:rgba(255,255,255,0.7); line-height:1.6;">還原錄音室等級的聽覺饗宴，每一個細節都清晰可見，讓您沉浸在純粹的音樂中。</p>
                 </div>
                 <div class="feature-card visible" style="transition-delay: 0.2s;">
-                    <span class="feature-icon">📂</span>
+                    <!-- SVG: Folder (Replacing 📂) -->
+                    <svg class="feature-icon-svg" viewBox="0 0 24 24">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
                     <h3 style="margin-bottom:10px; font-size:1.4rem;">雲端資料庫</h3>
                     <p style="color:rgba(255,255,255,0.7); line-height:1.6;">採用先進的 IndexedDB 技術儲存，您的播放清單與偏好設定將永久保存，不隨裝置遺失。</p>
                 </div>
                 <div class="feature-card visible" style="transition-delay: 0.4s;">
-                    <span class="feature-icon">📱</span>
+                    <!-- SVG: Smartphone (Replacing 📱) -->
+                    <svg class="feature-icon-svg" viewBox="0 0 24 24">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12" y2="18"></line>
+                    </svg>
                     <h3 style="margin-bottom:10px; font-size:1.4rem;">跨平台同步</h3>
                     <p style="color:rgba(255,255,255,0.7); line-height:1.6;">無論是手機、平板還是電腦，登入即可無縫接續播放，音樂隨身帶著走。</p>
                 </div>
@@ -394,7 +439,7 @@
     <section id="app-view" class="hidden">
         <nav class="sidebar">
             <div class="sidebar-logo">
-                <img src="./images/logo.png" style="height: 40px; vertical-align: middle; margin-right: 12px; flex-shrink: 0;">
+                <img src="./images/logo.png" style="height: 36px; vertical-align: middle; margin-right: 12px; flex-shrink: 0;">
                 ASTRA Music
             </div>
             <div class="nav-item active" onclick="switchPage('home')" id="nav-home"><svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>首頁</div>
@@ -415,7 +460,7 @@
                 <div class="hero-banner" style="height:300px; border-radius:24px; background:linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%); display:flex; align-items:flex-end; padding:30px; margin-bottom:30px; color:white; position:relative; overflow:hidden;">
                     <div style="position:relative; z-index:2;">
                         <span style="background:rgba(0,0,0,0.2); padding:4px 10px; border-radius:8px; font-size:0.8rem; font-weight:bold; backdrop-filter:blur(5px);">NEW RELEASE</span>
-                        <h1 style="font-size:2.8rem; margin:10px 0;">New Era.</h1>
+                        <h1 style="font-size:2.8rem; margin:10px 0;">WE GO UP-EP</h1>
                         <p style="opacity:0.9;">BABYMONSTER 全新專輯</p>
                         <button onclick="openAlbumDetail('WE GO UP-EP')" style="margin-top:15px; padding:12px 25px; background:white; color:black; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow:0 5px 15px rgba(0,0,0,0.2);">立即播放</button>
                     </div>
@@ -488,7 +533,8 @@
                     <div class="camera-icon-badge"><svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
                 </div>
                 <h2 id="profile-username-display">User</h2>
-                <button onclick="document.getElementById('profile-upload').click()" style="margin-top:10px; padding:6px 16px; font-size:0.85rem; background:var(--input-bg); border:none; border-radius:15px; cursor:pointer; color:var(--text-primary);">更換頭像</button>
+                <!-- 修正：按鈕樣式與間距 -->
+                <button class="change-avatar-btn" onclick="document.getElementById('profile-upload').click()">更換頭像</button>
             </div>
             <div style="margin-bottom:30px;"><input type="text" id="edit-username" class="input-style" placeholder="新使用者名稱"><button class="btn-primary" onclick="updateUsername()">更新名稱</button></div>
             <div style="margin-bottom:30px; border-top:1px solid var(--divider); padding-top:20px;"><input type="password" id="old-password" class="input-style" placeholder="舊密碼"><input type="password" id="new-password" class="input-style" placeholder="新密碼"><button class="btn-primary" style="background:#333;" onclick="updatePassword()">更新密碼</button></div>
@@ -554,9 +600,6 @@
 
     <script>
         // --- 1. 定義歌手與專輯圖片對照表 (User-Editable Area) ---
-        // 請在這裡填入圖片連結 (GitHub Pages 連結或外部網址)
-        // 範例: "BABYMONSTER": "./images/artist_bm.jpg"
-        
         const artistImages = {
             "BABYMONSTER": "./images/artists/babymonster.jpg"
         };
@@ -565,7 +608,6 @@
             "WE GO UP-EP": "./images/albums/we_go_up_ep.jpg"
         };
 
-        // 預設圖片 (當找不到對應圖片時顯示)
         const DEFAULT_ARTIST_IMG = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
         const DEFAULT_ALBUM_IMG = "https://cdn-icons-png.flaticon.com/512/3208/3208703.png";
 
@@ -578,40 +620,11 @@
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
         // --- Music Data ---
-        // cover 欄位現在如果留空，程式會嘗試自動去對應 albumImages，如果也沒有才用預設
         const musicLibrary = [
-            { 
-                id: 1, 
-                title: "WE GO UP", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song1.mp3",
-                cover: ""
-            },
-            { 
-                id: 2, 
-                title: "PSYCHO", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song2.mp3",
-                cover: ""
-            },
-            { 
-                id: 3, 
-                title: "SUPA DUPA LUV", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song3.mp3",
-                cover: ""
-            },
-            { 
-                id: 4, 
-                title: "WILD", 
-                artist: "BABYMONSTER", 
-                album: "WE GO UP-EP", 
-                filename: "song4.mp3",
-                cover: ""
-            },
+            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
+            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
+            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
+            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
         ];
         
         let currentUserData = null; 
@@ -634,15 +647,10 @@
                 } else localStorage.removeItem('current_session_user');
             }
             
-            // --- 播放器事件監聽 (關鍵修正) ---
             const player = document.getElementById('audio-player');
-            player.addEventListener('ended', playNext); // 自動下一首
-            
-            // 監聽時間更新，同步給 iOS 系統
+            player.addEventListener('ended', playNext); 
             if ('mediaSession' in navigator) {
-                // 當歌曲載入完成，告訴系統總長度
                 player.addEventListener('loadedmetadata', updateIOSPositionState);
-                // 當播放/暫停/跳轉時，更新系統狀態
                 player.addEventListener('play', updateIOSPositionState);
                 player.addEventListener('pause', updateIOSPositionState);
                 player.addEventListener('ratechange', updateIOSPositionState);
@@ -702,7 +710,7 @@
             else header.classList.remove('scrolled');
         }
 
-        // --- Player Logic (大幅優化 iOS 支援) ---
+        // --- Player Logic ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
 
@@ -726,7 +734,7 @@
                     isPlaying = true;
                     updatePlayBtn();
                     document.getElementById('player-bar').classList.add('active');
-                    setupMediaSession(song, coverImage); // 設定鎖定畫面
+                    setupMediaSession(song, coverImage);
                 })
                 .catch(err => console.log("播放被阻擋:", err));
         }
@@ -755,35 +763,27 @@
             }
         }
 
-        // --- 核心：iOS 鎖定畫面與進度條控制 ---
         function setupMediaSession(song, coverImage) {
             if ('mediaSession' in navigator) {
-                // 1. 設定基本資訊 (標題、封面)
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
                     artist: song.artist,
                     album: song.album,
                     artwork: [{ src: coverImage, sizes: '512x512', type: 'image/png' }]
                 });
-
-                // 2. 設定按鈕動作
                 navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
-                
-                // 3. 關鍵：設定進度條拖曳 (Seek)
                 navigator.mediaSession.setActionHandler('seekto', (details) => {
                     if (details.seekTime || details.seekTime === 0) {
                         audioPlayer.currentTime = details.seekTime;
-                        updateIOSPositionState(); // 拖曳完馬上更新狀態
+                        updateIOSPositionState();
                     }
                 });
-                
                 updateIOSPositionState();
             }
         }
 
-        // 告訴 iOS 現在播到哪裡了
         function updateIOSPositionState() {
             if ('mediaSession' in navigator && audioPlayer.duration && !isNaN(audioPlayer.duration)) {
                 navigator.mediaSession.setPositionState({
