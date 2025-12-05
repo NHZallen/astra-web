@@ -254,7 +254,7 @@
     <!-- Landing Page -->
     <section id="landing-page">
         <nav class="lp-nav">
-            <div style="font-size:1.5rem; font-weight:800; color:var(--accent-color);">ASTRA.</div>
+            <div style="font-size:1.5rem; font-weight:800; color:var(--accent-color);">ASTRA Music</div>
             <button class="lp-btn" style="padding:8px 20px; font-size:0.9rem; opacity:1; animation:none;" onclick="openLoginModal()">登入</button>
         </nav>
         <div class="lp-hero">
@@ -502,25 +502,11 @@
         ];
         
         let currentUserData = null; 
-        let currentQueue = []; // For auto-play next
+        let currentQueue = []; 
         let currentSongIndex = -1;
-        let currentCollectionSongs = []; // Temp storage for detail view
+        let currentCollectionSongs = [];
         let songToAdd = null; 
         let tempImgBase64 = null;
-
-        // --- Helper: Get Images ---
-        function getArtistImage(name) {
-            return artistImages[name] || DEFAULT_ARTIST_IMG;
-        }
-        function getAlbumImage(name) {
-            return albumImages[name] || DEFAULT_ALBUM_IMG;
-        }
-        function getSongCover(song) {
-            if(song.cover) return song.cover;
-            // 如果歌曲沒設定封面，嘗試用專輯封面
-            if(song.album && albumImages[song.album]) return albumImages[song.album];
-            return DEFAULT_ALBUM_IMG;
-        }
 
         // --- Init ---
         window.onload = async function() {
@@ -534,8 +520,21 @@
                     initApp();
                 } else localStorage.removeItem('current_session_user');
             }
-            // Auto Play Next Listener
-            document.getElementById('audio-player').addEventListener('ended', playNext);
+            
+            // --- 播放器事件監聽 (關鍵修正) ---
+            const player = document.getElementById('audio-player');
+            player.addEventListener('ended', playNext); // 自動下一首
+            
+            // 監聽時間更新，同步給 iOS 系統
+            if ('mediaSession' in navigator) {
+                // 當歌曲載入完成，告訴系統總長度
+                player.addEventListener('loadedmetadata', updateIOSPositionState);
+                // 當播放/暫停/跳轉時，更新系統狀態
+                player.addEventListener('play', updateIOSPositionState);
+                player.addEventListener('pause', updateIOSPositionState);
+                player.addEventListener('ratechange', updateIOSPositionState);
+                player.addEventListener('seeked', updateIOSPositionState);
+            }
         };
 
         function initApp() {
@@ -555,21 +554,24 @@
             document.getElementById('profile-username-display').innerText = currentUserData.username;
         }
 
-        // --- Unified Navigation ---
+        // --- Helper: Get Images ---
+        function getArtistImage(name) { return artistImages[name] || DEFAULT_ARTIST_IMG; }
+        function getAlbumImage(name) { return albumImages[name] || DEFAULT_ALBUM_IMG; }
+        function getSongCover(song) {
+            if(song.cover) return song.cover;
+            if(song.album && albumImages[song.album]) return albumImages[song.album];
+            return DEFAULT_ALBUM_IMG;
+        }
+
+        // --- Navigation ---
         function switchPage(pid) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+pid).classList.add('active');
-            
-            // PC
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             if(document.getElementById('nav-'+pid)) document.getElementById('nav-'+pid).classList.add('active');
-            
-            // Mobile
             updateMobileNavActive(pid);
-            
             const titles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
             document.getElementById('current-page-title').innerText = titles[pid];
-
             if(pid !== 'search') document.getElementById('search-history-dropdown').classList.remove('active');
         }
 
@@ -587,6 +589,98 @@
             else header.classList.remove('scrolled');
         }
 
+        // --- Player Logic (大幅優化 iOS 支援) ---
+        const audioPlayer = document.getElementById('audio-player');
+        let isPlaying = false;
+
+        function playSong(id) {
+            const song = musicLibrary.find(s => s.id === id);
+            if(!song) return;
+            currentQueue = [song]; 
+            currentSongIndex = 0;
+            playSongObject(song);
+        }
+
+        function playSongObject(song) {
+            audioPlayer.src = `./music/${song.filename}`;
+            document.getElementById('p-title').innerText = song.title;
+            document.getElementById('p-artist').innerText = song.artist;
+            const coverImage = getSongCover(song);
+            document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
+            
+            audioPlayer.play()
+                .then(() => {
+                    isPlaying = true;
+                    updatePlayBtn();
+                    document.getElementById('player-bar').classList.add('active');
+                    setupMediaSession(song, coverImage); // 設定鎖定畫面
+                })
+                .catch(err => console.log("播放被阻擋:", err));
+        }
+
+        function togglePlay() {
+            if(audioPlayer.src) {
+                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
+                isPlaying = !isPlaying;
+                updatePlayBtn();
+            }
+        }
+
+        function updatePlayBtn() {
+            document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶";
+        }
+
+        function playNext() {
+            if(currentQueue.length > 0 && currentSongIndex < currentQueue.length - 1) {
+                currentSongIndex++;
+                playSongObject(currentQueue[currentSongIndex]);
+            } else {
+                const randomSong = musicLibrary[Math.floor(Math.random() * musicLibrary.length)];
+                playSongObject(randomSong);
+                currentQueue = [randomSong];
+                currentSongIndex = 0;
+            }
+        }
+
+        // --- 核心：iOS 鎖定畫面與進度條控制 ---
+        function setupMediaSession(song, coverImage) {
+            if ('mediaSession' in navigator) {
+                // 1. 設定基本資訊 (標題、封面)
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: song.artist,
+                    album: song.album,
+                    artwork: [{ src: coverImage, sizes: '512x512', type: 'image/png' }]
+                });
+
+                // 2. 設定按鈕動作
+                navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
+                navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
+                navigator.mediaSession.setActionHandler('nexttrack', playNext);
+                
+                // 3. 關鍵：設定進度條拖曳 (Seek)
+                navigator.mediaSession.setActionHandler('seekto', (details) => {
+                    if (details.seekTime || details.seekTime === 0) {
+                        audioPlayer.currentTime = details.seekTime;
+                        updateIOSPositionState(); // 拖曳完馬上更新狀態
+                    }
+                });
+                
+                updateIOSPositionState();
+            }
+        }
+
+        // 告訴 iOS 現在播到哪裡了
+        function updateIOSPositionState() {
+            if ('mediaSession' in navigator && audioPlayer.duration && !isNaN(audioPlayer.duration)) {
+                navigator.mediaSession.setPositionState({
+                    duration: audioPlayer.duration,
+                    playbackRate: audioPlayer.playbackRate,
+                    position: audioPlayer.currentTime
+                });
+            }
+        }
+
         // --- Search System ---
         function showSearchHistory() {
             const history = currentUserData.search_history || [];
@@ -602,50 +696,29 @@
             document.getElementById('search-input').value = keyword;
             const area = document.getElementById('search-results-area');
             
-            // Filter Data
             const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(keyword.toLowerCase()));
             const matchedArtists = [...new Set(musicLibrary.filter(s => s.artist.toLowerCase().includes(keyword.toLowerCase())).map(s => s.artist))];
             const matchedAlbums = [...new Set(musicLibrary.filter(s => s.album.toLowerCase().includes(keyword.toLowerCase())).map(s => s.album))];
             
             let html = '';
-
-            // 1. Artists
             if(matchedArtists.length > 0) {
                 html += `<div class="search-section-title">歌手</div><div class="grid-container">`;
-                html += matchedArtists.map(artist => `
-                    <div class="artist-card" onclick="openArtistDetail('${artist}')">
-                        <div class="artist-img" style="background-image:url('${getArtistImage(artist)}')"></div>
-                        <div style="font-weight:bold;">${artist}</div>
-                    </div>
-                `).join('');
+                html += matchedArtists.map(artist => `<div class="artist-card" onclick="openArtistDetail('${artist}')"><div class="artist-img" style="background-image:url('${getArtistImage(artist)}')"></div><div style="font-weight:bold;">${artist}</div></div>`).join('');
                 html += `</div>`;
             }
-
-            // 2. Albums
             if(matchedAlbums.length > 0) {
                 html += `<div class="search-section-title">專輯</div><div class="grid-container">`;
-                html += matchedAlbums.map(album => `
-                    <div class="music-card" onclick="openAlbumDetail('${album}')">
-                        <div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div>
-                        <div style="font-weight:bold; font-size:0.95rem;">${album}</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
-                    </div>
-                `).join('');
+                html += matchedAlbums.map(album => `<div class="music-card" onclick="openAlbumDetail('${album}')"><div class="cover-art" style="background-image:url('${getAlbumImage(album)}')"></div><div style="font-weight:bold; font-size:0.95rem;">${album}</div><div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div></div>`).join('');
                 html += `</div>`;
             }
-
-            // 3. Songs
             if(matchedSongs.length > 0) {
                 html += `<div class="search-section-title">歌曲</div><div class="grid-container">`;
                 html += matchedSongs.map(song => createSongCardHTML(song)).join('');
                 html += `</div>`;
             }
-
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center; padding-top:40px;">找不到 "${keyword}" 的結果</div>`;
-            
             area.innerHTML = html;
 
-            // Save History
             let history = currentUserData.search_history || [];
             history = history.filter(h => h !== keyword);
             history.unshift(keyword);
@@ -657,143 +730,31 @@
         async function deleteHistory(e, item) { e.stopPropagation(); let history = currentUserData.search_history || []; history = history.filter(h => h !== item); currentUserData.search_history = history; await saveUserToDB(currentUserData); showSearchHistory(); }
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
 
-        // --- Detail Views (Updated with Images) ---
+        // --- Detail Views & Helpers ---
         function openCollectionDetail(title, subtitle, coverUrl, songs) {
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
             document.getElementById('cd-cover').style.backgroundImage = `url(${coverUrl})`;
-            
             const list = document.getElementById('cd-songs-list');
-            list.innerHTML = songs.map(s => `
-                <div class="playlist-row" onclick="playSong(${s.id})">
-                    <div style="font-weight:bold; flex:1;">${s.title}</div>
-                    <div style="color:var(--text-secondary); font-size:0.9rem;">${s.artist}</div>
-                </div>
-            `).join('');
-            
-            currentCollectionSongs = songs; // For "Play All"
+            list.innerHTML = songs.map(s => `<div class="playlist-row" onclick="playSong(${s.id})"><div style="font-weight:bold; flex:1;">${s.title}</div><div style="color:var(--text-secondary); font-size:0.9rem;">${s.artist}</div></div>`).join('');
+            currentCollectionSongs = songs; 
             document.getElementById('collection-detail-modal').classList.add('active');
         }
         function closeCollectionDetail() { document.getElementById('collection-detail-modal').classList.remove('active'); }
+        function openArtistDetail(artistName) { const songs = musicLibrary.filter(s => s.artist === artistName); openCollectionDetail(artistName, "歌手", getArtistImage(artistName), songs); }
+        function openAlbumDetail(albumName) { const songs = musicLibrary.filter(s => s.album === albumName); const artist = songs.length > 0 ? songs[0].artist : "Unknown"; openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs); }
+        function openPlaylistDetail(plId) { const pl = currentUserData.playlists.find(p => p.id === plId); if(!pl) return; const songs = musicLibrary.filter(s => pl.songs.includes(s.id)); openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs); }
+        function playCollectionAll() { if(currentCollectionSongs.length > 0) { currentQueue = [...currentCollectionSongs]; currentSongIndex = 0; playSongObject(currentQueue[0]); } }
 
-        function openArtistDetail(artistName) {
-            const songs = musicLibrary.filter(s => s.artist === artistName);
-            openCollectionDetail(artistName, "歌手", getArtistImage(artistName), songs);
-        }
-        function openAlbumDetail(albumName) {
-            const songs = musicLibrary.filter(s => s.album === albumName);
-            const artist = songs.length > 0 ? songs[0].artist : "Unknown";
-            openCollectionDetail(albumName, `專輯 • ${artist}`, getAlbumImage(albumName), songs);
-        }
-        function openPlaylistDetail(plId) {
-            const pl = currentUserData.playlists.find(p => p.id === plId);
-            if(!pl) return;
-            const songs = musicLibrary.filter(s => pl.songs.includes(s.id));
-            openCollectionDetail(pl.name, `${songs.length} 首歌曲`, pl.img || DEFAULT_ALBUM_IMG, songs);
-        }
-        
-        function playCollectionAll() {
-            if(currentCollectionSongs.length > 0) {
-                currentQueue = [...currentCollectionSongs];
-                currentSongIndex = 0;
-                playSongObject(currentQueue[0]);
-            }
-        }
-
-        // --- Player Logic ---
-        const audioPlayer = document.getElementById('audio-player');
-        let isPlaying = false;
-
-        function playSong(id) {
-            const song = musicLibrary.find(s => s.id === id);
-            if(!song) return;
-            
-            currentQueue = [song]; 
-            currentSongIndex = 0;
-            
-            playSongObject(song);
-        }
-
-        function playSongObject(song) {
-            audioPlayer.src = `./music/${song.filename}`;
-            document.getElementById('p-title').innerText = song.title;
-            document.getElementById('p-artist').innerText = song.artist;
-            
-            const coverImage = getSongCover(song);
-            document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
-            
-            audioPlayer.play();
-            isPlaying = true;
-            document.getElementById('playBtn').innerText = "||";
-            document.getElementById('player-bar').classList.add('active');
-
-            // Lock Screen Control
-            if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: song.title,
-                    artist: song.artist,
-                    album: song.album,
-                    artwork: [
-                        { src: coverImage, sizes: '512x512', type: 'image/png' }
-                    ]
-                });
-
-                navigator.mediaSession.setActionHandler('play', togglePlay);
-                navigator.mediaSession.setActionHandler('pause', togglePlay);
-                navigator.mediaSession.setActionHandler('nexttrack', playNext);
-            }
-        }
-
-        function togglePlay() {
-            if(audioPlayer.src) {
-                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
-                isPlaying = !isPlaying;
-                document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶";
-            }
-        }
-
-        function playNext() {
-            if(currentQueue.length > 0 && currentSongIndex < currentQueue.length - 1) {
-                currentSongIndex++;
-                playSongObject(currentQueue[currentSongIndex]);
-            } else {
-                const randomSong = musicLibrary[Math.floor(Math.random() * musicLibrary.length)];
-                playSongObject(randomSong);
-                currentQueue = [randomSong];
-                currentSongIndex = 0;
-            }
-        }
-
-        // --- Helpers ---
         function createSongCardHTML(song) {
             const img = getSongCover(song);
-            return `
-                <div class="music-card" onclick="playSong(${song.id})">
-                    <div class="cover-art" style="background-image:url('${img}')">
-                        <div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})">
-                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </div>
-                    </div>
-                    <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div>
-                    <div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
-                </div>
-            `;
+            return `<div class="music-card" onclick="playSong(${song.id})"><div class="cover-art" style="background-image:url('${img}')"><div class="add-btn" onclick="openPlaylistSelector(event, ${song.id})"><svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="3" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div></div>`;
         }
         function renderCards(containerId, songs) { document.getElementById(containerId).innerHTML = songs.map(s => createSongCardHTML(s)).join(''); }
-        function renderPlaylists() {
-            const container = document.getElementById('playlists-container');
-            const playlists = currentUserData.playlists || [];
-            if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; }
-            container.innerHTML = playlists.map(pl => `
-                <div class="playlist-row" onclick="openPlaylistDetail(${pl.id})">
-                    <div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div>
-                    <div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div>
-                </div>
-            `).join('');
-        }
+        function renderPlaylists() { const container = document.getElementById('playlists-container'); const playlists = currentUserData.playlists || []; if(playlists.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-secondary);">尚未建立清單</div>'; return; } container.innerHTML = playlists.map(pl => `<div class="playlist-row" onclick="openPlaylistDetail(${pl.id})"><div class="playlist-cover-small" style="background-image:url(${pl.img || DEFAULT_ALBUM_IMG})"></div><div><div style="font-weight:bold;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div></div>`).join(''); }
 
-        // (Other Login/Profile/Settings functions remain same)
+        // --- Standard Functions (Login, Profile, Settings) ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         async function handleLogin(e) { e.preventDefault(); const u = document.getElementById('username').value; const p = document.getElementById('password').value; let user = await getUserFromDB(u); if(user){ if(user.password===p){ currentUserData=user; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); }else alert("密碼錯誤"); }else{ if(confirm("註冊?")){ const n={username:u,password:p,avatar:null,playlists:[],theme:'light',search_history:[]}; await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); } } }
@@ -820,4 +781,3 @@
     </script>
 </body>
 </html>
-
