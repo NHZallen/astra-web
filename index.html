@@ -205,76 +205,83 @@
         .player-bar.active { transform: translateY(0); opacity: 1; }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
 
-        /* --- Full Screen Player --- */
+        /* --- Full Screen Player (UPDATED) --- */
         #full-player {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(60px); -webkit-backdrop-filter: blur(60px);
             z-index: 3000; display: flex; flex-direction: column;
-            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateY(100%); 
+            transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
             color: white; overflow: hidden;
+            touch-action: none; /* 防止滑動穿透 */
         }
         #full-player.active { transform: translateY(0); }
+        #full-player.dragging { transition: none; } /* 拖曳時取消過度動畫 */
         
-        .fp-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; opacity: 0.3; filter: blur(80px); transition: background-image 0.5s; }
+        .fp-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; opacity: 0.4; filter: blur(100px); transition: background-image 0.5s; }
         
+        /* 標題與返回按鈕區域 */
         .fp-header {
             display: flex; justify-content: center; align-items: center;
             padding: calc(10px + var(--safe-top)) 20px 20px 20px;
             position: relative; flex-shrink: 0;
+            width: 100%;
         }
-        .fp-header-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
+        /* 中間的 Pill */
+        .fp-header-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; position: absolute; top: calc(10px + var(--safe-top)); left: 50%; transform: translateX(-50%); }
+        /* 左上角返回按鈕 */
+        .fp-close-btn { position: absolute; top: calc(0px + var(--safe-top)); left: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 50%; cursor: pointer; backdrop-filter: blur(10px); z-index: 10; border: none; color: white; transition: 0.2s;}
+        .fp-close-btn:active { background: rgba(255,255,255,0.3); }
 
-        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: 20px;}
         
-        /* FP View 1: Main Player */
+        /* View 1: Main Player */
         .fp-view-main {
-            flex: 1; display: flex; flex-direction: column; padding: 20px 40px 50px 40px;
+            flex: 1; display: flex; flex-direction: column; padding: 0 30px 40px 30px;
             transition: transform 0.4s ease, opacity 0.4s ease;
         }
         .fp-view-main.shifted { transform: translateX(-20%); opacity: 0; pointer-events: none; }
 
         .fp-cover-container {
             flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         .fp-cover {
-            width: 100%; max-width: 380px; aspect-ratio: 1/1;
-            border-radius: 20px; background: #333;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            width: 100%; max-width: 340px; aspect-ratio: 1/1;
+            border-radius: 12px; background: #333;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             background-size: cover; background-position: center;
         }
 
-        .fp-info-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
-        .fp-text { flex: 1; margin-right: 20px; overflow: hidden; }
-        .fp-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
-        .fp-artist { font-size: 1.1rem; color: rgba(255,255,255,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fp-info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding: 0 5px; }
+        .fp-text { flex: 1; margin-right: 20px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .fp-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; text-align: left; }
+        .fp-artist { font-size: 1.1rem; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
         
-        .fp-actions-top-right { display: flex; gap: 15px; }
-        .fp-icon-btn { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; padding: 5px; transition: 0.2s; }
-        .fp-icon-btn:hover { color: white; }
+        .fp-actions-top-right { display: flex; gap: 0; align-items: center; }
+        .fp-icon-btn { background: none; border: none; color: rgba(255,255,255,0.7); cursor: pointer; padding: 10px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .fp-icon-btn:active { transform: scale(0.9); }
         .fp-icon-btn.active { color: var(--accent-color); }
+        .fp-icon-btn svg { width: 26px; height: 26px; stroke-width: 2px; }
 
-        .fp-progress-container { width: 100%; margin-bottom: 40px; }
+        .fp-progress-container { width: 100%; margin-bottom: 30px; }
         .fp-range {
             width: 100%; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.2);
             border-radius: 2px; outline: none; cursor: pointer;
         }
         .fp-range::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: white; border-radius: 50%; transition: 0.2s; }
-        .fp-range:hover::-webkit-slider-thumb { width: 16px; height: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
-        .fp-time-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 600; }
+        .fp-range:hover::-webkit-slider-thumb { width: 14px; height: 14px; }
+        .fp-time-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-        .fp-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; padding: 0 10px; }
+        .fp-controls { display: flex; justify-content: space-around; align-items: center; margin-bottom: 40px; padding: 0 10px; }
         .fp-ctrl-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .fp-ctrl-btn:active { transform: scale(0.9); }
-        .fp-play-btn { width: 80px; height: 80px; background: white; border-radius: 50%; color: black; box-shadow: 0 5px 20px rgba(255,255,255,0.2); }
-        .fp-play-btn svg { width: 32px; height: 32px; fill: black; stroke: none; margin-left: 2px; }
-        .fp-play-btn.pause svg { margin-left: 0; }
+        .fp-ctrl-btn:active { transform: scale(0.85); opacity: 0.7; }
+        .fp-play-btn { width: 70px; height: 70px; background: transparent; border-radius: 50%; color: white; }
+        .fp-play-btn svg { width: 45px; height: 45px; fill: white; stroke: none; }
 
-        .fp-bottom-row { display: flex; justify-content: space-between; align-items: center; }
-        .fp-vol-slider { width: 100px; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
-        .fp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: white; border-radius: 50%; }
+        .fp-bottom-row { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
 
-        /* FP View 2: Queue / Options */
+        /* View 2: Queue / Options */
         .fp-view-queue {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; padding: 20px 30px;
@@ -489,10 +496,15 @@
         </div>
     </div>
 
-    <!-- Full Screen Player Modal -->
+    <!-- Full Screen Player Modal (New Layout) -->
     <div id="full-player">
         <div class="fp-bg-layer" id="fp-bg"></div>
-        <div class="fp-header" onclick="closeFullPlayer()">
+        
+        <div class="fp-header" id="fp-drag-area">
+             <!-- 下拉關閉按鈕 (左上角) -->
+            <button class="fp-close-btn" onclick="closeFullPlayer()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
             <div class="fp-header-pill"></div>
         </div>
         
@@ -509,11 +521,13 @@
                         <div class="fp-artist" id="fp-artist">Artist Name</div>
                     </div>
                     <div class="fp-actions-top-right">
+                         <!-- 喜好項目 (愛心) -->
                         <button class="fp-icon-btn" id="fp-fav-btn" onclick="toggleCurrentFavorite(event)">
-                            <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                         </button>
+                        <!-- 更多選項 -->
                         <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
-                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                         </button>
                     </div>
                 </div>
@@ -528,27 +542,38 @@
 
                 <div class="fp-controls">
                     <button class="fp-ctrl-btn" onclick="playPrev()">
-                        <svg class="icon" viewBox="0 0 24 24" style="width:36px; height:36px;"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 20L9 12l10-8v16zM5 19h2V5H5v14z"/></svg>
                     </button>
                     <button class="fp-ctrl-btn fp-play-btn" id="fp-play-btn" onclick="togglePlay()">
-                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
                     </button>
                     <button class="fp-ctrl-btn" onclick="playNext()">
-                        <svg class="icon" viewBox="0 0 24 24" style="width:36px; height:36px;"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 4l10 8-10 8V4zM19 5h-2v14h2V5z"/></svg>
                     </button>
                 </div>
 
                 <div class="fp-bottom-row">
-                    <button class="fp-icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></button> <!-- Lyrics Placeholder -->
-                    <button class="fp-icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93L4.93 19.07"></path></svg></button> <!-- Airplay/Speaker Placeholder -->
+                    <!-- 歌詞按鈕 -->
+                    <button class="fp-icon-btn">
+                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    </button>
+                    
+                    <!-- (中間按鈕已刪除) -->
+
+                    <!-- 清單按鈕 -->
                     <button class="fp-icon-btn" onclick="togglePlayerView()">
-                        <svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     </button>
                 </div>
             </div>
 
             <!-- View 2: Queue & Options -->
             <div class="fp-view-queue" id="fp-view-queue">
+                 <!-- 點擊此按鈕返回主播放頁 -->
+                <div style="text-align: right; margin-bottom: 10px;">
+                     <button onclick="togglePlayerView()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer;">完成</button>
+                </div>
+
                 <div class="fp-options-grid">
                     <button class="fp-opt-btn" id="btn-shuffle" onclick="toggleShuffle()">
                         <svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
@@ -706,7 +731,7 @@
         </footer>
     </section>
 
-    <!-- Modals (Profile, Settings, Playlist Selection) - Same as before -->
+    <!-- Modals (Profile, Settings, Playlist Selection) -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
         <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button></div>
         <div class="modal-body">
@@ -886,6 +911,8 @@
             const player = document.getElementById('audio-player');
             player.addEventListener('ended', handleSongEnd); 
             player.addEventListener('timeupdate', updateProgress);
+            
+            setupDragToClose(); // 初始化拖曳關閉功能
 
             if ('mediaSession' in navigator) {
                 player.addEventListener('play', () => updateMediaSessionPosition());
@@ -907,6 +934,59 @@
             renderPlaylists();
             updateUIFromUserData();
             updateMobileNavActive('home');
+        }
+
+        // --- Drag to Close Logic (NEW) ---
+        function setupDragToClose() {
+            const player = document.getElementById('full-player');
+            const dragArea = document.getElementById('fp-drag-area'); 
+            
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+
+            // 只在 Header 區域監聽 Touch 事件
+            player.addEventListener('touchstart', (e) => {
+                // 如果目前是 Queue 列表模式，不啟用下拉關閉，避免衝突
+                const queueView = document.getElementById('fp-view-queue');
+                if (queueView.classList.contains('active')) return;
+
+                startY = e.touches[0].clientY;
+                // 只有在接近頂部時才觸發
+                if (startY < 200) {
+                     isDragging = true;
+                     player.classList.add('dragging');
+                }
+            }, {passive: true});
+
+            player.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                
+                // 只能往下拉
+                if (diff > 0) {
+                    player.style.transform = `translateY(${diff}px)`;
+                    // 下拉時讓背景變透明一點
+                    document.getElementById('fp-bg').style.opacity = Math.max(0, 0.4 - (diff/1000));
+                }
+            }, {passive: true});
+
+            player.addEventListener('touchend', () => {
+                if (!isDragging) return;
+                isDragging = false;
+                player.classList.remove('dragging');
+                
+                const diff = currentY - startY;
+                if (diff > 120) { // 下拉超過 120px 則關閉
+                    closeFullPlayer();
+                } else {
+                    // 回彈
+                    player.style.transform = '';
+                    document.getElementById('fp-bg').style.opacity = '0.4';
+                }
+                currentY = 0;
+            });
         }
 
         function renderTagSections(containerId, sourceLibrary, isDiscovery = false) {
@@ -1002,7 +1082,8 @@
             const overlay = document.getElementById('cm-overlay');
             const menu = document.getElementById('context-menu');
             let html = '';
-
+            
+            // ... (Icons SVG defined same as before for brevity in display, but assume they exist) ...
             const iconPlus = `<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
             const iconHeart = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             const iconHeartFill = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -1072,7 +1153,6 @@
             await saveUserToDB(currentUserData);
             if(currentPlaylistId === 'favorites') openPlaylistDetail('favorites');
             
-            // Update Full Player Heart
             if (currentSongId === id) updateFullPlayerHeart();
             renderPlaylists();
         }
@@ -1123,8 +1203,6 @@
             saveUserToDB(currentUserData);
 
             if (currentCollectionSongs.length > 0 && currentCollectionSongs.find(s => s.id === id)) {
-                // If shuffling, currentQueue might be shuffled.
-                // We should find the index in the current queue if possible, or reset queue
                 if (!currentQueue.some(s => s.id === id)) currentQueue = [...currentCollectionSongs];
             } else {
                 currentQueue = [...musicLibrary];
@@ -1144,7 +1222,7 @@
             const coverImage = getSongCover(song);
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
             
-            // Update Full Player
+            // Update Full Player (NEW IDs)
             document.getElementById('fp-title').innerText = song.title;
             document.getElementById('fp-artist').innerText = song.artist;
             document.getElementById('fp-cover-img').style.backgroundImage = `url('${coverImage}')`;
@@ -1176,12 +1254,13 @@
             miniBtn.innerText = isPlaying ? "||" : "▶";
             
             const fpBtn = document.getElementById('fp-play-btn');
+            // Updated SVG for Pause/Play
             if(isPlaying) {
                 fpBtn.classList.add('pause');
-                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>`;
             } else {
                 fpBtn.classList.remove('pause');
-                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>`;
             }
         }
 
@@ -1190,11 +1269,10 @@
                 if(currentSongIndex < currentQueue.length - 1) {
                     currentSongIndex++;
                     playSongObject(currentQueue[currentSongIndex]);
-                } else if (loopMode === 1) { // Loop Playlist
+                } else if (loopMode === 1) { 
                     currentSongIndex = 0;
                     playSongObject(currentQueue[currentSongIndex]);
                 } else if (isAutoPlay) {
-                     // Auto play logic: pick random
                      const candidates = getDiscoveryRecommendations();
                      const nextSong = candidates[0];
                      if(nextSong) {
@@ -1203,7 +1281,6 @@
                          playSongObject(nextSong);
                      }
                 } else {
-                    // Stop
                     isPlaying = false;
                     updatePlayBtns();
                 }
@@ -1226,7 +1303,7 @@
         }
 
         function handleSongEnd() {
-            if (loopMode === 2) { // Loop Single
+            if (loopMode === 2) { 
                 audioPlayer.currentTime = 0;
                 audioPlayer.play();
             } else {
@@ -1235,21 +1312,32 @@
         }
         
         // --- Full Player Logic ---
-        function openFullPlayer() { document.getElementById('full-player').classList.add('active'); document.body.style.overflow='hidden'; }
-        function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); document.body.style.overflow=''; }
+        function openFullPlayer() { 
+            const fp = document.getElementById('full-player');
+            fp.classList.add('active'); 
+            fp.style.transform = ''; // 清除拖曳殘留
+            document.body.style.overflow='hidden'; 
+        }
+        function closeFullPlayer() { 
+            const fp = document.getElementById('full-player');
+            fp.classList.remove('active'); 
+            fp.style.transform = '';
+            document.body.style.overflow=''; 
+        }
         
-        let fpView = 'main'; // 'main' or 'queue'
+        // Toggle Queue / Main View
         function togglePlayerView() {
             const main = document.getElementById('fp-view-main');
             const queue = document.getElementById('fp-view-queue');
-            if (fpView === 'main') {
-                fpView = 'queue';
-                main.classList.add('shifted');
-                queue.classList.add('active');
-            } else {
-                fpView = 'main';
-                main.classList.remove('shifted');
+            if (queue.classList.contains('active')) {
+                // Return to main
                 queue.classList.remove('active');
+                main.classList.remove('shifted');
+            } else {
+                // Go to queue
+                queue.classList.add('active');
+                main.classList.add('shifted');
+                renderQueue(); // Refresh queue list
             }
         }
 
@@ -1262,23 +1350,23 @@
             const btn = document.getElementById('fp-fav-btn');
             if(isLiked) {
                 btn.classList.add('active');
-                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:none;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                // 實心紅色愛心
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             } else {
                 btn.classList.remove('active');
-                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                // 空心愛心
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             }
         }
 
-        // Toggles
+        // Toggles (Shuffle, Loop...)
         function toggleShuffle() {
             isShuffleMode = !isShuffleMode;
             document.getElementById('btn-shuffle').classList.toggle('active', isShuffleMode);
             
             if(isShuffleMode) {
-                // Shuffle current queue (keep current song)
                 const current = currentQueue[currentSongIndex];
                 let rest = currentQueue.filter((_, i) => i !== currentSongIndex);
-                // Fisher-Yates
                 for (let i = rest.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [rest[i], rest[j]] = [rest[j], rest[i]];
@@ -1286,9 +1374,6 @@
                 currentQueue = [current, ...rest];
                 currentSongIndex = 0;
             } else {
-                 // Revert to original album/playlist order? 
-                 // Simplifying: just sort ID or keep as is for now.
-                 // Ideally we store original queue order.
                  if(currentCollectionSongs.length) {
                      const current = currentQueue[currentSongIndex];
                      currentQueue = [...currentCollectionSongs];
@@ -1299,7 +1384,6 @@
         }
 
         function toggleLoop() {
-            // 0 -> 1 -> 2 -> 0
             loopMode = (loopMode + 1) % 3;
             const btn = document.getElementById('btn-loop');
             const txt = document.getElementById('txt-loop');
@@ -1383,7 +1467,6 @@
             const list = document.getElementById('fp-queue-list');
             let html = `<div class="fp-queue-header">待播清單</div>`;
             
-            // Show playing + next
             for (let i = currentSongIndex; i < currentQueue.length; i++) {
                 const s = currentQueue[i];
                 const isPlayingItem = (i === currentSongIndex);
