@@ -158,8 +158,24 @@
         }
         [data-theme="dark"] .cover-art { background-image: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         
+        /* Batch Delete Checkbox */
+        .batch-select-overlay {
+            position: absolute; top: 8px; left: 8px; width: 24px; height: 24px;
+            background: rgba(255,255,255,0.9); border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid var(--text-secondary);
+        }
+        .music-card.edit-mode .batch-select-overlay { display: flex; }
+        .music-card.selected .batch-select-overlay { background: var(--accent-color); border-color: var(--accent-color); }
+        .music-card.selected .batch-select-overlay::after {
+            content: ''; width: 10px; height: 5px; border-left: 2px solid white; border-bottom: 2px solid white;
+            transform: rotate(-45deg); margin-top: -2px;
+        }
+
         .ctx-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; z-index: 5; color: white; }
         .music-card:hover .ctx-btn { opacity: 1; }
+        .music-card.edit-mode .ctx-btn { display: none; } /* Hide context menu in edit mode */
         @media (max-width: 768px) { .ctx-btn { opacity: 1; background: rgba(255,255,255,0.8); color: black; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } [data-theme="dark"] .ctx-btn { background: rgba(0,0,0,0.6); color: white; } }
 
         .song-list-item { 
@@ -349,6 +365,15 @@
             font-size: 0.8rem; font-weight: bold; margin-left: 10px;
         }
 
+        /* Batch Delete Action Bar */
+        .batch-action-bar {
+            display: none; justify-content: space-between; align-items: center;
+            background: var(--accent-color); color: white;
+            padding: 10px 20px; border-radius: 30px; margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(250, 45, 72, 0.3);
+        }
+        .batch-action-bar.active { display: flex; animation: fadeSlideUp 0.3s ease; }
+
     </style>
 </head>
 <body>
@@ -430,7 +455,7 @@
             <!-- B. Search -->
             <div id="page-search" class="page-section">
                 <div class="search-container">
-                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲..." onfocus="showSearchHistory()" oninput="handleSearchInput(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
+                    <input type="text" id="search-input" class="input-style" placeholder="搜尋藝人、歌曲、專輯..." onfocus="showSearchHistory()" oninput="handleSearchInput(event)" style="padding:16px; font-size:1.1rem; margin-bottom:0;">
                     <div id="search-history-dropdown" class="search-history-dropdown"></div>
                 </div>
                 <div id="search-results-area">
@@ -451,8 +476,17 @@
             <div id="page-database" class="page-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
                     <h2>我的播放清單</h2>
-                    <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建清單</button>
+                    <div style="display:flex; gap:10px;">
+                         <button id="batch-delete-toggle-btn" onclick="toggleBatchDeleteMode()" style="padding:8px 16px; background:var(--input-bg); color:var(--text-primary); border:none; border-radius:20px; font-weight:600; cursor:pointer;">編輯</button>
+                         <button onclick="openCreatePlaylistModal()" style="padding:8px 16px; background:var(--accent-color); color:white; border:none; border-radius:20px; font-weight:bold; cursor:pointer;">+ 新建</button>
+                    </div>
                 </div>
+                
+                <div id="batch-action-bar" class="batch-action-bar">
+                    <span id="batch-select-count">已選取 0 個項目</span>
+                    <button onclick="executeBatchDelete()" style="background:white; color:var(--accent-color); border:none; padding:6px 15px; border-radius:15px; font-weight:bold; cursor:pointer;">刪除選取</button>
+                </div>
+
                 <div id="playlists-container" class="grid-container"></div>
             </div>
         </main>
@@ -633,7 +667,11 @@
         let itemsToAdd = []; 
         let tempImgBase64 = null;
         let addingToPlaylistId = null;
-        let isShuffleMode = true; // 預設隨機播放，避免順序一樣
+        let isShuffleMode = true; // 預設隨機播放
+
+        // Batch Delete State
+        let isBatchDeleteMode = false;
+        let selectedPlaylists = new Set();
 
         // --- Init ---
         window.onload = async function() {
@@ -661,6 +699,20 @@
             
             const player = document.getElementById('audio-player');
             player.addEventListener('ended', playNext); 
+
+            // --- 修正1: 增加 timeupdate 監聽，解決靈動島無法拉動時間問題 ---
+            player.addEventListener('timeupdate', () => {
+                 if ('mediaSession' in navigator && !isNaN(player.duration)) {
+                    try {
+                        navigator.mediaSession.setPositionState({
+                            duration: player.duration,
+                            playbackRate: player.playbackRate,
+                            position: player.currentTime
+                        });
+                    } catch(e) {}
+                }
+            });
+
             if ('mediaSession' in navigator) {
                 player.addEventListener('play', () => updateMediaSessionPosition());
                 player.addEventListener('pause', () => updateMediaSessionPosition());
@@ -679,7 +731,7 @@
             
             // --- 渲染分類 (Tags) ---
             renderTagSections('home-tags-container', musicLibrary); 
-            renderTagSections('discovery-tags-container', musicLibrary, true); // Discovery 頁面使用相同邏輯但可微調
+            renderTagSections('discovery-tags-container', musicLibrary, true); 
             
             renderPlaylists();
             updateUIFromUserData();
@@ -791,6 +843,8 @@
         // --- Context Menu System ---
         function showContextMenu(e, type, data) {
             e.stopPropagation();
+            if(isBatchDeleteMode) return; // Disable in batch mode
+
             const overlay = document.getElementById('cm-overlay');
             const menu = document.getElementById('context-menu');
             let html = '';
@@ -903,6 +957,9 @@
             updateMobileNavActive(pid);
             const titles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
             document.getElementById('current-page-title').innerText = titles[pid];
+            
+            // Exit batch mode if leaving database
+            if(pid !== 'database' && isBatchDeleteMode) toggleBatchDeleteMode();
         }
 
         function updateMobileNavActive(pid) {
@@ -930,13 +987,9 @@
             currentUserData.play_counts[id] = (currentUserData.play_counts[id] || 0) + 1;
             saveUserToDB(currentUserData);
 
-            // --- 重要修正：自動填入佇列 ---
-            // 如果當前是在某個列表(Playlist/Album)內，且該歌屬於該列表，則保留該列表
-            // 否則（例如首頁點擊），將整個資料庫作為佇列（或智慧推薦列表），確保下一首能播放
             if (currentCollectionSongs.length > 0 && currentCollectionSongs.find(s => s.id === id)) {
                 currentQueue = [...currentCollectionSongs];
             } else {
-                // 如果沒有特定上下文，使用整個音樂庫作為背景佇列，這樣永遠有歌可以播
                 currentQueue = [...musicLibrary];
             }
             
@@ -974,6 +1027,14 @@
                 navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
+                
+                // --- 修正1 補充: 增加 seekto 處理器，允許鎖定畫面調整時間 ---
+                navigator.mediaSession.setActionHandler('seekto', (details) => {
+                     if (details.seekTime || details.seekTime === 0) {
+                         audioPlayer.currentTime = details.seekTime;
+                         updateMediaSessionPosition();
+                     }
+                });
             }
         }
 
@@ -998,13 +1059,22 @@
         }
         function updatePlayBtn() { document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶"; }
         
-        // --- 修正後的 playNext 邏輯 ---
+        // --- 修正2: Fisher-Yates 洗牌演算法，保證真正的隨機 ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         function playNext() {
             if(currentQueue.length > 0) {
                 if (isShuffleMode) {
-                    // 隨機模式：隨機選取下一首，確保不重複（若只有一首則重播）
                     if (currentQueue.length > 1) {
                         let nextIndex;
+                        // 簡單的隨機下一首 (不重排列表，只重選索引)
+                        // 如果要嚴格不重複，應該要維護一個播放過的清單，這裡簡化處理
                         do {
                             nextIndex = Math.floor(Math.random() * currentQueue.length);
                         } while (nextIndex === currentSongIndex);
@@ -1015,7 +1085,6 @@
                     if (currentSongIndex < currentQueue.length - 1) {
                         currentSongIndex++;
                     } else {
-                        // 列表結束，循環回到第一首
                         currentSongIndex = 0;
                     }
                 }
@@ -1093,14 +1162,71 @@
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div>
                 </div>
             `;
-            html += playlists.map(pl => `
-                <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
-                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')"></div>
+            html += playlists.map(pl => {
+                const isSelected = selectedPlaylists.has(pl.id);
+                return `
+                <div class="music-card ${isBatchDeleteMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''}" onclick="handlePlaylistClick(${pl.id})">
+                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')">
+                        <div class="batch-select-overlay"></div>
+                    </div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
-            `).join(''); 
+            `}).join(''); 
             container.innerHTML = html;
+        }
+
+        // --- 修正4: 批次刪除邏輯 ---
+        function toggleBatchDeleteMode() {
+            isBatchDeleteMode = !isBatchDeleteMode;
+            selectedPlaylists.clear();
+            const btn = document.getElementById('batch-delete-toggle-btn');
+            const actionBar = document.getElementById('batch-action-bar');
+            
+            if(isBatchDeleteMode) {
+                btn.innerText = "完成";
+                btn.style.color = "var(--accent-color)";
+                actionBar.classList.add('active');
+            } else {
+                btn.innerText = "編輯";
+                btn.style.color = "var(--text-primary)";
+                actionBar.classList.remove('active');
+            }
+            updateBatchSelectCount();
+            renderPlaylists();
+        }
+
+        function handlePlaylistClick(plId) {
+            if(plId === 'favorites') {
+                if(!isBatchDeleteMode) openPlaylistDetail('favorites');
+                return; // Favorites cannot be selected/deleted
+            }
+
+            if (isBatchDeleteMode) {
+                if (selectedPlaylists.has(plId)) {
+                    selectedPlaylists.delete(plId);
+                } else {
+                    selectedPlaylists.add(plId);
+                }
+                updateBatchSelectCount();
+                renderPlaylists(); // Re-render to show selection
+            } else {
+                openPlaylistDetail(plId);
+            }
+        }
+
+        function updateBatchSelectCount() {
+            document.getElementById('batch-select-count').innerText = `已選取 ${selectedPlaylists.size} 個項目`;
+        }
+
+        async function executeBatchDelete() {
+            if (selectedPlaylists.size === 0) return alert("請先選取要刪除的清單");
+            if (confirm(`確定要刪除這 ${selectedPlaylists.size} 個播放清單嗎？`)) {
+                currentUserData.playlists = currentUserData.playlists.filter(p => !selectedPlaylists.has(p.id));
+                await saveUserToDB(currentUserData);
+                toggleBatchDeleteMode(); // Exit mode
+                renderPlaylists();
+            }
         }
 
         function triggerCoverEdit() {
@@ -1238,17 +1364,20 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
+        // --- 修正2: 確保隨機播放是真的隨機排列 ---
         function playCollectionAll(shuffle) {
             if(currentCollectionSongs.length > 0) {
+                // 複製一個新陣列
                 let queue = [...currentCollectionSongs];
-                // 設定播放模式，如果是點擊隨機播放則開啟 Shuffle，否則關閉 (或依據使用者全局設定)
                 isShuffleMode = shuffle;
                 
                 if (shuffle) {
-                    queue.sort(() => Math.random() - 0.5);
+                    // 使用 Fisher-Yates 洗牌，確保即使只有兩首也能交換順序
+                    queue = shuffleArray(queue);
                 }
+                
                 currentQueue = queue;
-                currentSongIndex = 0;
+                currentSongIndex = 0; // 永遠從洗牌後的第一首開始
                 playSongObject(currentQueue[0]);
             }
         }
@@ -1435,12 +1564,27 @@
             if(type === 'artist') openArtistDetail(title); else if(type === 'album') openAlbumDetail(title); else if(type === 'song') playSong(id);
         }
         function handleHistoryItemClick(type, title, id) { document.getElementById('search-history-dropdown').classList.remove('active'); if(type === 'artist') openArtistDetail(title); else if(type === 'album') openAlbumDetail(title); else if(type === 'song' && id) playSong(parseInt(id)); }
+        
+        // --- 修正3: 增加藝人(Artist)搜尋 ---
         async function performSearch(keyword) {
             document.getElementById('search-history-dropdown').classList.remove('active');
             const area = document.getElementById('search-results-area');
-            const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(keyword.toLowerCase()));
-            const matchedAlbums = [...new Set(musicLibrary.filter(s => s.album.toLowerCase().includes(keyword.toLowerCase())).map(s => s.album))];
+            const val = keyword.toLowerCase();
+            
+            const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(val));
+            const matchedAlbums = [...new Set(musicLibrary.filter(s => s.album.toLowerCase().includes(val)).map(s => s.album))];
+            const matchedArtists = [...new Set(musicLibrary.filter(s => s.artist.toLowerCase().includes(val)).map(s => s.artist))];
+            
             let html = '';
+            
+            if(matchedArtists.length) {
+                html += `<div class="search-section-title">藝人</div><div class="horizontal-row">` + matchedArtists.map(art => `
+                    <div class="artist-card" onclick="handleSearchResultClick('artist', '${art}', '${getArtistImage(art)}')">
+                        <div class="artist-img" style="background-image:url('${getArtistImage(art)}')"></div>
+                        <div style="font-weight:bold; font-size:0.9rem;">${art}</div>
+                    </div>`).join('') + `</div>`;
+            }
+
             if(matchedAlbums.length) {
                 html += `<div class="search-section-title">專輯</div><div class="horizontal-row">` + matchedAlbums.map(alb => `
                     <div class="music-card" onclick="handleSearchResultClick('album', '${alb}', '${getAlbumImage(alb)}')">
@@ -1454,6 +1598,25 @@
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center;">無結果</div>`;
             area.innerHTML = html;
         }
+
+        // Helper for artist detail (simple version showing songs by that artist)
+        function openArtistDetail(artistName) {
+            // Re-use album detail layout for simplicity or create new modal
+            openAlbumDetail(artistName); 
+            // Override texts
+            document.getElementById('cd-nav-title').innerText = artistName;
+            document.getElementById('cd-title').innerText = artistName;
+            document.getElementById('cd-subtitle').innerText = "藝人";
+            document.getElementById('cd-cover').style.backgroundImage = `url(${getArtistImage(artistName)})`;
+            
+            // Logic to fetch songs by artist
+            const songs = musicLibrary.filter(s => s.artist === artistName);
+            currentCollectionSongs = songs;
+             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
+            html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
+            document.getElementById('cd-content-area').innerHTML = html;
+        }
+
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
     </script>
 </body>
