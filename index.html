@@ -229,9 +229,30 @@
         }
         /* 中間的 Pill */
         .fp-header-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; position: absolute; top: calc(10px + var(--safe-top)); left: 50%; transform: translateX(-50%); }
-        /* 左上角返回按鈕 */
-        .fp-close-btn { position: absolute; top: calc(0px + var(--safe-top)); left: 20px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.15); border-radius: 50%; cursor: pointer; backdrop-filter: blur(10px); z-index: 10; border: none; color: white; transition: 0.2s;}
-        .fp-close-btn:active { background: rgba(255,255,255,0.3); }
+        
+        /* 左上角返回按鈕 (優化版) */
+        .fp-close-btn { 
+            position: absolute; 
+            top: 40px; 
+            left: 40px; 
+            width: 40px; height: 40px; 
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(255,255,255,0.15); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            backdrop-filter: blur(10px); 
+            z-index: 10; 
+            border: 1px solid rgba(255,255,255,0.1); 
+            color: white; 
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .fp-close-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+        .fp-close-btn:active { transform: scale(0.95); }
+        /* 手機版隱藏此按鈕 */
+        @media (max-width: 768px) {
+            .fp-close-btn { display: none; }
+        }
 
         .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: 20px;}
         
@@ -289,14 +310,31 @@
         }
         .fp-view-queue.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
 
-        .fp-options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        /* New Queue Header Style */
+        .fp-queue-top-info {
+            display: flex; align-items: center; 
+            margin-bottom: 25px; 
+            background: rgba(255,255,255,0.05);
+            padding: 10px; border-radius: 16px;
+        }
+        .fp-q-header-img {
+            width: 50px; height: 50px; border-radius: 8px; margin-right: 15px;
+            background-size: cover; background-position: center; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .fp-q-header-text { flex: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .fp-q-header-text .t { font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .fp-q-header-text .a { font-size: 0.8rem; color: rgba(255,255,255,0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .fp-q-header-actions { display: flex; gap: 5px; }
+
+        .fp-options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
         .fp-opt-btn {
             background: rgba(255,255,255,0.1); border-radius: 12px; border: none;
-            padding: 15px 0; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 0.8rem;
-            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.2s;
+            padding: 12px 0; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 0.75rem;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: 0.2s;
         }
         .fp-opt-btn.active { background: rgba(255,255,255,0.25); color: white; }
-        .fp-opt-btn svg { width: 24px; height: 24px; }
+        .fp-opt-btn svg { width: 20px; height: 20px; }
 
         .fp-queue-list { flex: 1; overflow-y: auto; padding-bottom: 40px; }
         .fp-queue-header { font-size: 1rem; font-weight: 700; margin-bottom: 15px; color: white; }
@@ -500,8 +538,9 @@
     <div id="full-player">
         <div class="fp-bg-layer" id="fp-bg"></div>
         
+        <!-- Header: Pull Drag Area -->
         <div class="fp-header" id="fp-drag-area">
-             <!-- 下拉關閉按鈕 (左上角) -->
+             <!-- 下拉關閉按鈕 (左上角，手機隱藏) -->
             <button class="fp-close-btn" onclick="closeFullPlayer()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
@@ -561,7 +600,7 @@
                     <!-- (中間按鈕已刪除) -->
 
                     <!-- 清單按鈕 -->
-                    <button class="fp-icon-btn" onclick="togglePlayerView()">
+                    <button class="fp-icon-btn" id="fp-queue-toggle-btn" onclick="togglePlayerView()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                     </button>
                 </div>
@@ -569,9 +608,21 @@
 
             <!-- View 2: Queue & Options -->
             <div class="fp-view-queue" id="fp-view-queue">
-                 <!-- 點擊此按鈕返回主播放頁 -->
-                <div style="text-align: right; margin-bottom: 10px;">
-                     <button onclick="togglePlayerView()" style="background:rgba(255,255,255,0.2); border:none; color:white; padding: 6px 14px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; cursor: pointer;">完成</button>
+                <!-- 新增：頂部正在播放歌曲資訊列 -->
+                <div class="fp-queue-top-info">
+                    <div class="fp-q-header-img" id="fp-q-img"></div>
+                    <div class="fp-q-header-text">
+                        <div class="t" id="fp-q-title">Song</div>
+                        <div class="a" id="fp-q-artist">Artist</div>
+                    </div>
+                    <div class="fp-q-header-actions">
+                        <button class="fp-icon-btn" id="fp-q-fav-btn" onclick="toggleCurrentFavorite(event)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </button>
+                         <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="fp-options-grid">
@@ -936,23 +987,23 @@
             updateMobileNavActive('home');
         }
 
-        // --- Drag to Close Logic (NEW) ---
+        // --- Drag to Close Logic (Enhanced for Queue View) ---
         function setupDragToClose() {
             const player = document.getElementById('full-player');
-            const dragArea = document.getElementById('fp-drag-area'); 
-            
             let startY = 0;
             let currentY = 0;
             let isDragging = false;
 
-            // 只在 Header 區域監聽 Touch 事件
+            // 監聽 Header 區域的 Touch 事件
             player.addEventListener('touchstart', (e) => {
-                // 如果目前是 Queue 列表模式，不啟用下拉關閉，避免衝突
                 const queueView = document.getElementById('fp-view-queue');
-                if (queueView.classList.contains('active')) return;
+                const queueList = document.getElementById('fp-queue-list');
+                
+                // 如果是 Queue 頁面，且列表已經往下捲動，則不啟用拖曳（讓使用者正常捲動列表）
+                if (queueView.classList.contains('active') && queueList.scrollTop > 5) return;
 
                 startY = e.touches[0].clientY;
-                // 只有在接近頂部時才觸發
+                // 只有在接近頂部時才觸發拖曳
                 if (startY < 200) {
                      isDragging = true;
                      player.classList.add('dragging');
@@ -1083,7 +1134,6 @@
             const menu = document.getElementById('context-menu');
             let html = '';
             
-            // ... (Icons SVG defined same as before for brevity in display, but assume they exist) ...
             const iconPlus = `<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
             const iconHeart = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             const iconHeartFill = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -1215,20 +1265,25 @@
         function playSongObject(song) {
             currentSongId = song.id;
             audioPlayer.src = `./music/${song.filename}`;
+            const coverImage = getSongCover(song);
             
             // Update Mini Player
             document.getElementById('p-title').innerText = song.title;
             document.getElementById('p-artist').innerText = song.artist;
-            const coverImage = getSongCover(song);
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
             
-            // Update Full Player (NEW IDs)
+            // Update Full Player (Main View)
             document.getElementById('fp-title').innerText = song.title;
             document.getElementById('fp-artist').innerText = song.artist;
             document.getElementById('fp-cover-img').style.backgroundImage = `url('${coverImage}')`;
             document.getElementById('fp-bg').style.backgroundImage = `url('${coverImage}')`;
+            
+            // Update Full Player (Queue View Header)
+            document.getElementById('fp-q-title').innerText = song.title;
+            document.getElementById('fp-q-artist').innerText = song.artist;
+            document.getElementById('fp-q-img').style.backgroundImage = `url('${coverImage}')`;
+            
             updateFullPlayerHeart();
-
             updateMediaSession(song, coverImage);
             
             audioPlayer.play().then(() => {
@@ -1254,7 +1309,6 @@
             miniBtn.innerText = isPlaying ? "||" : "▶";
             
             const fpBtn = document.getElementById('fp-play-btn');
-            // Updated SVG for Pause/Play
             if(isPlaying) {
                 fpBtn.classList.add('pause');
                 fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>`;
@@ -1315,7 +1369,7 @@
         function openFullPlayer() { 
             const fp = document.getElementById('full-player');
             fp.classList.add('active'); 
-            fp.style.transform = ''; // 清除拖曳殘留
+            fp.style.transform = ''; 
             document.body.style.overflow='hidden'; 
         }
         function closeFullPlayer() { 
@@ -1329,15 +1383,19 @@
         function togglePlayerView() {
             const main = document.getElementById('fp-view-main');
             const queue = document.getElementById('fp-view-queue');
+            const toggleBtn = document.getElementById('fp-queue-toggle-btn');
+            
             if (queue.classList.contains('active')) {
                 // Return to main
                 queue.classList.remove('active');
                 main.classList.remove('shifted');
+                toggleBtn.classList.remove('active');
             } else {
                 // Go to queue
                 queue.classList.add('active');
                 main.classList.add('shifted');
-                renderQueue(); // Refresh queue list
+                toggleBtn.classList.add('active');
+                renderQueue(); 
             }
         }
 
@@ -1348,14 +1406,17 @@
         function updateFullPlayerHeart() {
             const isLiked = currentUserData.liked_songs.includes(currentSongId);
             const btn = document.getElementById('fp-fav-btn');
+            const qBtn = document.getElementById('fp-q-fav-btn');
+            
+            const filledIcon = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none" style="color:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            const outlineIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            
             if(isLiked) {
-                btn.classList.add('active');
-                // 實心紅色愛心
-                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                if(btn) btn.innerHTML = filledIcon;
+                if(qBtn) qBtn.innerHTML = filledIcon;
             } else {
-                btn.classList.remove('active');
-                // 空心愛心
-                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                if(btn) btn.innerHTML = outlineIcon;
+                if(qBtn) qBtn.innerHTML = outlineIcon;
             }
         }
 
@@ -1363,7 +1424,6 @@
         function toggleShuffle() {
             isShuffleMode = !isShuffleMode;
             document.getElementById('btn-shuffle').classList.toggle('active', isShuffleMode);
-            
             if(isShuffleMode) {
                 const current = currentQueue[currentSongIndex];
                 let rest = currentQueue.filter((_, i) => i !== currentSongIndex);
