@@ -232,35 +232,82 @@
         
         /* 左上角返回按鈕 (優化版) */
         .fp-close-btn { 
-            position: absolute; 
-            top: 40px; 
-            left: 40px; 
-            width: 40px; height: 40px; 
-            display: flex; align-items: center; justify-content: center; 
-            background: rgba(255,255,255,0.15); 
-            border-radius: 50%; 
-            cursor: pointer; 
-            backdrop-filter: blur(10px); 
-            z-index: 10; 
-            border: 1px solid rgba(255,255,255,0.1); 
-            color: white; 
-            transition: 0.2s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .fp-close-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
-        .fp-close-btn:active { transform: scale(0.95); }
-        /* 手機版隱藏此按鈕 */
-        @media (max-width: 768px) {
-            .fp-close-btn { display: none; }
-        }
+    position: absolute; 
+    top: 25px; /* 改成 25px 讓它更靠上，避免擋到內容 */
+    left: 30px; /* 稍微靠左一點 */
+    width: 40px; height: 40px; 
+    display: flex; align-items: center; justify-content: center; 
+    background: rgba(255,255,255,0.1); 
+    border-radius: 50%; 
+    cursor: pointer; 
+    backdrop-filter: blur(10px); 
+    z-index: 50; /* 提高層級，確保能被點到 */
+    border: 1px solid rgba(255,255,255,0.15); 
+    color: white; 
+    transition: 0.2s;
+}
+.fp-close-btn:hover { background: rgba(255,255,255,0.25); }
 
-        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: 20px;}
-        
-        /* View 1: Main Player */
-        .fp-view-main {
-            flex: 1; display: flex; flex-direction: column; padding: 0 30px 40px 30px;
-            transition: transform 0.4s ease, opacity 0.4s ease;
-        }
+/* 手機版絕對隱藏此按鈕 */
+@media (max-width: 768px) {
+    .fp-close-btn { display: none !important; }
+}
+
+/* 2. 讓第二頁 (Queue) 的內容在電腦版往下移，避免被左上角按鈕蓋住 */
+.fp-view-queue {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    display: flex; flex-direction: column; 
+    padding: 20px 30px;
+    padding-top: 90px; /* [關鍵] 電腦版上方留出空間給返回按鈕 */
+    transform: translateX(100%); 
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
+    opacity: 0; pointer-events: none;
+    z-index: 10; /* 確保在主頁面上方 */
+}
+
+/* 手機版第二頁不需要留這麼多頭部空間 (因為沒有按鈕) */
+@media (max-width: 768px) {
+    .fp-view-queue {
+        padding-top: calc(20px + var(--safe-top)); 
+    }
+}
+
+/* 3. [關鍵] 讓底部功能列常駐並浮動在最下方 */
+.fp-bottom-row { 
+    position: absolute; /* 絕對定位 */
+    bottom: 0; 
+    left: 0;
+    width: 100%;
+    height: 100px; /* 給予固定高度區域 */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0 40px; 
+    padding-bottom: 20px;
+    z-index: 60; /* 確保在所有視圖之上 */
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); /* 加一點漸層讓按鈕明顯 */
+    pointer-events: none; /* 讓點擊穿透背景 */
+}
+
+/* 讓按鈕恢復可點擊 */
+.fp-bottom-row .fp-icon-btn {
+    pointer-events: auto; 
+}
+
+/* 手機版底部位置微調 */
+@media (max-width: 768px) {
+    .fp-bottom-row {
+        padding: 0 25px;
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+}
+
+/* 調整主視圖高度，避免被底部功能列擋住內容 */
+.fp-view-main {
+    flex: 1; display: flex; flex-direction: column; padding: 0 30px;
+    padding-bottom: 100px; /* 留空間給底部列 */
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
         .fp-view-main.shifted { transform: translateX(-20%); opacity: 0; pointer-events: none; }
 
         .fp-cover-container {
@@ -536,75 +583,118 @@
 
     <!-- Full Screen Player Modal (New Layout) -->
     <div id="full-player">
-        <div class="fp-bg-layer" id="fp-bg"></div>
-        
-        <!-- Header: Pull Drag Area -->
-        <div class="fp-header" id="fp-drag-area">
-             <!-- 下拉關閉按鈕 (左上角，手機隱藏) -->
-            <button class="fp-close-btn" onclick="closeFullPlayer()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </button>
-            <div class="fp-header-pill"></div>
-        </div>
-        
-        <div class="fp-container">
-            <!-- View 1: Main -->
-            <div class="fp-view-main" id="fp-view-main">
-                <div class="fp-cover-container">
-                    <div class="fp-cover" id="fp-cover-img"></div>
+    <div class="fp-bg-layer" id="fp-bg"></div>
+    
+    <!-- 頂部區塊 (負責下拉手勢偵測 + 電腦版返回按鈕) -->
+    <div class="fp-header" id="fp-drag-area">
+        <!-- 電腦版左上角按鈕 (CSS已設定手機隱藏) -->
+        <button class="fp-close-btn" onclick="closeFullPlayer()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <!-- 下拉提示條 (Pill) -->
+        <div class="fp-header-pill"></div>
+    </div>
+    
+    <div class="fp-container">
+        <!-- 第一頁: 唱片與控制 -->
+        <div class="fp-view-main" id="fp-view-main">
+            <div class="fp-cover-container">
+                <div class="fp-cover" id="fp-cover-img"></div>
+            </div>
+            
+            <div class="fp-info-row">
+                <div class="fp-text">
+                    <div class="fp-title" id="fp-title">Song Title</div>
+                    <div class="fp-artist" id="fp-artist">Artist Name</div>
                 </div>
-                
-                <div class="fp-info-row">
-                    <div class="fp-text">
-                        <div class="fp-title" id="fp-title">Song Title</div>
-                        <div class="fp-artist" id="fp-artist">Artist Name</div>
-                    </div>
-                    <div class="fp-actions-top-right">
-                         <!-- 喜好項目 (愛心) -->
-                        <button class="fp-icon-btn" id="fp-fav-btn" onclick="toggleCurrentFavorite(event)">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        </button>
-                        <!-- 更多選項 -->
-                        <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="fp-progress-container">
-                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value)">
-                    <div class="fp-time-labels">
-                        <span id="fp-curr-time">0:00</span>
-                        <span id="fp-total-time">-:--</span>
-                    </div>
-                </div>
-
-                <div class="fp-controls">
-                    <button class="fp-ctrl-btn" onclick="playPrev()">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 20L9 12l10-8v16zM5 19h2V5H5v14z"/></svg>
+                <div class="fp-actions-top-right">
+                    <button class="fp-icon-btn" id="fp-fav-btn" onclick="toggleCurrentFavorite(event)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
-                    <button class="fp-ctrl-btn fp-play-btn" id="fp-play-btn" onclick="togglePlay()">
-                        <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
-                    </button>
-                    <button class="fp-ctrl-btn" onclick="playNext()">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 4l10 8-10 8V4zM19 5h-2v14h2V5z"/></svg>
-                    </button>
-                </div>
-
-                <div class="fp-bottom-row">
-                    <!-- 歌詞按鈕 -->
-                    <button class="fp-icon-btn">
-                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                    </button>
-                    
-                    <!-- (中間按鈕已刪除) -->
-
-                    <!-- 清單按鈕 -->
-                    <button class="fp-icon-btn" id="fp-queue-toggle-btn" onclick="togglePlayerView()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                     </button>
                 </div>
             </div>
+
+            <div class="fp-progress-container">
+                <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value)">
+                <div class="fp-time-labels">
+                    <span id="fp-curr-time">0:00</span>
+                    <span id="fp-total-time">-:--</span>
+                </div>
+            </div>
+
+            <div class="fp-controls">
+                <button class="fp-ctrl-btn" onclick="playPrev()">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 20L9 12l10-8v16zM5 19h2V5H5v14z"/></svg>
+                </button>
+                <button class="fp-ctrl-btn fp-play-btn" id="fp-play-btn" onclick="togglePlay()">
+                    <svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9V3z"/></svg>
+                </button>
+                <button class="fp-ctrl-btn" onclick="playNext()">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M5 4l10 8-10 8V4zM19 5h-2v14h2V5z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- 第二頁: 待播清單 (右上角無完成按鈕) -->
+        <div class="fp-view-queue" id="fp-view-queue">
+            <!-- 上方歌曲資訊列 (新增) -->
+            <div class="fp-queue-top-info">
+                <div class="fp-q-header-img" id="fp-q-img"></div>
+                <div class="fp-q-header-text">
+                    <div class="t" id="fp-q-title">Song</div>
+                    <div class="a" id="fp-q-artist">Artist</div>
+                </div>
+                <div class="fp-q-header-actions">
+                    <button class="fp-icon-btn" id="fp-q-fav-btn" onclick="toggleCurrentFavorite(event)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 四個功能按鈕 -->
+            <div class="fp-options-grid">
+                <button class="fp-opt-btn" id="btn-shuffle" onclick="toggleShuffle()">
+                    <svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                    隨機播放
+                </button>
+                <button class="fp-opt-btn" id="btn-loop" onclick="toggleLoop()">
+                    <svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    <span id="txt-loop">循環</span>
+                </button>
+                <button class="fp-opt-btn" id="btn-auto" onclick="toggleAutoPlay()">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    自動播放
+                </button>
+                <button class="fp-opt-btn" id="btn-mix">
+                    <svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                    混音
+                </button>
+            </div>
+
+            <!-- 清單列表 -->
+            <div class="fp-queue-list" id="fp-queue-list"></div>
+        </div>
+
+        <!-- 底部常駐功能列 (獨立出來，不受頁面切換影響) -->
+        <div class="fp-bottom-row">
+            <!-- 左：歌詞 -->
+            <button class="fp-icon-btn">
+                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+            
+            <!-- 右：清單開關 (點擊切換 1/2 頁) -->
+            <button class="fp-icon-btn" id="fp-queue-toggle-btn" onclick="togglePlayerView()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+        </div>
+    </div>
+</div>
 
             <!-- View 2: Queue & Options -->
             <div class="fp-view-queue" id="fp-view-queue">
@@ -1936,3 +2026,4 @@
     </script>
 </body>
 </html>
+
