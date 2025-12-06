@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
     <link rel="icon" href="./images/logo.png" type="image/png">
+    <!-- 預設為淺色，JS 會根據設定動態修改 -->
     <meta name="theme-color" content="#FFFFFF" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -177,7 +178,6 @@
 
         .music-card { position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .music-card:hover { transform: translateY(-6px); }
-        /* 修正封面裁切問題 */
         .cover-art { 
             width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; 
             background: linear-gradient(135deg, #e0e0e0, #f5f5f5); 
@@ -203,7 +203,6 @@
         .song-list-item:nth-child(3) { animation-delay: 0.15s; }
         .song-list-item:nth-child(4) { animation-delay: 0.2s; }
         .song-list-item:nth-child(5) { animation-delay: 0.25s; }
-        /* 更多項目以此類推，通用延遲 */
         .song-list-item:nth-child(n+6) { animation-delay: 0.3s; }
 
         .song-list-item:hover { background: var(--input-bg); transform: scale(1.01); }
@@ -236,7 +235,7 @@
         .page-section { 
             padding: 20px 16px 120px 16px; display: none; 
             opacity: 0;
-            animation: none; /* 由 JS 控制 */
+            animation: none; 
         }
         .page-section.active { 
             display: block; 
@@ -280,7 +279,7 @@
         .context-menu-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9998; display: none;
-            background: rgba(0,0,0,0.2); /* 增加背景遮罩濃度 */
+            background: rgba(0,0,0,0.2);
             backdrop-filter: blur(2px);
             transition: opacity 0.3s ease;
             opacity: 0;
@@ -299,14 +298,11 @@
             transform-origin: top left;
             opacity: 0;
             transform: scale(0.8);
-            transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 彈跳效果 */
+            transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex; flex-direction: column; gap: 4px;
         }
-        .context-menu-overlay.active .context-menu {
-            opacity: 1; transform: scale(1);
-        }
+        .context-menu-overlay.active .context-menu { opacity: 1; transform: scale(1); }
 
-        /* Mobile specific context menu (Action Sheet style) */
         @media (max-width: 768px) {
             .context-menu {
                 position: fixed; bottom: 20px; left: 3%; width: 94%;
@@ -315,9 +311,7 @@
                 transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
                 border-radius: 20px;
             }
-            .context-menu-overlay.active .context-menu {
-                transform: translateY(0);
-            }
+            .context-menu-overlay.active .context-menu { transform: translateY(0); }
         }
 
         .cm-row { display: flex; gap: 8px; }
@@ -342,7 +336,6 @@
         .cm-btn.split svg { margin-right: 0; width: 22px; height: 22px; margin-bottom: 4px; }
         .cm-btn.split { flex-direction: column; font-size: 0.8rem; gap: 2px; }
 
-        /* --- Playlist Header Buttons --- */
         .playlist-header-actions { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 20px; }
         .ph-btn {
             flex: 1; max-width: 180px; padding: 12px; border-radius: 30px; border: none; font-weight: 700; cursor: pointer;
@@ -352,7 +345,6 @@
         .ph-btn.shuffle { background: var(--input-bg); color: var(--accent-color); }
         .ph-btn:active { transform: scale(0.95); }
 
-        /* --- Add Music Red Bar --- */
         .add-music-bar {
             margin-top: 20px; width: 100%; padding: 15px;
             border-radius: 12px; border: 2px dashed rgba(250, 45, 72, 0.3);
@@ -364,13 +356,14 @@
         .add-music-bar:active { transform: scale(0.99); }
         .add-music-bar svg { margin-right: 8px; }
 
-        /* 修正 Collection Detail Header */
+        /* Header Cover Style */
         #cd-cover {
             width: 180px; height: 180px; margin: 0 auto 20px; 
             border-radius: 20px; background: #eee; 
             background-size: cover !important; 
             background-position: center !important; 
             box-shadow: var(--shadow-md);
+            display: flex; align-items: center; justify-content: center; /* 讓 SVG 居中 */
         }
 
     </style>
@@ -444,6 +437,7 @@
                 <h2>精選專輯</h2>
                 <div id="home-album-container" class="horizontal-row" style="margin-top:15px;"></div>
                 <h2>為你推薦</h2>
+                <!-- 這裡會顯示演算法計算後的結果 -->
                 <div id="home-horizontal-container" style="margin-top:20px;"></div>
             </div>
 
@@ -574,8 +568,6 @@
                 <div id="cd-cover"></div>
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
                 <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
-                
-                <!-- 兩個並列的播放按鈕 -->
                 <div class="playlist-header-actions">
                     <button class="ph-btn play" onclick="playCollectionAll(false)">
                         <svg class="icon" viewBox="0 0 24 24" style="fill:currentColor; stroke:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 播放
@@ -629,10 +621,7 @@
         let currentSongIndex = -1;
         let currentCollectionSongs = [];
         let currentPlaylistId = null; 
-        
-        // 修正：itemsToAdd 改為陣列，支援多首歌同時加入
         let itemsToAdd = []; 
-        
         let tempImgBase64 = null;
         let addingToPlaylistId = null;
 
@@ -649,6 +638,11 @@
                 if(currentUserData) {
                     if(!currentUserData.search_history) { currentUserData.search_history = []; }
                     if(!currentUserData.liked_songs) { currentUserData.liked_songs = []; } 
+                    // 新增：黑名單欄位，用於減少推薦
+                    if(!currentUserData.disliked_songs) { currentUserData.disliked_songs = []; }
+                    // 新增：播放次數/記錄，用於推薦演算法
+                    if(!currentUserData.play_counts) { currentUserData.play_counts = {}; }
+
                     saveUserToDB(currentUserData);
                     document.getElementById('landing-page').classList.add('hidden');
                     document.getElementById('app-view').classList.remove('hidden');
@@ -658,7 +652,6 @@
             
             const player = document.getElementById('audio-player');
             player.addEventListener('ended', playNext); 
-            // 監聽播放事件以更新 MediaSession
             if ('mediaSession' in navigator) {
                 player.addEventListener('play', () => updateMediaSessionPosition());
                 player.addEventListener('pause', () => updateMediaSessionPosition());
@@ -666,12 +659,53 @@
         };
 
         function initApp() {
-            renderHorizontalRows('home-horizontal-container', musicLibrary);
+            // 使用智慧推薦演算法
+            const recommended = getSmartRecommendations();
+            renderHorizontalRows('home-horizontal-container', recommended);
             renderAlbumSection();
             renderHorizontalRows('discovery-horizontal-container', [...musicLibrary].reverse());
             renderPlaylists();
             updateUIFromUserData();
             updateMobileNavActive('home');
+        }
+
+        // --- Smart Recommendation Algorithm ---
+        function getSmartRecommendations() {
+            // 過濾掉黑名單歌曲
+            const disliked = currentUserData.disliked_songs || [];
+            let candidates = musicLibrary.filter(s => !disliked.includes(s.id));
+
+            // 簡單評分機制
+            const liked = currentUserData.liked_songs || [];
+            const counts = currentUserData.play_counts || {};
+
+            candidates.forEach(song => {
+                let score = 0;
+                // 1. 如果歌曲在喜好清單中，大幅加分 (但不推薦已經加入的，這裡假設推薦是為了發現新歌或常聽的)
+                // 但首頁「為你推薦」通常包含已喜歡的，所以加分
+                if(liked.includes(song.id)) score += 50;
+
+                // 2. 如果喜歡該歌手的其他歌，加分 (模擬協同過濾的簡化版)
+                const artistLikedCount = liked.filter(lid => {
+                    const s = musicLibrary.find(x => x.id === lid);
+                    return s && s.artist === song.artist;
+                }).length;
+                score += (artistLikedCount * 10);
+
+                // 3. 播放次數加分 (越常聽越容易出現)
+                if(counts[song.id]) score += (counts[song.id] * 2);
+
+                // 4. 隨機因子 (0~20分)，確保每次刷新有點變化，不要死板
+                score += Math.random() * 20;
+
+                song._score = score;
+            });
+
+            // 依照分數高低排序
+            candidates.sort((a, b) => b._score - a._score);
+
+            // 取前 20 首
+            return candidates.slice(0, 20);
         }
 
         function updateUIFromUserData() {
@@ -719,7 +753,7 @@
                     </div>
                     <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconPlay} 立即播放</button>
                     <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconShuffle} 隨機播放後續</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
+                    <button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>
                 `;
             } else if (type === 'playlist_song') {
                 html = `
@@ -729,11 +763,10 @@
                     </div>
                     <button class="cm-btn full-width" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} 釘選歌曲 (置頂)</button>
                     <button class="cm-btn full-width" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} 前往專輯</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
+                    <button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>
                     <button class="cm-btn full-width" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()" style="color:var(--accent-color);">${iconTrash} 從清單移除</button>
                 `;
             } else if (type === 'album') {
-                // 修正：專輯加入清單邏輯
                 html = `
                     <div class="cm-row">
                         <button class="cm-btn split" onclick="openPlaylistSelector(event, '${data.name}', 'album'); closeContextMenu()">${iconPlus} 加入清單</button>
@@ -760,9 +793,7 @@
             }
         }
 
-        function closeContextMenu() {
-            document.getElementById('cm-overlay').classList.remove('active');
-        }
+        function closeContextMenu() { document.getElementById('cm-overlay').classList.remove('active'); }
 
         async function toggleLike(id) {
             const idx = currentUserData.liked_songs.indexOf(id);
@@ -771,6 +802,24 @@
             await saveUserToDB(currentUserData);
             if(currentPlaylistId === 'favorites') openPlaylistDetail('favorites');
             renderPlaylists();
+        }
+
+        // --- Dislike / Not Recommended Logic ---
+        async function dislikeSong(id) {
+            if(!currentUserData.disliked_songs.includes(id)) {
+                currentUserData.disliked_songs.push(id);
+                // 同時從喜好項目移除
+                const likeIdx = currentUserData.liked_songs.indexOf(id);
+                if(likeIdx !== -1) currentUserData.liked_songs.splice(likeIdx, 1);
+                
+                await saveUserToDB(currentUserData);
+                
+                // 重新計算推薦並刷新首頁
+                const recommended = getSmartRecommendations();
+                renderHorizontalRows('home-horizontal-container', recommended);
+                
+                alert("已減少此類歌曲推薦，演算法將自動調整。");
+            }
         }
 
         async function pinSongInPlaylist(songId) {
@@ -807,13 +856,19 @@
             else header.classList.remove('scrolled');
         }
 
-        // --- Player & Media Session Fixed ---
+        // --- Player ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
 
         function playSong(id) {
             const song = musicLibrary.find(s => s.id === id);
             if(!song) return;
+            
+            // 記錄播放次數 (用於推薦演算法)
+            if(!currentUserData.play_counts) currentUserData.play_counts = {};
+            currentUserData.play_counts[id] = (currentUserData.play_counts[id] || 0) + 1;
+            saveUserToDB(currentUserData);
+
             currentQueue = [song]; 
             currentSongIndex = 0;
             playSongObject(song);
@@ -825,10 +880,7 @@
             document.getElementById('p-artist').innerText = song.artist;
             const coverImage = getSongCover(song);
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
-            
-            // 關鍵修正：在播放前設定 Media Metadata，解決靈動島不顯示問題
             updateMediaSession(song, coverImage);
-
             audioPlayer.play().then(() => {
                 isPlaying = true;
                 updatePlayBtn();
@@ -840,7 +892,6 @@
 
         function updateMediaSession(song, coverImage) {
             if ('mediaSession' in navigator) {
-                // 必須提供完整的 sizes 陣列以相容不同裝置
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
                     artist: song.artist,
@@ -854,11 +905,9 @@
                         { src: coverImage, sizes: '512x512', type: 'image/png' },
                     ]
                 });
-
                 navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
-                // 支援進度條拖曳
                 navigator.mediaSession.setActionHandler('seekto', (details) => {
                     if (details.seekTime || details.seekTime === 0) {
                         audioPlayer.currentTime = details.seekTime;
@@ -876,7 +925,7 @@
                         playbackRate: audioPlayer.playbackRate,
                         position: audioPlayer.currentTime
                     });
-                } catch(e) {} // 忽略尚未載入完成的錯誤
+                } catch(e) {} 
             }
         }
 
@@ -968,13 +1017,18 @@
 
         function openPlaylistDetail(plId) {
             let pl, songs, title, subtitle, cover;
+            const coverEl = document.getElementById('cd-cover');
             
             if (plId === 'favorites') {
                 currentPlaylistId = 'favorites';
                 title = "喜好項目";
                 songs = currentUserData.liked_songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 subtitle = `${songs.length} 首歌曲`;
-                cover = 'https://cdn-icons-png.flaticon.com/512/847/847969.png'; 
+                
+                // 修正喜好項目頭像顯示
+                coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
+                coverEl.style.backgroundImage = 'none'; 
+                coverEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             } else {
                 pl = currentUserData.playlists.find(p => p.id === plId);
                 if(!pl) return;
@@ -983,6 +1037,10 @@
                 title = pl.name;
                 subtitle = `${songs.length} 首歌曲`;
                 cover = pl.img || DEFAULT_ALBUM_IMG;
+
+                coverEl.innerHTML = '';
+                coverEl.style.background = '#eee';
+                coverEl.style.backgroundImage = `url(${cover})`;
             }
 
             currentCollectionSongs = songs;
@@ -990,15 +1048,6 @@
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
-            if(plId === 'favorites') {
-                document.getElementById('cd-cover').style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
-                document.getElementById('cd-cover').style.backgroundImage = 'none';
-                document.getElementById('cd-cover').innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="width:60px; height:60px; color:white; stroke:white; fill:white; margin-top:60px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
-            } else {
-                document.getElementById('cd-cover').innerHTML = '';
-                document.getElementById('cd-cover').style.background = '#eee';
-                document.getElementById('cd-cover').style.backgroundImage = `url(${cover})`;
-            }
 
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
             html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
@@ -1042,9 +1091,10 @@
             document.getElementById('cd-nav-title').innerText = albumName;
             document.getElementById('cd-title').innerText = albumName;
             document.getElementById('cd-subtitle').innerText = `專輯 • ${songs[0]?.artist || ''}`;
-            document.getElementById('cd-cover').style.background = '#eee';
-            document.getElementById('cd-cover').style.backgroundImage = `url(${getAlbumImage(albumName)})`;
-            document.getElementById('cd-cover').innerHTML = '';
+            const coverEl = document.getElementById('cd-cover');
+            coverEl.style.background = '#eee';
+            coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
+            coverEl.innerHTML = '';
             
             currentCollectionSongs = songs;
             
@@ -1110,18 +1160,14 @@
             } else { alert("歌曲已存在於清單中"); }
         }
 
-        // --- Select Playlist Logic (Updated for Album) ---
+        // --- Select Playlist Logic ---
         function openPlaylistSelector(e, idOrName, type){ 
             e.stopPropagation(); 
-            // 修正：清空並重新填充 itemsToAdd
             itemsToAdd = [];
-
             if (type === 'album') {
-                // 如果是專輯，找出所有該專輯的歌曲ID
                 const albumSongs = musicLibrary.filter(s => s.album === idOrName).map(s => s.id);
                 itemsToAdd = albumSongs;
             } else {
-                // 如果是單曲
                 itemsToAdd = [idOrName];
             }
 
@@ -1135,22 +1181,13 @@
         async function addToPlaylist(pid){ 
             const p=currentUserData.playlists.find(x=>x.id===pid); 
             if(p){
-                // 修正：批量加入並去重
                 let addedCount = 0;
                 itemsToAdd.forEach(sid => {
-                    if(!p.songs.includes(sid)) {
-                        p.songs.push(sid);
-                        addedCount++;
-                    }
+                    if(!p.songs.includes(sid)) { p.songs.push(sid); addedCount++; }
                 });
-                
                 if (addedCount > 0) {
-                    await saveUserToDB(currentUserData); 
-                    renderPlaylists(); 
-                    alert(`已加入 ${addedCount} 首歌曲到清單`); 
-                } else {
-                    alert("選取的歌曲已存在於清單中");
-                }
+                    await saveUserToDB(currentUserData); renderPlaylists(); alert(`已加入 ${addedCount} 首歌曲到清單`); 
+                } else { alert("選取的歌曲已存在於清單中"); }
             }
             closePlaylistSelector(); 
         }
@@ -1164,12 +1201,15 @@
             if(user){ 
                 if(user.password===p){ 
                     currentUserData=user; 
-                    if(!currentUserData.liked_songs) { currentUserData.liked_songs = []; await saveUserToDB(currentUserData); }
+                    if(!currentUserData.liked_songs) currentUserData.liked_songs = []; 
+                    if(!currentUserData.disliked_songs) currentUserData.disliked_songs = [];
+                    if(!currentUserData.play_counts) currentUserData.play_counts = {};
+                    await saveUserToDB(currentUserData);
                     localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); 
                 } else alert("密碼錯誤"); 
             } else { 
                 if(confirm("用戶不存在，是否立即註冊?")){ 
-                    const n={username:u,password:p,avatar:null,playlists:[],liked_songs:[],theme:'light',search_history:[]}; 
+                    const n={username:u,password:p,avatar:null,playlists:[],liked_songs:[],disliked_songs:[],play_counts:{},theme:'light',search_history:[]}; 
                     await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); 
                 } 
             } 
@@ -1185,7 +1225,25 @@
         function openSettings() { document.getElementById('settings-modal').classList.add('active'); document.getElementById('player-bar').classList.add('hidden'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); document.getElementById('player-bar').classList.remove('hidden'); }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
-        function updateThemeUI(t) { const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } }
+        
+        // 修正：深淺色模式切換時強制更新 meta tag
+        function updateThemeUI(t) { 
+            const p=document.getElementById('theme-pill'); 
+            const pl=document.getElementById('pill-light'); 
+            const pd=document.getElementById('pill-dark'); 
+            const m=document.getElementById('theme-color-meta'); 
+            if(t==='dark'){ 
+                document.body.setAttribute('data-theme','dark'); 
+                p.setAttribute('data-state','dark'); 
+                pl.classList.remove('active'); pd.classList.add('active'); 
+                m.setAttribute('content','#000000'); 
+            }else{ 
+                document.body.removeAttribute('data-theme'); 
+                p.setAttribute('data-state','light'); 
+                pd.classList.remove('active'); pl.classList.add('active'); 
+                m.setAttribute('content','#FFFFFF'); 
+            } 
+        }
         
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
         function closeCreatePlaylistModal(){ document.getElementById('create-playlist-modal').classList.remove('active'); if (document.activeElement) document.activeElement.blur(); }
