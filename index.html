@@ -147,7 +147,14 @@
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
         .music-card { position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .music-card:hover { transform: translateY(-6px); }
+        
+        /* [修正] 限制 Hover 效果僅在支援 hover 的裝置上觸發，避免手機點擊卡住 */
+        @media (hover: hover) {
+            .music-card:hover { transform: translateY(-6px); }
+        }
+        /* [修正] 新增 Active 狀態，讓手機點擊有回饋且手指放開即復原 */
+        .music-card:active { transform: scale(0.95); }
+
         .cover-art { 
             width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; 
             background: linear-gradient(135deg, #e0e0e0, #f5f5f5); 
@@ -287,12 +294,31 @@
         .fp-icon-btn svg { width: 26px; height: 26px; stroke-width: 2px; }
 
         .fp-progress-container { width: 100%; margin-bottom: 20px; }
+        
+        /* [修正] 新的進度條樣式：中間簍空、已播放為白色 */
         .fp-range {
-            width: 100%; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.2);
-            border-radius: 2px; outline: none; cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%; 
+            height: 4px; /* 軌道高度 */
+            background: rgba(255,255,255,0.2); /* 預設背景（未播放部分） */
+            border-radius: 2px; 
+            outline: none; 
+            cursor: pointer;
+            position: relative;
         }
-        .fp-range::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: white; border-radius: 50%; transition: 0.2s; }
-        .fp-range:hover::-webkit-slider-thumb { width: 14px; height: 14px; }
+        /* 滑塊樣式 */
+        .fp-range::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            width: 14px; /* 加大滑塊方便點擊 */
+            height: 14px; 
+            background: white; 
+            border-radius: 50%; 
+            transition: transform 0.1s;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3); 
+        }
+        .fp-range::-webkit-slider-thumb:active { transform: scale(1.3); }
+        
         .fp-time-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.6); font-weight: 600; font-variant-numeric: tabular-nums; }
 
         .fp-controls { display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px; padding: 0 10px; }
@@ -575,7 +601,7 @@
             <button class="fp-close-btn" onclick="closeFullPlayer()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
-            <!-- 下拉提示條 (Pill) - 點擊關閉 -->
+            <!-- 下拉提示條 (Pill) - 點擊可關閉 -->
             <div class="fp-header-pill" onclick="closeFullPlayer()"></div>
         </div>
         
@@ -602,7 +628,8 @@
                 </div>
 
                 <div class="fp-progress-container">
-                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value)">
+                    <!-- [修正] oninput 新增 updateRangeBackground -->
+                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value); updateRangeBackground(this)">
                     <div class="fp-time-labels">
                         <span id="fp-curr-time">0:00</span>
                         <span id="fp-total-time">-:--</span>
@@ -1311,6 +1338,9 @@
             document.getElementById('fp-q-artist').innerText = song.artist;
             document.getElementById('fp-q-img').style.backgroundImage = `url('${coverImage}')`;
             
+            // [修正] 重置進度條背景
+            updateRangeBackground(document.getElementById('fp-progress'));
+
             updateFullPlayerHeart();
             updateMediaSession(song, coverImage);
             
@@ -1399,6 +1429,8 @@
             fp.classList.add('active'); 
             fp.style.transform = ''; 
             document.body.style.overflow='hidden'; 
+            // 確保打開時進度條背景正確
+            updateRangeBackground(document.getElementById('fp-progress'));
         }
         function closeFullPlayer() { 
             const fp = document.getElementById('full-player');
@@ -1496,19 +1528,35 @@
             document.getElementById('btn-auto').classList.toggle('active', isAutoPlay);
         }
 
-        // Progress & Time
+        // Progress & Time & [修正] Slider Background Logic
         function updateProgress() {
             if(!audioPlayer.duration) return;
             const current = audioPlayer.currentTime;
             const duration = audioPlayer.duration;
-            document.getElementById('fp-progress').max = Math.floor(duration);
-            document.getElementById('fp-progress').value = Math.floor(current);
+            const slider = document.getElementById('fp-progress');
+            slider.max = Math.floor(duration);
+            slider.value = Math.floor(current);
             document.getElementById('fp-curr-time').innerText = formatTime(current);
             document.getElementById('fp-total-time').innerText = formatTime(duration);
+            
+            // 更新進度條背景樣式
+            updateRangeBackground(slider);
         }
+        
+        // [新增] 更新進度條背景漸層函數
+        function updateRangeBackground(input) {
+            const val = input.value;
+            const max = input.max || 100;
+            const percentage = max > 0 ? (val / max) * 100 : 0;
+            input.style.background = `linear-gradient(to right, #FFFFFF ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
+        }
+
         function seekAudio(val) {
             audioPlayer.currentTime = val;
+            // Seek 時也更新背景
+            updateRangeBackground(document.getElementById('fp-progress'));
         }
+
         function formatTime(s) {
             const min = Math.floor(s / 60);
             const sec = Math.floor(s % 60);
