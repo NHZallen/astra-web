@@ -102,29 +102,13 @@
         .btn-large { padding: 18px 45px; border-radius: 40px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: 0.3s; }
         .btn-filled { background: #1D1D1F; color: white; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
         .btn-outlined { background: transparent; color: #1D1D1F; border: 1px solid #D2D2D7; }
-        .marquee-strip { background: #FA2D48; color: white; padding: 15px 0; overflow: hidden; position: relative; width: 100%; transform: rotate(-2deg) scale(1.05); margin: 60px 0; }
-        .marquee-content { display: flex; gap: 50px; white-space: nowrap; animation: scrollLeft 20s linear infinite; font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; }
-        @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .app-showcase { display: flex; justify-content: center; margin: 80px 0; perspective: 1000px; }
-        .phone-mockup { width: 320px; height: 640px; background: #FFF; border-radius: 45px; border: 12px solid #1D1D1F; position: relative; overflow: hidden; box-shadow: 0 50px 100px rgba(0,0,0,0.15); transform: rotateY(-10deg) rotateX(5deg); transition: 0.5s; }
-        .screen-content { width: 100%; height: 100%; background: #F5F5F7; padding: 20px; display: flex; flex-direction: column; }
-        .features-section { background: #F5F5F7; border-radius: 40px; margin: 40px 20px; }
-        .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 50px; }
-        .feature-box { background: #FFFFFF; padding: 40px; border-radius: 24px; transition: 0.3s; display: flex; flex-direction: column; align-items: flex-start; border: 1px solid transparent; opacity: 0; transform: translateY(30px); }
-        .feature-box.visible { opacity: 1; transform: translateY(0); transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        .f-icon { width: 50px; height: 50px; background: #F5F5F7; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: var(--accent-color); }
-        .lp-footer { text-align: center; padding: 80px 20px; background: #FFF; border-top: 1px solid #F5F5F7; }
-        .footer-logo { font-size: 2rem; font-weight: 800; margin-bottom: 20px; color: #1D1D1F; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 768px) {
             .lp-nav { padding: 15px 30px; padding-top: calc(15px + var(--safe-top)); }
             .lp-hero { padding: 120px 30px 60px 30px; }
-            .lp-section { padding: 80px 30px; }
             .hero-title { font-size: 2.8rem; }
-            .phone-mockup { width: 280px; height: 560px; transform: none; margin: 0 auto; border-width: 8px; }
             .hero-cta-group { flex-direction: column; width: 100%; max-width: 300px; margin: 0 auto; }
             .btn-large { width: 100%; }
-            .features-section { margin: 20px 10px; border-radius: 30px; padding: 40px 20px; }
         }
 
         /* --- Login Modal --- */
@@ -161,19 +145,6 @@
         .horizontal-row { display: flex; overflow-x: auto; gap: 16px; padding-bottom: 20px; margin-bottom: 20px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; }
         .horizontal-row::-webkit-scrollbar { display: none; }
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
-        .horizontal-row .artist-card { flex: 0 0 auto; scroll-snap-align: start; }
-
-        .artist-song-container-scroll { display: grid; grid-auto-flow: column; grid-template-rows: repeat(3, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scroll-snap-type: x mandatory; }
-        .artist-song-container-scroll::-webkit-scrollbar { display: none; }
-        .artist-song-item { width: 280px; scroll-snap-align: start; display: flex; align-items: center; padding: 8px; border-radius: 12px; background: transparent; transition: 0.2s; cursor: pointer; }
-        .artist-song-item:hover { background: var(--input-bg); }
-        
-        .artist-album-grid { display: grid; gap: 15px; grid-template-columns: repeat(2, 1fr); margin-bottom: 30px; }
-        @media (min-width: 769px) { .artist-album-grid { grid-template-columns: repeat(5, 1fr); } }
-
-        .artist-card { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.3s; width: 120px; margin-right: 20px; flex-shrink: 0; }
-        .artist-card:hover { transform: translateY(-4px); }
-        .artist-img { width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center; margin-bottom: 10px; border: 2px solid var(--card-bg); box-shadow: var(--shadow-sm); }
 
         .music-card { position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .music-card:hover { transform: translateY(-6px); }
@@ -218,7 +189,6 @@
         .player-bar.active { transform: translateY(0); opacity: 1; }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
         
-        /* Updated Fullscreen Modal for Playlist Detail */
         .fullscreen-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--modal-bg); z-index: 300; 
@@ -228,79 +198,9 @@
         }
         .fullscreen-modal.active { transform: translateY(0) scale(1); opacity: 1; }
         
-        /* New Layout for Collection Detail */
-        #collection-detail-modal .modal-nav {
-            position: absolute; top: var(--safe-top); left: 0; width: 100%; 
-            z-index: 20; background: transparent; border: none;
-            padding: 10px 20px;
-        }
-        #collection-detail-modal .modal-body {
-            padding: 0; overflow-y: auto; height: 100%;
-            display: flex; flex-direction: column;
-            scroll-behavior: smooth;
-        }
-        
-        .cd-header-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 400px; padding: 80px 20px 20px;
-            background: linear-gradient(to bottom, #dce4eb, var(--bg-color));
-            position: relative;
-            flex-shrink: 0;
-        }
-        [data-theme="dark"] .cd-header-container { background: linear-gradient(to bottom, #2c3e50, var(--bg-color)); }
-
-        .cd-bg-blur {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-size: cover; background-position: center; opacity: 0.3;
-            filter: blur(40px); z-index: 0; pointer-events: none;
-        }
-
-        #cd-cover {
-            width: 240px; height: 240px; 
-            border-radius: 20px; background: #eee; 
-            background-size: cover !important; 
-            background-position: center !important; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-            display: flex; align-items: center; justify-content: center;
-            position: relative; overflow: hidden; z-index: 2;
-            margin-bottom: 25px; transition: 0.3s;
-        }
-        .cover-edit-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
-            opacity: 0; transition: opacity 0.2s; cursor: pointer;
-        }
-        #cd-cover:hover .cover-edit-overlay { opacity: 1; }
-        .cover-edit-overlay svg { color: white; width: 40px; height: 40px; }
-
-        .cd-info-block { text-align: center; z-index: 2; width: 100%; max-width: 600px; }
-        #cd-title { font-size: 2rem; font-weight: 800; margin-bottom: 5px; line-height: 1.1; }
-        #cd-subtitle { color: var(--text-secondary); font-weight: 600; margin-bottom: 20px; }
-
-        .playlist-header-actions { display: flex; gap: 15px; width: 100%; justify-content: center; margin-bottom: 20px; }
-        .ph-btn {
-            flex: 1; max-width: 160px; padding: 14px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
-            font-size: 1rem;
-        }
-        .ph-btn.play { background: var(--text-primary); color: var(--bg-color); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .ph-btn.shuffle { background: rgba(128,128,128,0.15); color: var(--text-primary); backdrop-filter: blur(10px); }
-        .ph-btn:active { transform: scale(0.95); }
-
-        .playlist-search-container {
-            width: 100%; max-width: 600px; padding: 0 20px; margin-bottom: 10px; z-index: 2;
-        }
-        .playlist-local-search {
-            width: 100%; padding: 12px 15px; border-radius: 10px; 
-            background: rgba(128,128,128,0.1); border: none;
-            color: var(--text-primary); font-size: 0.95rem; outline: none;
-            text-align: center; transition: 0.2s;
-        }
-        .playlist-local-search:focus { background: rgba(128,128,128,0.2); text-align: left; }
-
+        .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
         
-        /* 頁面切換動畫 */
         .page-section { 
             padding: 20px 16px 120px 16px; display: none; 
             opacity: 0;
@@ -326,14 +226,12 @@
             .main-content { padding-top: calc(70px + var(--safe-top)); padding-bottom: 160px; }
             .page-section { padding: 10px 16px 120px 16px; } 
             .horizontal-row .music-card { width: 45%; min-width: 130px; }
-            .artist-song-item { width: 85vw; }
         }
 
         .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); transition: 0.3s; }
         .user-profile-btn { width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer; background-size: cover !important; background-position: center !important; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg); }
         .user-profile-btn:active { transform: scale(0.9); }
         
-        /* Search */
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto; }
         .search-history-dropdown.active { display: block; animation: fadeSlideUp 0.3s ease forwards; }
@@ -405,6 +303,15 @@
         .cm-btn.split svg { margin-right: 0; width: 22px; height: 22px; margin-bottom: 4px; }
         .cm-btn.split { flex-direction: column; font-size: 0.8rem; gap: 2px; }
 
+        .playlist-header-actions { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 20px; }
+        .ph-btn {
+            flex: 1; max-width: 180px; padding: 12px; border-radius: 30px; border: none; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s;
+        }
+        .ph-btn.play { background: var(--accent-color); color: white; box-shadow: 0 4px 15px var(--accent-color-light); }
+        .ph-btn.shuffle { background: var(--input-bg); color: var(--accent-color); }
+        .ph-btn:active { transform: scale(0.95); }
+
         .add-music-bar {
             margin-top: 20px; width: 100%; padding: 15px;
             border-radius: 12px; border: 2px dashed rgba(250, 45, 72, 0.3);
@@ -415,6 +322,32 @@
         .add-music-bar:hover { background: rgba(250, 45, 72, 0.08); border-color: var(--accent-color); transform: scale(1.01); }
         .add-music-bar:active { transform: scale(0.99); }
         .add-music-bar svg { margin-right: 8px; }
+
+        /* Header Cover Style & Edit Overlay */
+        #cd-cover {
+            width: 180px; height: 180px; margin: 0 auto 20px; 
+            border-radius: 20px; background: #eee; 
+            background-size: cover !important; 
+            background-position: center !important; 
+            box-shadow: var(--shadow-md);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .cover-edit-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s; cursor: pointer;
+        }
+        #cd-cover:hover .cover-edit-overlay { opacity: 1; }
+        .cover-edit-overlay svg { color: white; width: 40px; height: 40px; }
+        
+        .tag-section-header {
+             display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px;
+        }
+        .tag-badge {
+            background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 6px; 
+            font-size: 0.8rem; font-weight: bold; margin-left: 10px;
+        }
 
     </style>
 </head>
@@ -465,7 +398,7 @@
             <div class="nav-item" onclick="switchPage('search')" id="nav-search"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
             <div class="nav-item" onclick="switchPage('discovery')" id="nav-discovery"><svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>新發現</div>
             <div class="nav-item" onclick="switchPage('database')" id="nav-database"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>資料庫</div>
-            <div class="nav-item" style="margin-top:auto" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
+            <div class="nav-item" style="margin-top:auto" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
         </nav>
 
         <main class="main-content" onscroll="handleScroll()">
@@ -486,9 +419,12 @@
                 </div>
                 <h2>精選專輯</h2>
                 <div id="home-album-container" class="horizontal-row" style="margin-top:15px;"></div>
+                
                 <h2>為你推薦</h2>
-                <!-- 這裡會顯示演算法計算後的結果 -->
                 <div id="home-horizontal-container" style="margin-top:20px;"></div>
+
+                <!-- 這裡會自動生成標籤分類區塊 -->
+                <div id="home-tags-container"></div>
             </div>
 
             <!-- B. Search -->
@@ -507,6 +443,8 @@
                 <h2 style="margin-bottom:20px;">探索新聲</h2>
                 <p style="color:var(--text-secondary); margin-bottom:20px;">挖掘那些您可能錯過的好音樂</p>
                 <div id="discovery-horizontal-container"></div>
+                <!-- 新發現也會包含分類 -->
+                <div id="discovery-tags-container"></div>
             </div>
 
             <!-- D. Database -->
@@ -525,7 +463,7 @@
             <div class="mobile-nav-item" onclick="switchPage('search')" id="mobile-nav-search"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>搜尋</div>
             <div class="mobile-nav-item" onclick="switchPage('discovery')" id="mobile-nav-discovery"><svg class="icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>新發現</div>
             <div class="mobile-nav-item" onclick="switchPage('database')" id="mobile-nav-database"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>資料庫</div>
-            <div class="mobile-nav-item" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
+            <div class="mobile-nav-item" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
         </div>
 
         <footer class="player-bar" id="player-bar">
@@ -537,6 +475,7 @@
                 </div>
             </div>
             <div style="display:flex; gap:10px; align-items:center;">
+                <!-- Shuffle Toggle Indicator (Implicitly ON) -->
                 <button onclick="togglePlay()" id="playBtn" style="width:40px; height:40px; border-radius:50%; background:var(--text-primary); color:var(--bg-color); border:none; cursor:pointer; font-size:1.2rem;">▶</button>
                 <button onclick="playNext()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">
                     <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="currentColor"><path d="M5 4l10 8-10 8V4z"></path><line x1="19" y1="5" x2="19" y2="19"></line></svg>
@@ -606,29 +545,27 @@
         </div>
     </div>
 
-    <!-- Collection Detail Modal (Rewritten Layout) -->
+    <!-- Collection Detail Modal -->
     <div id="collection-detail-modal" class="fullscreen-modal" style="z-index:305;">
-        <button class="modal-nav" onclick="closeCollectionDetail()" style="color:var(--text-primary);">
-            <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-        </button>
-        
+        <div class="modal-nav">
+            <button onclick="closeCollectionDetail()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">←</button>
+            <h2 id="cd-nav-title" style="font-size:1.2rem;">Title</h2>
+            <div style="width:30px;"></div>
+        </div>
         <div class="modal-body">
-            <!-- Header Section -->
-            <div class="cd-header-container">
-                <div class="cd-bg-blur" id="cd-bg-blur"></div>
-                
+            <!-- Header Info -->
+            <div style="text-align:center; margin-bottom:30px;">
+                <!-- 增加封面的編輯 Overlay -->
                 <div id="cd-cover" onclick="triggerCoverEdit()">
                     <div class="cover-edit-overlay">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                     </div>
                 </div>
+                <!-- 隱藏的檔案輸入框，用於修改封面 -->
                 <input type="file" id="playlist-cover-upload" accept="image/*" style="display:none;" onchange="handlePlaylistCoverUpdate(this)">
                 
-                <div class="cd-info-block">
-                    <h1 id="cd-title">Title</h1>
-                    <p id="cd-subtitle">Subtitle</p>
-                </div>
-
+                <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
+                <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
                 <div class="playlist-header-actions">
                     <button class="ph-btn play" onclick="playCollectionAll(false)">
                         <svg class="icon" viewBox="0 0 24 24" style="fill:currentColor; stroke:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 播放
@@ -637,15 +574,9 @@
                         <svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg> 隨機播放
                     </button>
                 </div>
-
-                <!-- Playlist Local Search -->
-                <div class="playlist-search-container">
-                    <input type="text" class="playlist-local-search" placeholder="搜尋此列表內的歌曲" oninput="filterPlaylistSongs(this.value)">
-                </div>
             </div>
-
-            <!-- List Content Area -->
-            <div id="cd-content-area" style="padding: 0 20px; background: var(--modal-bg);"></div>
+            <!-- Dynamic Content Area -->
+            <div id="cd-content-area"></div>
         </div>
     </div>
 
@@ -666,21 +597,31 @@
         async function saveUserToDB(userObj) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(userObj); tx.oncomplete = () => res(); tx.onerror = () => rej(); }); }
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
+        // --- 在這裡加入 Tags (標籤) ---
         const baseMusic = [
-            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "" },
-            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "" },
-            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "" },
-            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "" },
+            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "", tags: ["K-POP", "舞曲"] },
+            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "", tags: ["K-POP"] },
+            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "", tags: ["K-POP", "R&B"] },
+            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "", tags: ["K-POP"] },
         ];
+        
         let musicLibrary = [...baseMusic];
-        for(let i=5; i<=30; i++) {
+        const tagPool = ["華語", "西洋", "K-POP", "J-POP", "R&B", "搖滾", "嘻哈"];
+
+        for(let i=5; i<=50; i++) {
+            // 隨機分配 Tag 測試用
+            const randomTag = tagPool[Math.floor(Math.random() * tagPool.length)];
+            const randomTag2 = Math.random() > 0.5 ? tagPool[Math.floor(Math.random() * tagPool.length)] : null;
+            const tags = randomTag2 && randomTag2 !== randomTag ? [randomTag, randomTag2] : [randomTag];
+
             musicLibrary.push({
                 id: i,
                 title: `Demo Song ${i}`,
                 artist: i % 2 === 0 ? "BABYMONSTER" : "Various Artist",
                 album: `Demo Album ${Math.floor(i/5)}`,
                 filename: "song1.mp3",
-                cover: ""
+                cover: "",
+                tags: tags 
             });
         }
         
@@ -692,6 +633,7 @@
         let itemsToAdd = []; 
         let tempImgBase64 = null;
         let addingToPlaylistId = null;
+        let isShuffleMode = true; // 預設隨機播放，避免順序一樣
 
         // --- Init ---
         window.onload = async function() {
@@ -726,14 +668,64 @@
         };
 
         function initApp() {
+            // 推薦
             const recommended = getSmartRecommendations();
             renderHorizontalRows('home-horizontal-container', recommended);
             renderAlbumSection();
+            
+            // 探索
             const discoveries = getDiscoveryRecommendations();
             renderHorizontalRows('discovery-horizontal-container', discoveries);
+            
+            // --- 渲染分類 (Tags) ---
+            renderTagSections('home-tags-container', musicLibrary); 
+            renderTagSections('discovery-tags-container', musicLibrary, true); // Discovery 頁面使用相同邏輯但可微調
+            
             renderPlaylists();
             updateUIFromUserData();
             updateMobileNavActive('home');
+        }
+
+        // 自動生成分類區塊的函數
+        function renderTagSections(containerId, sourceLibrary, isDiscovery = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            // 取得所有唯一的 Tags
+            const allTags = [...new Set(sourceLibrary.flatMap(s => s.tags || []))].filter(t => t);
+            
+            allTags.forEach(tag => {
+                // 找出該 Tag 的歌曲
+                let songs = sourceLibrary.filter(s => s.tags && s.tags.includes(tag));
+                
+                if (songs.length > 0) {
+                    if(isDiscovery) {
+                        // 如果是 Discovery 頁面，隨機打亂並只取部分
+                        songs.sort(() => Math.random() - 0.5);
+                        songs = songs.slice(0, 10);
+                    } else {
+                         // 首頁只顯示前 15 首
+                         songs = songs.slice(0, 15);
+                    }
+                    
+                    if(songs.length === 0) return;
+
+                    // 建立標題
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'search-section-title tag-section-header';
+                    titleDiv.innerHTML = `${tag} <span class="tag-badge">${isDiscovery ? '新發現' : '精選'}</span>`;
+                    container.appendChild(titleDiv);
+                    
+                    // 建立橫向捲動區
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'horizontal-section-wrapper';
+                    const row = document.createElement('div');
+                    row.className = 'horizontal-row';
+                    row.innerHTML = songs.map(s => createSongCardHTML(s)).join('');
+                    wrapper.appendChild(row);
+                    container.appendChild(wrapper);
+                }
+            });
         }
 
         function getSmartRecommendations() {
@@ -742,14 +734,22 @@
             const liked = currentUserData.liked_songs || [];
             const counts = currentUserData.play_counts || {};
             let artistAffinity = {};
-            liked.forEach(songId => { const s = musicLibrary.find(x => x.id === songId); if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + 10; });
-            Object.keys(counts).forEach(songId => { const s = musicLibrary.find(x => x.id === parseInt(songId)); if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + (counts[songId] * 2); });
+            liked.forEach(songId => {
+                const s = musicLibrary.find(x => x.id === songId);
+                if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + 10;
+            });
+            Object.keys(counts).forEach(songId => {
+                const s = musicLibrary.find(x => x.id === parseInt(songId));
+                if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + (counts[songId] * 2); 
+            });
             candidates.forEach(song => {
                 let score = 0;
                 if(liked.includes(song.id)) score += 100;
-                const affinity = artistAffinity[song.artist] || 0; score += Math.min(affinity, 50);
+                const affinity = artistAffinity[song.artist] || 0;
+                score += Math.min(affinity, 50);
                 if(counts[song.id]) score += Math.min(counts[song.id] * 2, 40);
-                score += Math.random() * 20; score += (song.id / 5);
+                score += Math.random() * 20;
+                score += (song.id / 5);
                 song._score = score;
             });
             candidates.sort((a, b) => b._score - a._score);
@@ -788,12 +788,13 @@
             return DEFAULT_ALBUM_IMG;
         }
 
+        // --- Context Menu System ---
         function showContextMenu(e, type, data) {
             e.stopPropagation();
             const overlay = document.getElementById('cm-overlay');
             const menu = document.getElementById('context-menu');
             let html = '';
-            // Icons skipped for brevity, assumed existing
+
             const iconPlus = `<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
             const iconHeart = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
             const iconHeartFill = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
@@ -809,26 +810,55 @@
             const likeText = isLiked ? "取消喜好" : "喜好項目";
 
             if (type === 'song') {
-                html = `<div class="cm-row"><button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">${iconPlus} 加入清單</button><button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button></div><button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconPlay} 立即播放</button><button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconShuffle} 隨機播放後續</button><button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>`;
+                html = `
+                    <div class="cm-row">
+                        <button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">${iconPlus} 加入清單</button>
+                        <button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button>
+                    </div>
+                    <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconPlay} 立即播放</button>
+                    <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconShuffle} 隨機播放後續</button>
+                    <button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>
+                `;
             } else if (type === 'playlist_song') {
-                html = `<div class="cm-row"><button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button><button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">${iconPlus} 加到其他</button></div><button class="cm-btn full-width" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} 釘選歌曲 (置頂)</button><button class="cm-btn full-width" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} 前往專輯</button><button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button><button class="cm-btn full-width" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()" style="color:var(--accent-color);">${iconTrash} 從清單移除</button>`;
+                html = `
+                    <div class="cm-row">
+                        <button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button>
+                        <button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">${iconPlus} 加到其他</button>
+                    </div>
+                    <button class="cm-btn full-width" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} 釘選歌曲 (置頂)</button>
+                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} 前往專輯</button>
+                    <button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>
+                    <button class="cm-btn full-width" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()" style="color:var(--accent-color);">${iconTrash} 從清單移除</button>
+                `;
             } else if (type === 'album') {
-                html = `<div class="cm-row"><button class="cm-btn split" onclick="openPlaylistSelector(event, '${data.name}', 'album'); closeContextMenu()">${iconPlus} 加入清單</button><button class="cm-btn split" onclick="closeContextMenu(); alert('已加入喜好')">${iconHeart} 喜好項目</button></div><button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(false); closeContextMenu()">${iconPlay} 立即播放</button><button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(true); closeContextMenu()">${iconShuffle} 隨機播放</button><button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>`;
+                html = `
+                    <div class="cm-row">
+                        <button class="cm-btn split" onclick="openPlaylistSelector(event, '${data.name}', 'album'); closeContextMenu()">${iconPlus} 加入清單</button>
+                        <button class="cm-btn split" onclick="closeContextMenu(); alert('已加入喜好')">${iconHeart} 喜好項目</button>
+                    </div>
+                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(false); closeContextMenu()">${iconPlay} 立即播放</button>
+                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(true); closeContextMenu()">${iconShuffle} 隨機播放</button>
+                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
+                `;
             }
+
             menu.innerHTML = html;
             overlay.classList.add('active');
-            // positioning logic omitted for brevity, same as before
+
             const isMobile = window.innerWidth <= 768;
             if (!isMobile) {
                 const rect = menu.getBoundingClientRect();
-                let x = e.clientX; let y = e.clientY;
+                let x = e.clientX;
+                let y = e.clientY;
                 if (x + rect.width > window.innerWidth) x -= rect.width;
                 if (y + rect.height > window.innerHeight) y -= rect.height;
-                menu.style.left = x + 'px'; menu.style.top = y + 'px';
+                menu.style.left = x + 'px';
+                menu.style.top = y + 'px';
             }
         }
 
         function closeContextMenu() { document.getElementById('cm-overlay').classList.remove('active'); }
+
         async function toggleLike(id) {
             const idx = currentUserData.liked_songs.indexOf(id);
             if(idx === -1) currentUserData.liked_songs.push(id);
@@ -837,24 +867,34 @@
             if(currentPlaylistId === 'favorites') openPlaylistDetail('favorites');
             renderPlaylists();
         }
+
         async function dislikeSong(id) {
             if(!currentUserData.disliked_songs.includes(id)) {
                 currentUserData.disliked_songs.push(id);
                 const likeIdx = currentUserData.liked_songs.indexOf(id);
                 if(likeIdx !== -1) currentUserData.liked_songs.splice(likeIdx, 1);
+                
                 await saveUserToDB(currentUserData);
+                
                 const recommended = getSmartRecommendations();
                 renderHorizontalRows('home-horizontal-container', recommended);
                 const discoveries = getDiscoveryRecommendations();
                 renderHorizontalRows('discovery-horizontal-container', discoveries);
             }
         }
+
         async function pinSongInPlaylist(songId) {
             if(!currentPlaylistId || currentPlaylistId === 'favorites') return;
             const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
-            if(pl) { pl.songs = pl.songs.filter(id => id !== songId); pl.songs.unshift(songId); await saveUserToDB(currentUserData); openPlaylistDetail(currentPlaylistId); }
+            if(pl) {
+                pl.songs = pl.songs.filter(id => id !== songId);
+                pl.songs.unshift(songId);
+                await saveUserToDB(currentUserData);
+                openPlaylistDetail(currentPlaylistId);
+            }
         }
 
+        // --- Core Functions ---
         function switchPage(pid) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
             document.getElementById('page-'+pid).classList.add('active');
@@ -864,10 +904,12 @@
             const titles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
             document.getElementById('current-page-title').innerText = titles[pid];
         }
+
         function updateMobileNavActive(pid) {
             document.querySelectorAll('.mobile-nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('mobile-nav-' + pid)?.classList.add('active');
         }
+
         function handleScroll() {
             const header = document.getElementById('main-header');
             const mainContent = document.querySelector('.main-content');
@@ -883,22 +925,22 @@
             const song = musicLibrary.find(s => s.id === id);
             if(!song) return;
             
+            // 記錄播放次數
             if(!currentUserData.play_counts) currentUserData.play_counts = {};
             currentUserData.play_counts[id] = (currentUserData.play_counts[id] || 0) + 1;
             saveUserToDB(currentUserData);
 
-            // 重要修正：如果當前正在檢視清單，則使用該清單作為 Queue
-            // 如果這首歌存在於當前的 currentCollectionSongs 中，就使用整個列表
-            const inListIndex = currentCollectionSongs.findIndex(s => s.id === id);
-            if (inListIndex !== -1 && currentCollectionSongs.length > 0) {
+            // --- 重要修正：自動填入佇列 ---
+            // 如果當前是在某個列表(Playlist/Album)內，且該歌屬於該列表，則保留該列表
+            // 否則（例如首頁點擊），將整個資料庫作為佇列（或智慧推薦列表），確保下一首能播放
+            if (currentCollectionSongs.length > 0 && currentCollectionSongs.find(s => s.id === id)) {
                 currentQueue = [...currentCollectionSongs];
-                currentSongIndex = inListIndex;
             } else {
-                // 如果是從搜尋或其他地方單獨播放
-                currentQueue = [song]; 
-                currentSongIndex = 0;
+                // 如果沒有特定上下文，使用整個音樂庫作為背景佇列，這樣永遠有歌可以播
+                currentQueue = [...musicLibrary];
             }
-
+            
+            currentSongIndex = currentQueue.findIndex(s => s.id === id);
             playSongObject(song);
         }
 
@@ -921,37 +963,81 @@
         function updateMediaSession(song, coverImage) {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
-                    title: song.title, artist: song.artist, album: song.album,
-                    artwork: [ { src: coverImage, sizes: '512x512', type: 'image/png' } ]
+                    title: song.title,
+                    artist: song.artist,
+                    album: song.album,
+                    artwork: [
+                        { src: coverImage, sizes: '96x96', type: 'image/png' },
+                        { src: coverImage, sizes: '512x512', type: 'image/png' },
+                    ]
                 });
                 navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
-                navigator.mediaSession.setActionHandler('seekto', (details) => {
-                    if (details.seekTime || details.seekTime === 0) { audioPlayer.currentTime = details.seekTime; updateMediaSessionPosition(); }
-                });
             }
         }
-        function updateMediaSessionPosition() { if ('mediaSession' in navigator && audioPlayer.duration) { try { navigator.mediaSession.setPositionState({ duration: audioPlayer.duration, playbackRate: audioPlayer.playbackRate, position: audioPlayer.currentTime }); } catch(e) {} } }
-        function togglePlay() { if(audioPlayer.src) { if(isPlaying) audioPlayer.pause(); else audioPlayer.play(); isPlaying = !isPlaying; updatePlayBtn(); } }
+
+        function updateMediaSessionPosition() {
+             if ('mediaSession' in navigator && audioPlayer.duration) {
+                try {
+                    navigator.mediaSession.setPositionState({
+                        duration: audioPlayer.duration,
+                        playbackRate: audioPlayer.playbackRate,
+                        position: audioPlayer.currentTime
+                    });
+                } catch(e) {} 
+            }
+        }
+
+        function togglePlay() {
+            if(audioPlayer.src) {
+                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
+                isPlaying = !isPlaying;
+                updatePlayBtn();
+            }
+        }
         function updatePlayBtn() { document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶"; }
         
+        // --- 修正後的 playNext 邏輯 ---
         function playNext() {
-            if(currentQueue.length > 0 && currentSongIndex < currentQueue.length - 1) {
-                currentSongIndex++;
+            if(currentQueue.length > 0) {
+                if (isShuffleMode) {
+                    // 隨機模式：隨機選取下一首，確保不重複（若只有一首則重播）
+                    if (currentQueue.length > 1) {
+                        let nextIndex;
+                        do {
+                            nextIndex = Math.floor(Math.random() * currentQueue.length);
+                        } while (nextIndex === currentSongIndex);
+                        currentSongIndex = nextIndex;
+                    }
+                } else {
+                    // 順序播放模式
+                    if (currentSongIndex < currentQueue.length - 1) {
+                        currentSongIndex++;
+                    } else {
+                        // 列表結束，循環回到第一首
+                        currentSongIndex = 0;
+                    }
+                }
                 playSongObject(currentQueue[currentSongIndex]);
-            } else {
-                // 如果清單播完，可以停止或循環，這裡暫時停止
-                isPlaying = false;
-                updatePlayBtn();
             }
         }
 
         // --- Rendering Helpers ---
         function createSongCardHTML(song) {
             const img = getSongCover(song);
-            return `<div class="music-card" onclick="playSong(${song.id})"><div class="cover-art" style="background-image:url('${img}')"><div class="ctx-btn" onclick="showContextMenu(event, 'song', {id: ${song.id}})"><svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></div></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div></div>`;
+            return `
+            <div class="music-card" onclick="playSong(${song.id})">
+                <div class="cover-art" style="background-image:url('${img}')">
+                    <div class="ctx-btn" onclick="showContextMenu(event, 'song', {id: ${song.id}})">
+                        <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
+                    </div>
+                </div>
+                <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${song.title}</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">${song.artist}</div>
+            </div>`;
         }
+        
         function renderHorizontalRows(containerId, songs) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; 
@@ -967,10 +1053,21 @@
                 container.appendChild(wrapper);
             }
         }
+
         function renderAlbumSection() {
             const container = document.getElementById('home-album-container');
             const albums = [...new Set(musicLibrary.map(s => s.album))];
-            container.innerHTML = albums.map(alb => `<div class="music-card" onclick="openAlbumDetail('${alb}')"><div class="cover-art" style="background-image:url('${getAlbumImage(alb)}')"><div class="ctx-btn" onclick="showContextMenu(event, 'album', {name: '${alb}'})"><svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></div></div><div style="font-weight:bold; font-size:0.95rem;">${alb}</div><div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div></div>`).join('');
+            container.innerHTML = albums.map(alb => `
+                <div class="music-card" onclick="openAlbumDetail('${alb}')">
+                    <div class="cover-art" style="background-image:url('${getAlbumImage(alb)}')">
+                         <div class="ctx-btn" onclick="showContextMenu(event, 'album', {name: '${alb}'})">
+                            <svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
+                        </div>
+                    </div>
+                    <div style="font-weight:bold; font-size:0.95rem;">${alb}</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
+                </div>
+            `).join('');
         }
 
         // --- Playlist Logic ---
@@ -978,25 +1075,58 @@
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
             const likedCount = currentUserData.liked_songs ? currentUserData.liked_songs.length : 0;
+            
             const favCover = currentUserData.favorites_cover 
                 ? `background-image:url('${currentUserData.favorites_cover}'); background-size:cover !important; background-position:center !important;`
                 : `background: linear-gradient(135deg, #FA2D48, #FF7657); display:flex; align-items:center; justify-content:center;`;
-            const favInner = currentUserData.favorites_cover ? `` : `<svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                
+            const favInner = currentUserData.favorites_cover
+                ? ``
+                : `<svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 
-            let html = `<div class="music-card" onclick="openPlaylistDetail('favorites')"><div class="cover-art" style="${favCover}">${favInner}</div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">喜好項目</div><div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div></div>`;
-            html += playlists.map(pl => `<div class="music-card" onclick="openPlaylistDetail(${pl.id})"><div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')"></div><div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div><div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div></div>`).join(''); 
+            let html = `
+                <div class="music-card" onclick="openPlaylistDetail('favorites')">
+                    <div class="cover-art" style="${favCover}">
+                        ${favInner}
+                    </div>
+                    <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">喜好項目</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div>
+                </div>
+            `;
+            html += playlists.map(pl => `
+                <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
+                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')"></div>
+                    <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
+                    <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
+                </div>
+            `).join(''); 
             container.innerHTML = html;
         }
 
-        function triggerCoverEdit() { if(currentPlaylistId) document.getElementById('playlist-cover-upload').click(); }
+        function triggerCoverEdit() {
+            if(currentPlaylistId) {
+                document.getElementById('playlist-cover-upload').click();
+            }
+        }
+
         function handlePlaylistCoverUpdate(input) {
             if(input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const newCover = e.target.result;
-                    if(currentPlaylistId === 'favorites') currentUserData.favorites_cover = newCover;
-                    else { const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId); if(pl) pl.img = newCover; }
-                    await saveUserToDB(currentUserData); renderPlaylists(); openPlaylistDetail(currentPlaylistId);
+                    
+                    if(currentPlaylistId === 'favorites') {
+                        currentUserData.favorites_cover = newCover;
+                    } else {
+                        const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
+                        if(pl) {
+                            pl.img = newCover;
+                        }
+                    }
+                    
+                    await saveUserToDB(currentUserData);
+                    renderPlaylists();
+                    openPlaylistDetail(currentPlaylistId);
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -1004,9 +1134,8 @@
         }
 
         function openPlaylistDetail(plId) {
-            let pl, songs, title, subtitle, cover;
+            let pl, songs, title, subtitle, cover, isDefaultCover;
             const coverEl = document.getElementById('cd-cover');
-            const bgBlur = document.getElementById('cd-bg-blur');
             
             if (plId === 'favorites') {
                 currentPlaylistId = 'favorites';
@@ -1017,13 +1146,14 @@
                 if(currentUserData.favorites_cover) {
                     coverEl.style.background = '#eee';
                     coverEl.style.backgroundImage = `url('${currentUserData.favorites_cover}')`;
-                    bgBlur.style.backgroundImage = `url('${currentUserData.favorites_cover}')`;
                     coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
                 } else {
                     coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
                     coverEl.style.backgroundImage = 'none'; 
-                    bgBlur.style.backgroundImage = 'none'; bgBlur.style.backgroundColor = '#FA2D48';
-                    coverEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
+                    coverEl.innerHTML = `
+                        <svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                    `;
                 }
             } else {
                 pl = currentUserData.playlists.find(p => p.id === plId);
@@ -1036,74 +1166,74 @@
 
                 coverEl.style.background = '#eee';
                 coverEl.style.backgroundImage = `url(${cover})`;
-                bgBlur.style.backgroundImage = `url(${cover})`;
                 coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
             }
 
             currentCollectionSongs = songs;
 
+            document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
 
-            let html = songs.map(s => createPlaylistSongRowHTML(s)).join('');
+            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
+            html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
 
-            // Add extra space for the "Add Music" area
             if (plId !== 'favorites') {
-                html += `<div class="add-music-bar" onclick="openSearchForPlaylist(${plId})"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>添加音樂</div>`;
-                html += `<div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;"><button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;"><svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>刪除此清單</button></div>`;
+                html += `
+                <div class="add-music-bar" onclick="openSearchForPlaylist(${plId})">
+                    <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    添加音樂
+                </div>
+                <div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;">
+                    <button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;">
+                        <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        刪除此清單
+                    </button>
+                </div>`;
             }
 
             document.getElementById('cd-content-area').innerHTML = html;
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
-        function filterPlaylistSongs(query) {
-            const val = query.toLowerCase().trim();
-            const listContainer = document.getElementById('cd-content-area');
-            
-            // 重新過濾 currentCollectionSongs
-            const filtered = currentCollectionSongs.filter(s => s.title.toLowerCase().includes(val) || s.artist.toLowerCase().includes(val));
-            
-            let html = filtered.map(s => createPlaylistSongRowHTML(s)).join('');
-            
-            // 如果沒在搜尋(空字串)，且不是喜好項目，把添加按鈕補回來
-            if (!val && currentPlaylistId !== 'favorites') {
-                html += `<div class="add-music-bar" onclick="openSearchForPlaylist(${currentPlaylistId})"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>添加音樂</div>`;
-                html += `<div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;"><button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;"><svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>刪除此清單</button></div>`;
-            }
-            
-            listContainer.innerHTML = html;
-        }
-
         function createPlaylistSongRowHTML(song) {
             const img = getSongCover(song);
-            return `<div class="song-list-item" onclick="playSong(${song.id})"><div class="song-row-img" style="background-image:url('${img}')"></div><div class="song-row-info"><div class="song-row-title">${song.title}</div><div class="song-row-artist">${song.artist}</div></div><button class="list-more-btn" onclick="showContextMenu(event, 'playlist_song', {id: ${song.id}, albumName: '${song.album}'})"><svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></button></div>`;
+            return `
+            <div class="song-list-item" onclick="playSong(${song.id})">
+                <div class="song-row-img" style="background-image:url('${img}')"></div>
+                <div class="song-row-info">
+                    <div class="song-row-title">${song.title}</div>
+                    <div class="song-row-artist">${song.artist}</div>
+                </div>
+                <button class="list-more-btn" onclick="showContextMenu(event, 'playlist_song', {id: ${song.id}, albumName: '${song.album}'})">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
+                </button>
+            </div>`;
         }
 
         function openAlbumDetail(albumName) {
             currentPlaylistId = null; 
             const songs = musicLibrary.filter(s => s.album === albumName);
+            document.getElementById('cd-nav-title').innerText = albumName;
             document.getElementById('cd-title').innerText = albumName;
             document.getElementById('cd-subtitle').innerText = `專輯 • ${songs[0]?.artist || ''}`;
-            
             const coverEl = document.getElementById('cd-cover');
-            const bgBlur = document.getElementById('cd-bg-blur');
-            const imgUrl = getAlbumImage(albumName);
-            
             coverEl.style.background = '#eee';
-            coverEl.style.backgroundImage = `url(${imgUrl})`;
-            bgBlur.style.backgroundImage = `url(${imgUrl})`;
-            coverEl.innerHTML = ''; // Album covers generally not editable here
+            coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
+            coverEl.innerHTML = '';
             
             currentCollectionSongs = songs;
             
-            let html = songs.map(s => `
-                <div class="song-list-item" onclick="playSong(${s.id})">
-                    <div class="song-row-img" style="background-image:url('${getSongCover(s)}')"></div>
-                    <div class="song-row-info"><div class="song-row-title">${s.title}</div><div class="song-row-artist">${s.artist}</div></div>
-                    <button class="list-more-btn" onclick="showContextMenu(event, 'song', {id: ${s.id}})"><svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></button>
-                </div>`).join('');
-            
+            let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
+            html += songs.map(s => {
+                 const img = getSongCover(s);
+                 return `
+                    <div class="song-list-item" onclick="playSong(${s.id})">
+                        <div class="song-row-img" style="background-image:url('${img}')"></div>
+                        <div class="song-row-info"><div class="song-row-title">${s.title}</div><div class="song-row-artist">${s.artist}</div></div>
+                        <button class="list-more-btn" onclick="showContextMenu(event, 'song', {id: ${s.id}})"><svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></button>
+                    </div>`;
+            }).join('');
             document.getElementById('cd-content-area').innerHTML = html;
             document.getElementById('collection-detail-modal').classList.add('active');
         }
@@ -1111,6 +1241,9 @@
         function playCollectionAll(shuffle) {
             if(currentCollectionSongs.length > 0) {
                 let queue = [...currentCollectionSongs];
+                // 設定播放模式，如果是點擊隨機播放則開啟 Shuffle，否則關閉 (或依據使用者全局設定)
+                isShuffleMode = shuffle;
+                
                 if (shuffle) {
                     queue.sort(() => Math.random() - 0.5);
                 }
@@ -1120,9 +1253,6 @@
             }
         }
 
-        function closeCollectionDetail() { document.getElementById('collection-detail-modal').classList.remove('active'); }
-
-        // --- Search for Adding to Playlist ---
         function openSearchForPlaylist(plId) {
             addingToPlaylistId = plId;
             document.getElementById('playlist-add-search-input').value = '';
@@ -1158,32 +1288,37 @@
             } else { alert("歌曲已存在於清單中"); }
         }
 
-        // --- Select Playlist Logic ---
         function openPlaylistSelector(e, idOrName, type){ 
             e.stopPropagation(); 
             itemsToAdd = [];
             if (type === 'album') {
                 const albumSongs = musicLibrary.filter(s => s.album === idOrName).map(s => s.id);
                 itemsToAdd = albumSongs;
-            } else { itemsToAdd = [idOrName]; }
+            } else {
+                itemsToAdd = [idOrName];
+            }
+
             if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} 
             const l=document.getElementById('playlist-selector-list'); 
             l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); 
             document.getElementById('select-playlist-modal').classList.add('active'); 
         }
         function closePlaylistSelector(){ document.getElementById('select-playlist-modal').classList.remove('active'); }
+        
         async function addToPlaylist(pid){ 
             const p=currentUserData.playlists.find(x=>x.id===pid); 
             if(p){
                 let addedCount = 0;
-                itemsToAdd.forEach(sid => { if(!p.songs.includes(sid)) { p.songs.push(sid); addedCount++; } });
-                if (addedCount > 0) { await saveUserToDB(currentUserData); renderPlaylists(); alert(`已加入 ${addedCount} 首歌曲到清單`); } 
-                else { alert("選取的歌曲已存在於清單中"); }
+                itemsToAdd.forEach(sid => {
+                    if(!p.songs.includes(sid)) { p.songs.push(sid); addedCount++; }
+                });
+                if (addedCount > 0) {
+                    await saveUserToDB(currentUserData); renderPlaylists(); alert(`已加入 ${addedCount} 首歌曲到清單`); 
+                } else { alert("選取的歌曲已存在於清單中"); }
             }
             closePlaylistSelector(); 
         }
 
-        // --- Misc Functions ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         async function handleLogin(e) { 
@@ -1207,18 +1342,35 @@
             } 
         }
         function handleLogout() { localStorage.removeItem('current_session_user'); location.reload(); }
+        
         function openProfileModal() { document.getElementById('profile-modal').classList.add('active'); document.getElementById('player-bar').classList.add('hidden'); }
         function closeProfileModal() { document.getElementById('profile-modal').classList.remove('active'); document.getElementById('player-bar').classList.remove('hidden'); }
         async function updateUsername() { const n = document.getElementById('edit-username').value; if(!n)return; const old=JSON.parse(JSON.stringify(currentUserData)); const ex=await getUserFromDB(n); if(ex)return alert("使用者名稱已存在"); const nw={...old,username:n}; await saveUserToDB(nw); const db=await openDB(); const tx=db.transaction(STORE_NAME,'readwrite'); tx.objectStore(STORE_NAME).delete(old.username); currentUserData=nw; localStorage.setItem('current_session_user',n); updateUIFromUserData(); alert("更新成功"); }
         async function updatePassword() { const o=document.getElementById('old-password').value; const n=document.getElementById('new-password').value; if(o!==currentUserData.password)return alert("舊密碼錯誤"); currentUserData.password=n; await saveUserToDB(currentUserData); alert("密碼已更新"); }
         function handleProfileUpload(i) { if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=async function(e){ currentUserData.avatar=e.target.result; await saveUserToDB(currentUserData); updateUIFromUserData(); }; r.readAsDataURL(i.files[0]); } }
+        
         function openSettings() { document.getElementById('settings-modal').classList.add('active'); document.getElementById('player-bar').classList.add('hidden'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); document.getElementById('player-bar').classList.remove('hidden'); }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
+        
         function updateThemeUI(t) { 
-            const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); 
-            if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } 
+            const p=document.getElementById('theme-pill'); 
+            const pl=document.getElementById('pill-light'); 
+            const pd=document.getElementById('pill-dark'); 
+            const m=document.getElementById('theme-color-meta'); 
+            if(t==='dark'){ 
+                document.body.setAttribute('data-theme','dark'); 
+                p.setAttribute('data-state','dark'); 
+                pl.classList.remove('active'); pd.classList.add('active'); 
+                m.setAttribute('content','#000000'); 
+            }else{ 
+                document.body.removeAttribute('data-theme'); 
+                p.setAttribute('data-state','light'); 
+                pd.classList.remove('active'); pl.classList.add('active'); 
+                m.setAttribute('content','#FFFFFF'); 
+            } 
         }
+        
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
         function closeCreatePlaylistModal(){ document.getElementById('create-playlist-modal').classList.remove('active'); if (document.activeElement) document.activeElement.blur(); }
         function previewImage(i){ if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=function(e){ tempImgBase64=e.target.result; document.getElementById('img-preview').style.backgroundImage=`url(${tempImgBase64})`; }; r.readAsDataURL(i.files[0]); } }
@@ -1234,12 +1386,24 @@
             e.stopPropagation(); if (!currentPlaylistId || currentPlaylistId==='favorites') return;
             if(!confirm("確定要從清單移除這首歌嗎？")) return;
             const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
-            if (pl) { pl.songs = pl.songs.filter(id => id !== songId); await saveUserToDB(currentUserData); renderPlaylists(); openPlaylistDetail(currentPlaylistId); }
+            if (pl) {
+                pl.songs = pl.songs.filter(id => id !== songId); 
+                await saveUserToDB(currentUserData);
+                renderPlaylists(); 
+                openPlaylistDetail(currentPlaylistId);
+            }
         }
         async function deleteCurrentPlaylist() {
             if (!currentPlaylistId || currentPlaylistId==='favorites') return;
-            if (confirm("確定要刪除此播放清單嗎？")) { currentUserData.playlists = currentUserData.playlists.filter(p => p.id !== currentPlaylistId); await saveUserToDB(currentUserData); renderPlaylists(); closeCollectionDetail(); }
+            if (confirm("確定要刪除此播放清單嗎？")) {
+                currentUserData.playlists = currentUserData.playlists.filter(p => p.id !== currentPlaylistId);
+                await saveUserToDB(currentUserData);
+                renderPlaylists();
+                closeCollectionDetail();
+            }
         }
+        function closeCollectionDetail() { document.getElementById('collection-detail-modal').classList.remove('active'); }
+        
         function handleSearchInput(e) {
             const val = e.target.value.trim();
             if(val) performSearch(val);
@@ -1277,8 +1441,16 @@
             const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(keyword.toLowerCase()));
             const matchedAlbums = [...new Set(musicLibrary.filter(s => s.album.toLowerCase().includes(keyword.toLowerCase())).map(s => s.album))];
             let html = '';
-            if(matchedAlbums.length) { html += `<div class="search-section-title">專輯</div><div class="horizontal-row">` + matchedAlbums.map(alb => `<div class="music-card" onclick="handleSearchResultClick('album', '${alb}', '${getAlbumImage(alb)}')"><div class="cover-art" style="background-image:url('${getAlbumImage(alb)}')"></div><div style="font-weight:bold; font-size:0.95rem;">${alb}</div></div>`).join('') + `</div>`; }
-            if(matchedSongs.length) { html += `<div class="search-section-title">歌曲</div><div class="grid-container">` + matchedSongs.map(s => createSongCardHTML(s)).join('') + `</div>`; }
+            if(matchedAlbums.length) {
+                html += `<div class="search-section-title">專輯</div><div class="horizontal-row">` + matchedAlbums.map(alb => `
+                    <div class="music-card" onclick="handleSearchResultClick('album', '${alb}', '${getAlbumImage(alb)}')">
+                        <div class="cover-art" style="background-image:url('${getAlbumImage(alb)}')"></div>
+                        <div style="font-weight:bold; font-size:0.95rem;">${alb}</div>
+                    </div>`).join('') + `</div>`;
+            }
+            if(matchedSongs.length) {
+                html += `<div class="search-section-title">歌曲</div><div class="grid-container">` + matchedSongs.map(s => createSongCardHTML(s)).join('') + `</div>`;
+            }
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center;">無結果</div>`;
             area.innerHTML = html;
         }
