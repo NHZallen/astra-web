@@ -147,13 +147,34 @@
         .horizontal-row .music-card { flex: 0 0 auto; width: 18%; min-width: 150px; scroll-snap-align: start; }
 
         .music-card { position: relative; cursor: pointer; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-        
-        /* [修正] 限制 Hover 效果僅在支援 hover 的裝置上觸發，避免手機點擊卡住 */
         @media (hover: hover) {
             .music-card:hover { transform: translateY(-6px); }
         }
-        /* [修正] 新增 Active 狀態，讓手機點擊有回饋且手指放開即復原 */
         .music-card:active { transform: scale(0.95); }
+
+        /* [新增] 歌手卡片樣式 */
+        .artist-card {
+            flex: 0 0 auto; 
+            width: 18%; 
+            min-width: 140px; 
+            scroll-snap-align: start;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .artist-card:active { transform: scale(0.95); }
+        .artist-img {
+            width: 140px; 
+            height: 140px; 
+            border-radius: 50%; /* 圓形頭像 */
+            background-size: cover !important; 
+            background-position: center !important; 
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--divider);
+        }
 
         .cover-art { 
             width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; 
@@ -295,7 +316,6 @@
 
         .fp-progress-container { width: 100%; margin-bottom: 20px; }
         
-        /* [修正] 新的進度條樣式：中間簍空、已播放為白色 */
         .fp-range {
             -webkit-appearance: none;
             appearance: none;
@@ -628,7 +648,6 @@
                 </div>
 
                 <div class="fp-progress-container">
-                    <!-- [修正] oninput 新增 updateRangeBackground -->
                     <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value); updateRangeBackground(this)">
                     <div class="fp-time-labels">
                         <span id="fp-curr-time">0:00</span>
@@ -1758,6 +1777,9 @@
                 coverEl.style.backgroundImage = `url(${pl.img || DEFAULT_PLAYLIST_IMG})`;
             }
 
+            // 重置圓角樣式(專輯是方形)
+            coverEl.style.borderRadius = "20px";
+
             currentCollectionSongs = songs;
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
@@ -1789,15 +1811,22 @@
             </div>`;
         }
 
+        /* [修正] 專輯詳情頁邏輯 (移除之前的遞迴錯誤) */
         function openAlbumDetail(albumName) {
-            openAlbumDetail(albumName); 
+            // 先定義 songs，避免變數未定義
+            const songs = musicLibrary.filter(s => s.album === albumName);
+            if(songs.length === 0) return;
+
             document.getElementById('cd-nav-title').innerText = albumName;
             document.getElementById('cd-title').innerText = albumName;
             document.getElementById('cd-subtitle').innerText = `專輯 • ${songs[0]?.artist || ''}`;
             const coverEl = document.getElementById('cd-cover');
             coverEl.style.background = '#eee';
             coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
+            // 重置圓角樣式(專輯是方形)
+            coverEl.style.borderRadius = "20px";
             coverEl.innerHTML = '';
+            
             currentCollectionSongs = songs;
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
             html += songs.map(s => {
@@ -1809,6 +1838,27 @@
                         <button class="list-more-btn" onclick="showContextMenu(event, 'song', {id: ${s.id}})"><svg class="icon" viewBox="0 0 24 24" style="width:18px;height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></button>
                     </div>`;
             }).join('');
+            document.getElementById('cd-content-area').innerHTML = html;
+            document.getElementById('collection-detail-modal').classList.add('active');
+        }
+
+        /* [修正] 歌手詳情頁邏輯 (獨立函數，不再呼叫 openAlbumDetail) */
+        function openArtistDetail(artistName) {
+            const songs = musicLibrary.filter(s => s.artist === artistName);
+            if(songs.length === 0) return;
+
+            document.getElementById('cd-nav-title').innerText = artistName;
+            document.getElementById('cd-title').innerText = artistName;
+            document.getElementById('cd-subtitle').innerText = "藝人";
+            const coverEl = document.getElementById('cd-cover');
+            coverEl.style.backgroundImage = `url(${getArtistImage(artistName)})`;
+            // 歌手圖片設為圓形
+            coverEl.style.borderRadius = "50%";
+            coverEl.innerHTML = '';
+
+            currentCollectionSongs = songs;
+             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
+            html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
             document.getElementById('cd-content-area').innerHTML = html;
             document.getElementById('collection-detail-modal').classList.add('active');
         }
@@ -1974,6 +2024,7 @@
             
             let html = '';
             if(matchedArtists.length) {
+                // [修正] 使用新的 artist-card 樣式
                 html += `<div class="search-section-title">藝人</div><div class="horizontal-row">` + matchedArtists.map(art => `
                     <div class="artist-card" onclick="handleSearchResultClick('artist', '${art}', '${getArtistImage(art)}')">
                         <div class="artist-img" style="background-image:url('${getArtistImage(art)}')"></div>
@@ -1992,19 +2043,6 @@
             }
             if(!html) html = `<div style="color:var(--text-secondary); text-align:center;">無結果</div>`;
             area.innerHTML = html;
-        }
-
-        function openArtistDetail(artistName) {
-            openAlbumDetail(artistName); 
-            document.getElementById('cd-nav-title').innerText = artistName;
-            document.getElementById('cd-title').innerText = artistName;
-            document.getElementById('cd-subtitle').innerText = "藝人";
-            document.getElementById('cd-cover').style.backgroundImage = `url(${getArtistImage(artistName)})`;
-            const songs = musicLibrary.filter(s => s.artist === artistName);
-            currentCollectionSongs = songs;
-             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
-            html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
-            document.getElementById('cd-content-area').innerHTML = html;
         }
 
         document.addEventListener('click', function(e) { const container = document.querySelector('.search-container'); if (container && !container.contains(e.target)) document.getElementById('search-history-dropdown').classList.remove('active'); });
