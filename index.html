@@ -555,6 +555,43 @@
         }
         .batch-action-bar.active { display: flex; animation: fadeSlideUp 0.3s ease; }
 
+        /* [新增] 藝人頁面垂直四排歌曲樣式 */
+        .horizontal-grid-scroller {
+            display: grid;
+            grid-template-rows: repeat(4, auto); /* 垂直四排 */
+            grid-auto-flow: column; /* 先填滿列，再往右延伸 */
+            grid-auto-columns: calc((100% - 24px) / 3); /* 電腦版：寬度計算，約顯示3列(12首) */
+            gap: 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 10px;
+            scroll-snap-type: x mandatory;
+        }
+        .horizontal-grid-scroller::-webkit-scrollbar { display: none; }
+        .horizontal-grid-scroller .song-list-item {
+            scroll-snap-align: start;
+            margin-bottom: 0;
+            background: var(--input-bg); /* 讓它看起來像卡片 */
+        }
+        
+        @media (max-width: 768px) {
+            .horizontal-grid-scroller {
+                grid-auto-columns: calc(100% - 20px); /* 手機版：寬度計算，約顯示1列(4首) */
+            }
+        }
+
+        /* [新增] 圓形頭像成員列表樣式 */
+        .member-avatar {
+            display: flex; flex-direction: column; align-items: center;
+            margin-right: 20px; cursor: pointer; min-width: 90px;
+        }
+        .member-avatar-img {
+            width: 90px; height: 90px; border-radius: 50%;
+            background-color: #eee; background-size: cover; background-position: center;
+            margin-bottom: 8px; box-shadow: var(--shadow-sm); border: 1px solid var(--divider);
+        }
+        .member-name { font-size: 0.9rem; font-weight: 600; text-align: center; }
+
     </style>
 </head>
 <body>
@@ -899,11 +936,16 @@
 
     <script>
         // --- Data ---
-        const artistImages = { "BABYMONSTER": "./images/artists/babymonster.jpg" };
+        const artistImages = { "BABYMONSTER": "./images/artists/babymonster.jpg", "Ruka": "https://cdn-icons-png.flaticon.com/512/6833/6833605.png" };
         const albumImages = { "WE GO UP-EP": "./images/albums/we_go_up_ep.jpg" };
         const DEFAULT_ARTIST_IMG = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
         const DEFAULT_ALBUM_IMG = "https://cdn-icons-png.flaticon.com/512/3208/3208703.png";
         const DEFAULT_PLAYLIST_IMG = "https://cdn-icons-png.flaticon.com/512/3019/3019014.png";
+
+        // [新增] 團體成員資料定義
+        const artistMembers = {
+            "BABYMONSTER": ["Ruka", "Pharita", "Asa", "Ahyeon", "Rami", "Rora", "Chiquita"]
+        };
 
         const DB_NAME = 'ASTRA_DB';
         const STORE_NAME = 'user_data';
@@ -912,11 +954,14 @@
         async function saveUserToDB(userObj) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(userObj); tx.oncomplete = () => res(); tx.onerror = () => rej(); }); }
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
+        // [修正] Base Music 資料結構，加入 group
         const baseMusic = [
-            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "", tags: ["K-POP", "舞曲"] },
-            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "", tags: ["K-POP"] },
-            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "", tags: ["K-POP", "R&B"] },
-            { id: 4, title: "WILD", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "", tags: ["K-POP"] },
+            { id: 1, title: "WE GO UP", artist: "BABYMONSTER", group: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "", tags: ["K-POP", "舞曲"] },
+            { id: 2, title: "PSYCHO", artist: "BABYMONSTER", group: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "", tags: ["K-POP"] },
+            { id: 3, title: "SUPA DUPA LUV", artist: "BABYMONSTER", group: "BABYMONSTER", album: "WE GO UP-EP", filename: "song3.mp3", cover: "", tags: ["K-POP", "R&B"] },
+            { id: 4, title: "WILD", artist: "BABYMONSTER", group: "BABYMONSTER", album: "WE GO UP-EP", filename: "song4.mp3", cover: "", tags: ["K-POP"] },
+            // 測試用：成員個人作品
+            { id: 999, title: "Solo Demo", artist: "Ruka", group: "BABYMONSTER", album: "Solo Debut", filename: "song1.mp3", cover: "", tags: ["K-POP"] }
         ];
         
         let musicLibrary = [...baseMusic];
@@ -926,11 +971,13 @@
             const randomTag = tagPool[Math.floor(Math.random() * tagPool.length)];
             const randomTag2 = Math.random() > 0.5 ? tagPool[Math.floor(Math.random() * tagPool.length)] : null;
             const tags = randomTag2 && randomTag2 !== randomTag ? [randomTag, randomTag2] : [randomTag];
-
+            const isGroup = i % 2 === 0;
+            
             musicLibrary.push({
                 id: i,
                 title: `Demo Song ${i}`,
-                artist: i % 2 === 0 ? "BABYMONSTER" : "Various Artist",
+                artist: isGroup ? "BABYMONSTER" : "Various Artist",
+                group: isGroup ? "BABYMONSTER" : "Various Artist",
                 album: `Demo Album ${Math.floor(i/5)}`,
                 filename: "song1.mp3",
                 cover: "",
@@ -1380,7 +1427,6 @@
         
         // --- Full Player Logic ---
         function openFullPlayer() { 
-            // [修正] 判斷是否正在播放或已載入歌曲，防止未播放時彈出
             if (!currentSongId && !audioPlayer.src) return;
 
             const fp = document.getElementById('full-player');
@@ -1495,12 +1541,10 @@
             updateRangeBackground(slider);
         }
         
-        // [新增] 更新進度條背景函式
         function updateRangeBackground(input) {
             const val = input.value;
             const max = input.max || 100;
             const percentage = max > 0 ? (val / max) * 100 : 0;
-            // 動態產生背景，達成圖二的「左白右透」效果
             input.style.background = `linear-gradient(to right, #FFFFFF ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
         }
 
@@ -1771,10 +1815,11 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
+        // [修改] 藝人詳情頁邏輯：垂直四排歌曲、專輯方塊、團體成員
         function openArtistDetail(artistName) {
+            // 過濾該藝人的歌曲
             const songs = musicLibrary.filter(s => s.artist === artistName);
-            if(songs.length === 0) return;
-
+            
             document.getElementById('cd-nav-title').innerText = artistName;
             document.getElementById('cd-title').innerText = artistName;
             document.getElementById('cd-subtitle').innerText = "藝人";
@@ -1784,8 +1829,48 @@
             coverEl.innerHTML = '';
 
             currentCollectionSongs = songs;
-             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
-            html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
+            let html = '';
+
+            // 1. 歌曲區塊 (垂直四排，左右滑動)
+            if(songs.length > 0) {
+                html += `<h3 style="margin-bottom:15px; font-size:1.1rem;">熱門歌曲</h3>`;
+                html += `<div class="horizontal-grid-scroller">`;
+                // 使用原有的 song-list-item 樣式，但因為放在 horizontal-grid-scroller 內會自動排版
+                html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
+                html += `</div>`;
+            } else {
+                 html += `<div style="padding:20px 0; color:var(--text-secondary);">暫無歌曲</div>`;
+            }
+
+            // 2. 專輯區塊 (方塊呈現，左右滑動)
+            const albums = [...new Set(songs.map(s => s.album))];
+            if(albums.length > 0) {
+                html += `<h3 style="margin-top:30px; margin-bottom:15px; font-size:1.1rem;">專輯</h3>`;
+                html += `<div class="horizontal-row">`;
+                html += albums.map(alb => `
+                    <div class="music-card" onclick="openAlbumDetail('${alb}')">
+                        <div class="cover-art" style="background-image:url('${getAlbumImage(alb)}')"></div>
+                        <div style="font-weight:bold; font-size:0.95rem;">${alb}</div>
+                        <div style="font-size:0.8rem; color:var(--text-secondary);">專輯</div>
+                    </div>
+                `).join('');
+                html += `</div>`;
+            }
+
+            // 3. 成員區塊 (如果是團體)
+            const members = artistMembers[artistName];
+            if(members && members.length > 0) {
+                html += `<h3 style="margin-top:30px; margin-bottom:15px; font-size:1.1rem;">成員</h3>`;
+                html += `<div class="horizontal-row" style="padding-bottom:10px;">`;
+                html += members.map(m => `
+                    <div class="member-avatar" onclick="openArtistDetail('${m}')">
+                        <div class="member-avatar-img" style="background-image:url('${getArtistImage(m)}')"></div>
+                        <div class="member-name">${m}</div>
+                    </div>
+                `).join('');
+                html += `</div>`;
+            }
+
             document.getElementById('cd-content-area').innerHTML = html;
             document.getElementById('collection-detail-modal').classList.add('active');
         }
