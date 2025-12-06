@@ -24,7 +24,11 @@
             --player-bg: rgba(255, 255, 255, 0.85);
             --modal-bg: #FFFFFF;
             --input-bg: #F5F5F7;
-            --context-menu-bg: rgba(255, 255, 255, 0.95);
+            /* iOS Menu Colors */
+            --menu-bg: rgba(250, 250, 250, 0.85);
+            --menu-divider: rgba(0, 0, 0, 0.1);
+            --menu-press: rgba(0, 0, 0, 0.05);
+            
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.04);
             --shadow-md: 0 12px 32px rgba(0,0,0,0.08);
             --radius-lg: 24px;
@@ -46,7 +50,11 @@
             --player-bg: rgba(28, 28, 30, 0.85);
             --modal-bg: #000000;
             --input-bg: #1C1C1E;
-            --context-menu-bg: rgba(30, 30, 30, 0.95);
+            /* iOS Menu Colors Dark */
+            --menu-bg: rgba(30, 30, 30, 0.8);
+            --menu-divider: rgba(255, 255, 255, 0.15);
+            --menu-press: rgba(255, 255, 255, 0.1);
+
             --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
             --shadow-md: 0 12px 32px rgba(0,0,0,0.6);
         }
@@ -76,7 +84,23 @@
         .btn-primary { width:100%; padding:16px; background:var(--accent-color); color:white; border:none; border-radius:14px; font-weight:600; font-size:1rem; cursor:pointer; transition: 0.2s; }
         .btn-primary:active { transform: scale(0.98); }
         
-        /* --- Landing Page Styles (保持不變) --- */
+        /* --- Pull to Refresh Spinner --- */
+        #ptr-spinner {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            top: -40px; width: 30px; height: 30px;
+            border: 3px solid rgba(128,128,128,0.3);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        #ptr-spinner.spinning {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% {transform: translateX(-50%) rotate(0deg);} 100% {transform: translateX(-50%) rotate(360deg);} }
+
+        /* --- Landing Page Styles --- */
         #landing-page { height: 100%; overflow-y: auto; overflow-x: hidden; z-index: 2000; position: relative; background-color: #FFFFFF; color: #1D1D1F; scroll-behavior: smooth; }
         .lp-nav { position: fixed; top: 0; width: 100%; padding: 20px 40px; padding-top: calc(20px + var(--safe-top)); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 100; transition: 0.3s; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .lp-logo { font-weight: 700; font-size: 1.4rem; letter-spacing: -0.5px; display: flex; align-items: center; color: #000; }
@@ -160,12 +184,23 @@
         .artist-card:hover { transform: translateY(-4px); }
         .artist-img { width: 100px; height: 100px; border-radius: 50%; background-size: cover; background-position: center; margin-bottom: 10px; border: 2px solid var(--card-bg); box-shadow: var(--shadow-sm); }
 
+        /* Music Card & Cover Art Fixes */
         .music-card { position: relative; cursor: pointer; transition: 0.3s; }
         .music-card:hover { transform: translateY(-4px); }
-        .cover-art { width: 100%; aspect-ratio: 1/1; border-radius: var(--radius-md); margin-bottom: 10px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm); position: relative; overflow: hidden; background-size: cover; background-position: center; }
+        .cover-art { 
+            width: 100%; aspect-ratio: 1/1; 
+            border-radius: var(--radius-md); 
+            margin-bottom: 10px; 
+            background: linear-gradient(135deg, #e0e0e0, #f5f5f5); 
+            display: flex; align-items: center; justify-content: center; 
+            box-shadow: var(--shadow-sm); 
+            position: relative; overflow: hidden; 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+        }
         [data-theme="dark"] .cover-art { background-image: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         
-        /* 更改為上下文選單的按鈕 (三個點) */
         .ctx-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; z-index: 5; color: white; }
         .music-card:hover .ctx-btn { opacity: 1; }
         @media (max-width: 768px) { .ctx-btn { opacity: 1; background: rgba(255,255,255,0.8); color: black; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } [data-theme="dark"] .ctx-btn { background: rgba(0,0,0,0.6); color: white; } }
@@ -177,7 +212,6 @@
         .song-row-title { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .song-row-artist { color: var(--text-secondary); font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        /* 列表中的更多選項按鈕 */
         .list-more-btn { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .list-more-btn:hover { background: var(--divider); color: var(--text-primary); }
 
@@ -190,11 +224,10 @@
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
         
-        .page-section { padding: 20px 16px 120px 16px; display: none; animation: fadeIn 0.3s ease; }
+        .page-section { padding: 20px 16px 120px 16px; display: none; animation: fadeIn 0.3s ease; position: relative; min-height: 100%; }
         .page-section.active { display: block; }
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-top: 20px; margin-bottom: 15px; color: var(--text-primary); }
 
-        /* Mobile Nav & Adjustments */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -213,7 +246,6 @@
         .page-heading { font-size: 2rem; font-weight: 800; color: var(--text-primary); }
         .user-profile-btn { width: 40px; height: 40px; border-radius: 50%; background: #eee; cursor: pointer; background-size: cover; background-position: center; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 2px solid var(--card-bg); }
         
-        /* Search */
         .search-container { position: relative; width: 100%; margin-bottom: 30px; }
         .search-history-dropdown { position: absolute; top: 100%; left: 0; width: 100%; background: var(--card-bg); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 20; display: none; border: 1px solid var(--divider); max-height: 300px; overflow-y: auto; }
         .search-history-dropdown.active { display: block; }
@@ -224,64 +256,86 @@
         .pill-option { flex: 1; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); }
         .pill-option.active { color: var(--text-primary); }
 
-        /* --- CONTEXT MENU STYLES --- */
+        /* --- iOS STYLE CONTEXT MENU (New) --- */
         .context-menu-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 9998; display: none;
-            background: rgba(0,0,0,0.1); /* 輕微背景遮罩 */
+            background: rgba(0,0,0,0.4); 
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            transition: opacity 0.3s;
         }
         .context-menu-overlay.active { display: block; }
         
-        .context-menu {
-            position: absolute;
-            background: var(--context-menu-bg);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            width: 260px;
-            padding: 8px;
+        .ios-menu-container {
+            position: fixed; top: 50%; left: 50%; 
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 280px; 
+            max-height: 80vh; overflow-y: auto;
+            opacity: 0;
+            transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             z-index: 9999;
-            transform-origin: top left;
-            animation: cmScale 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: flex; flex-direction: column; gap: 4px;
         }
-        
-        @keyframes cmScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* Mobile specific context menu (Action Sheet style) */
+        .context-menu-overlay.active .ios-menu-container {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
         @media (max-width: 768px) {
-            .context-menu {
-                position: fixed; bottom: 10px; left: 3%; width: 94%;
-                top: auto; transform-origin: bottom center;
-                animation: cmSlideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-                border-radius: 20px;
+            .ios-menu-container {
+                top: auto; bottom: 30px; left: 50%;
+                transform: translate(-50%, 100%);
+                width: 92%;
+                max-width: 400px;
             }
-            @keyframes cmSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+            .context-menu-overlay.active .ios-menu-container {
+                transform: translate(-50%, 0);
+            }
         }
 
-        .cm-row { display: flex; gap: 8px; }
-        .cm-btn {
+        .ios-menu-section {
+            background: var(--menu-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 18px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Top Grid Row */
+        .ios-grid-row {
+            display: flex;
+            width: 100%;
+        }
+        .ios-grid-item {
             flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-weight: 500;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 15px 5px;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-            text-align: left;
+            border-right: 1px solid var(--menu-divider);
+            transition: background 0.2s;
         }
-        .cm-btn.full-width { justify-content: flex-start; padding-left: 15px; }
-        .cm-btn:hover { background: var(--input-bg); }
-        .cm-btn:active { background: rgba(0,0,0,0.1); }
-        .cm-btn svg { margin-right: 10px; width: 20px; height: 20px; }
-        .cm-btn.split svg { margin-right: 0; width: 22px; height: 22px; margin-bottom: 4px; }
-        .cm-btn.split { flex-direction: column; font-size: 0.8rem; gap: 2px; }
+        .ios-grid-item:last-child { border-right: none; }
+        .ios-grid-item:active { background: var(--menu-press); }
+        .ios-grid-icon { width: 24px; height: 24px; margin-bottom: 6px; }
+        .ios-grid-text { font-size: 0.75rem; font-weight: 500; text-align: center; color: var(--text-primary); }
 
-        /* --- Playlist Header Buttons --- */
+        /* List Rows */
+        .ios-list-item {
+            display: flex; align-items: center;
+            padding: 14px 18px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--menu-divider);
+            transition: background 0.2s;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+        .ios-list-item:last-child { border-bottom: none; }
+        .ios-list-item:active { background: var(--menu-press); }
+        .ios-list-icon { width: 22px; height: 22px; margin-right: 14px; flex-shrink: 0; }
+        .ios-list-text { flex: 1; }
+
         .playlist-header-actions { display: flex; gap: 15px; width: 100%; justify-content: center; margin-top: 20px; }
         .ph-btn {
             flex: 1; max-width: 180px; padding: 12px; border-radius: 30px; border: none; font-weight: 700; cursor: pointer;
@@ -291,7 +345,6 @@
         .ph-btn.shuffle { background: var(--input-bg); color: var(--accent-color); }
         .ph-btn:active { transform: scale(0.97); }
 
-        /* --- Add Music Red Bar --- */
         .add-music-bar {
             margin-top: 20px; width: 100%; padding: 15px;
             border-radius: 12px; border: 2px dashed rgba(250, 45, 72, 0.3);
@@ -305,10 +358,10 @@
     </style>
 </head>
 <body>
-    <!-- Context Menu Structure -->
+    <!-- iOS Style Context Menu -->
     <div id="cm-overlay" class="context-menu-overlay" onclick="closeContextMenu()">
-        <div id="context-menu" class="context-menu" onclick="event.stopPropagation()">
-            <!-- Content Injected via JS -->
+        <div id="context-menu-container" class="ios-menu-container" onclick="event.stopPropagation()">
+            <!-- JS will inject content here -->
         </div>
     </div>
 
@@ -326,7 +379,6 @@
                 <button class="btn-large btn-filled" onclick="openLoginModal()">立即開始使用</button>
             </div>
         </div>
-        <!-- 保持其他 Landing Page 元素 ... -->
     </section>
 
     <!-- Login Modal -->
@@ -356,6 +408,7 @@
         </nav>
 
         <main class="main-content" onscroll="handleScroll()">
+            <div id="ptr-spinner"></div>
             <header class="content-header" id="main-header">
                 <h1 class="page-heading" id="current-page-title">首頁</h1>
                 <div class="user-profile-btn" id="header-avatar" onclick="openProfileModal()" style="background-image:url('https://cdn-icons-png.flaticon.com/512/847/847969.png')"></div>
@@ -478,7 +531,7 @@
         </div>
     </div>
     
-    <!-- Search For Playlist Modal (新增) -->
+    <!-- Search For Playlist Modal -->
     <div id="search-for-playlist-modal" class="fullscreen-modal" style="z-index:340;">
         <div class="modal-nav">
              <button onclick="closeSearchForPlaylist()" style="background:none; border:none; font-size:1.1rem; color:var(--accent-color);">取消</button>
@@ -505,7 +558,6 @@
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
                 <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
                 
-                <!-- 兩個並列的播放按鈕 -->
                 <div class="playlist-header-actions">
                     <button class="ph-btn play" onclick="playCollectionAll(false)">
                         <svg class="icon" viewBox="0 0 24 24" style="fill:currentColor; stroke:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> 播放
@@ -560,8 +612,9 @@
         let currentCollectionSongs = [];
         let currentPlaylistId = null; 
         let songToAdd = null; 
+        let collectionToAdd = null; // Store collection name when adding album to playlist
         let tempImgBase64 = null;
-        let addingToPlaylistId = null; // 記錄正在為哪個清單添加音樂
+        let addingToPlaylistId = null;
 
         // --- Init ---
         window.onload = async function() {
@@ -575,7 +628,7 @@
                 currentUserData = await getUserFromDB(sessionUser);
                 if(currentUserData) {
                     if(!currentUserData.search_history) { currentUserData.search_history = []; }
-                    if(!currentUserData.liked_songs) { currentUserData.liked_songs = []; } // 確保有喜好項目
+                    if(!currentUserData.liked_songs) { currentUserData.liked_songs = []; } 
                     saveUserToDB(currentUserData);
                     document.getElementById('landing-page').classList.add('hidden');
                     document.getElementById('app-view').classList.remove('hidden');
@@ -585,6 +638,9 @@
             
             const player = document.getElementById('audio-player');
             player.addEventListener('ended', playNext); 
+            
+            // Pull to Refresh Logic
+            initPullToRefresh();
         };
 
         function initApp() {
@@ -594,6 +650,60 @@
             renderPlaylists();
             updateUIFromUserData();
             updateMobileNavActive('home');
+        }
+
+        // --- Pull to Refresh ---
+        function initPullToRefresh() {
+            const mainContent = document.querySelector('.main-content');
+            const spinner = document.getElementById('ptr-spinner');
+            let startY = 0;
+            let currentY = 0;
+            let isDragging = false;
+            let isReloading = false;
+
+            mainContent.addEventListener('touchstart', (e) => {
+                if (mainContent.scrollTop === 0 && !isReloading) {
+                    startY = e.touches[0].clientY;
+                    isDragging = true;
+                }
+            }, {passive: true});
+
+            mainContent.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                currentY = e.touches[0].clientY;
+                const diff = currentY - startY;
+                if (diff > 0 && diff < 150) {
+                    // Pulling down
+                    spinner.style.opacity = Math.min(diff / 100, 1);
+                    spinner.style.top = `${(diff/2) - 40}px`;
+                    spinner.style.transform = `translateX(-50%) rotate(${diff*2}deg)`;
+                }
+            }, {passive: true});
+
+            mainContent.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                const diff = currentY - startY;
+                if (diff > 80 && mainContent.scrollTop === 0) {
+                    // Trigger refresh
+                    isReloading = true;
+                    spinner.classList.add('spinning');
+                    spinner.style.top = '20px';
+                    setTimeout(() => {
+                        // Simulate Reload
+                        initApp(); // Re-render content
+                        isReloading = false;
+                        spinner.classList.remove('spinning');
+                        spinner.style.top = '-40px';
+                        spinner.style.opacity = 0;
+                    }, 1500);
+                } else {
+                    // Reset
+                    spinner.style.top = '-40px';
+                    spinner.style.opacity = 0;
+                }
+                currentY = 0;
+            });
         }
 
         function updateUIFromUserData() {
@@ -612,83 +722,96 @@
             return DEFAULT_ALBUM_IMG;
         }
 
-        // --- Context Menu System ---
+        // --- New iOS Style Context Menu System ---
         function showContextMenu(e, type, data) {
             e.stopPropagation();
             const overlay = document.getElementById('cm-overlay');
-            const menu = document.getElementById('context-menu');
-            let html = '';
-
-            // SVG Icons defined for reuse
-            const iconPlus = `<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
-            const iconHeart = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
-            const iconHeartFill = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
-            const iconPlay = `<svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
-            const iconShuffle = `<svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>`;
-            const iconBan = `<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`;
-            const iconPin = `<svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.74V3H9v7.74a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>`;
-            const iconAlbum = `<svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
-            const iconTrash = `<svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
+            const menuContainer = document.getElementById('context-menu-container');
+            
+            // Icons
+            const iconPlus = `<svg class="icon ios-grid-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>`;
+            const iconHeart = `<svg class="icon ios-grid-icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            const iconHeartFill = `<svg class="icon ios-grid-icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:var(--accent-color);"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            const iconPlay = `<svg class="icon ios-list-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+            const iconShuffle = `<svg class="icon ios-list-icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>`;
+            const iconBan = `<svg class="icon ios-list-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`;
+            const iconPin = `<svg class="icon ios-list-icon" viewBox="0 0 24 24"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.74V3H9v7.74a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"></path></svg>`;
+            const iconAlbum = `<svg class="icon ios-list-icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
+            const iconTrash = `<svg class="icon ios-list-icon" viewBox="0 0 24 24" style="color:var(--accent-color);"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
             const isLiked = currentUserData.liked_songs.includes(data.id);
             const likeIcon = isLiked ? iconHeartFill : iconHeart;
-            const likeText = isLiked ? "取消喜好" : "喜好項目";
+            const likeText = isLiked ? "已加入" : "喜好項目";
+
+            let html = '';
 
             if (type === 'song') {
-                // 普通歌曲 Context Menu
                 html = `
-                    <div class="cm-row">
-                        <button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}); closeContextMenu()">${iconPlus} 加入清單</button>
-                        <button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button>
+                    <div class="ios-menu-section">
+                        <div class="ios-grid-row">
+                            <div class="ios-grid-item" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">
+                                ${iconPlus} <span class="ios-grid-text">加入</span>
+                            </div>
+                            <div class="ios-grid-item" onclick="toggleLike(${data.id}); closeContextMenu()">
+                                ${likeIcon} <span class="ios-grid-text">${likeText}</span>
+                            </div>
+                        </div>
                     </div>
-                    <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconPlay} 立即播放</button>
-                    <button class="cm-btn full-width" onclick="playSong(${data.id}); closeContextMenu()">${iconShuffle} 隨機播放後續</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
+                    <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="playSong(${data.id}); closeContextMenu()">${iconPlay} <span class="ios-list-text">播放</span></div>
+                        <div class="ios-list-item" onclick="playSong(${data.id}); closeContextMenu()">${iconShuffle} <span class="ios-list-text">隨機播放</span></div>
+                    </div>
+                    <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} <span class="ios-list-text">減少推薦</span></div>
+                    </div>
                 `;
             } else if (type === 'playlist_song') {
-                // 清單內歌曲 Context Menu
-                html = `
-                    <div class="cm-row">
-                        <button class="cm-btn split" onclick="toggleLike(${data.id}); closeContextMenu()">${likeIcon} ${likeText}</button>
-                        <button class="cm-btn split" onclick="openPlaylistSelector(event, ${data.id}); closeContextMenu()">${iconPlus} 加到其他</button>
+                 html = `
+                    <div class="ios-menu-section">
+                        <div class="ios-grid-row">
+                            <div class="ios-grid-item" onclick="toggleLike(${data.id}); closeContextMenu()">
+                                ${likeIcon} <span class="ios-grid-text">${likeText}</span>
+                            </div>
+                             <div class="ios-grid-item" onclick="openPlaylistSelector(event, ${data.id}, 'song'); closeContextMenu()">
+                                ${iconPlus} <span class="ios-grid-text">加入</span>
+                            </div>
+                        </div>
                     </div>
-                    <button class="cm-btn full-width" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} 釘選歌曲 (置頂)</button>
-                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} 前往專輯</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
-                    <button class="cm-btn full-width" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()" style="color:var(--accent-color);">${iconTrash} 從清單移除</button>
+                    <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} <span class="ios-list-text">釘選歌曲</span></div>
+                        <div class="ios-list-item" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} <span class="ios-list-text">前往專輯</span></div>
+                    </div>
+                     <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} <span class="ios-list-text">減少推薦</span></div>
+                    </div>
+                    <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()">${iconTrash} <span class="ios-list-text" style="color:var(--accent-color);">從清單移除</span></div>
+                    </div>
                 `;
             } else if (type === 'album') {
-                // 專輯 Context Menu
-                html = `
-                    <div class="cm-row">
-                        <button class="cm-btn split" onclick="closeContextMenu(); alert('功能開發中')">${iconPlus} 加入清單</button>
-                        <button class="cm-btn split" onclick="closeContextMenu(); alert('已加入喜好')">${iconHeart} 喜好項目</button>
+                 html = `
+                    <div class="ios-menu-section">
+                        <div class="ios-grid-row">
+                            <div class="ios-grid-item" onclick="openPlaylistSelector(event, null, 'album', '${data.name}'); closeContextMenu()">
+                                ${iconPlus} <span class="ios-grid-text">加入</span>
+                            </div>
+                            <div class="ios-grid-item" onclick="closeContextMenu(); alert('已加入喜好')">
+                                ${iconHeart} <span class="ios-grid-text">喜好項目</span>
+                            </div>
+                        </div>
                     </div>
-                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(false); closeContextMenu()">${iconPlay} 立即播放</button>
-                    <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(true); closeContextMenu()">${iconShuffle} 隨機播放</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
+                    <div class="ios-menu-section">
+                         <div class="ios-list-item" onclick="openAlbumDetail('${data.name}'); playCollectionAll(false); closeContextMenu()">${iconPlay} <span class="ios-list-text">播放</span></div>
+                         <div class="ios-list-item" onclick="openAlbumDetail('${data.name}'); playCollectionAll(true); closeContextMenu()">${iconShuffle} <span class="ios-list-text">隨機播放</span></div>
+                    </div>
+                     <div class="ios-menu-section">
+                        <div class="ios-list-item" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} <span class="ios-list-text">減少推薦</span></div>
+                    </div>
                 `;
             }
 
-            menu.innerHTML = html;
+            menuContainer.innerHTML = html;
             overlay.classList.add('active');
-
-            // Positioning Logic
-            const isMobile = window.innerWidth <= 768;
-            if (!isMobile) {
-                // Desktop: Position near click
-                const rect = menu.getBoundingClientRect();
-                let x = e.clientX;
-                let y = e.clientY;
-                
-                // Prevent overflow
-                if (x + rect.width > window.innerWidth) x -= rect.width;
-                if (y + rect.height > window.innerHeight) y -= rect.height;
-
-                menu.style.left = x + 'px';
-                menu.style.top = y + 'px';
-                menu.style.transformOrigin = 'top left';
-            }
         }
 
         function closeContextMenu() {
@@ -700,10 +823,7 @@
             if(idx === -1) currentUserData.liked_songs.push(id);
             else currentUserData.liked_songs.splice(idx, 1);
             await saveUserToDB(currentUserData);
-            // 如果當前正在看喜好項目清單，重新渲染
-            if(currentPlaylistId === 'favorites') {
-                openPlaylistDetail('favorites');
-            }
+            if(currentPlaylistId === 'favorites') { openPlaylistDetail('favorites'); }
             renderPlaylists();
         }
 
@@ -711,9 +831,7 @@
             if(!currentPlaylistId || currentPlaylistId === 'favorites') return;
             const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
             if(pl) {
-                // 移除原位置
                 pl.songs = pl.songs.filter(id => id !== songId);
-                // 放到第一位
                 pl.songs.unshift(songId);
                 await saveUserToDB(currentUserData);
                 openPlaylistDetail(currentPlaylistId);
@@ -761,6 +879,26 @@
             document.getElementById('p-artist').innerText = song.artist;
             const coverImage = getSongCover(song);
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
+            
+            // Setup Media Session correctly
+            if ('mediaSession' in navigator) {
+                // Ensure absolute URL for image if possible, though relative often works
+                const artworkUrl = new URL(coverImage, window.location.href).href;
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: song.artist,
+                    album: song.album || 'ASTRA Music',
+                    artwork: [
+                        { src: artworkUrl, sizes: '512x512', type: 'image/png' },
+                        { src: artworkUrl, sizes: '96x96', type: 'image/png' }
+                    ]
+                });
+                
+                navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); });
+                navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); });
+                navigator.mediaSession.setActionHandler('nexttrack', playNext);
+            }
+
             audioPlayer.play().then(() => {
                 isPlaying = true;
                 updatePlayBtn();
@@ -836,8 +974,6 @@
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
-            
-            // 強制添加「喜好項目」資料夾
             const likedCount = currentUserData.liked_songs ? currentUserData.liked_songs.length : 0;
             let html = `
                 <div class="music-card" onclick="openPlaylistDetail('favorites')">
@@ -848,7 +984,6 @@
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div>
                 </div>
             `;
-
             html += playlists.map(pl => `
                 <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
                     <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
@@ -856,7 +991,6 @@
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
             `).join(''); 
-            
             container.innerHTML = html;
         }
 
@@ -868,7 +1002,6 @@
                 title = "喜好項目";
                 songs = currentUserData.liked_songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 subtitle = `${songs.length} 首歌曲`;
-                cover = 'https://cdn-icons-png.flaticon.com/512/847/847969.png'; // 這裡可以用純色或特定圖標
             } else {
                 pl = currentUserData.playlists.find(p => p.id === plId);
                 if(!pl) return;
@@ -881,7 +1014,6 @@
 
             currentCollectionSongs = songs;
 
-            // UI 設定
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
@@ -895,26 +1027,15 @@
                 document.getElementById('cd-cover').style.backgroundImage = `url(${cover})`;
             }
 
-            // 生成列表
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
             html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
 
-            // 添加最下方的紅色 + 號 (Add Music Area)
-            // 如果是喜好項目資料夾，不顯示添加按鈕 (因為通常是自動添加)
-            // 但如果客戶想手動加喜好，也可以保留。這裡假設喜好項目只能透過愛心添加，所以隱藏。
-            // 根據需求 "播放列表所有音樂的最下面要添加一個添加音樂的區域"，所以普通清單要有
             if (plId !== 'favorites') {
                 html += `
                 <div class="add-music-bar" onclick="openSearchForPlaylist(${plId})">
                     <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     添加音樂
                 </div>
-                `;
-            }
-
-            // 刪除清單按鈕 (喜好項目不可刪除)
-            if (plId !== 'favorites') {
-                html += `
                 <div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;">
                     <button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;">
                         <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -943,7 +1064,6 @@
             </div>`;
         }
 
-        // --- Album Detail (No changes needed except integrating new context menu triggers) ---
         function openAlbumDetail(albumName) {
             currentPlaylistId = null; 
             const songs = musicLibrary.filter(s => s.album === albumName);
@@ -973,9 +1093,7 @@
         function playCollectionAll(shuffle) {
             if(currentCollectionSongs.length > 0) {
                 let queue = [...currentCollectionSongs];
-                if (shuffle) {
-                    queue.sort(() => Math.random() - 0.5);
-                }
+                if (shuffle) { queue.sort(() => Math.random() - 0.5); }
                 currentQueue = queue;
                 currentSongIndex = 0;
                 playSongObject(currentQueue[0]);
@@ -999,7 +1117,6 @@
             const val = e.target.value.toLowerCase().trim();
             const resDiv = document.getElementById('playlist-add-results');
             if(!val) { resDiv.innerHTML = ''; return; }
-            
             const matched = musicLibrary.filter(s => s.title.toLowerCase().includes(val) || s.artist.toLowerCase().includes(val));
             resDiv.innerHTML = matched.map(s => `
                 <div class="song-list-item" onclick="addSongToSpecificPlaylist(${s.id})">
@@ -1017,7 +1134,6 @@
                 p.songs.push(sid);
                 await saveUserToDB(currentUserData);
                 renderPlaylists();
-                // 刷新後方詳情頁
                 openPlaylistDetail(addingToPlaylistId);
                 closeSearchForPlaylist();
             } else {
@@ -1025,7 +1141,7 @@
             }
         }
 
-        // --- Misc Functions (Create Playlist, Login, Profile etc.) ---
+        // --- Misc Functions ---
         function openLoginModal() { document.getElementById('login-modal').classList.add('active'); }
         function closeLoginModal() { document.getElementById('login-modal').classList.remove('active'); }
         async function handleLogin(e) { 
@@ -1057,7 +1173,16 @@
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
         function updateThemeUI(t) { const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } }
         
-        function openPlaylistSelector(e,sid){ e.stopPropagation(); songToAdd=sid; if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} const l=document.getElementById('playlist-selector-list'); l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); document.getElementById('select-playlist-modal').classList.add('active'); }
+        function openPlaylistSelector(e, id, type, albumName){ 
+            e.stopPropagation(); 
+            songToAdd = (type === 'song') ? id : null;
+            collectionToAdd = (type === 'album') ? albumName : null;
+
+            if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} 
+            const l=document.getElementById('playlist-selector-list'); 
+            l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); 
+            document.getElementById('select-playlist-modal').classList.add('active'); 
+        }
         function closePlaylistSelector(){ document.getElementById('select-playlist-modal').classList.remove('active'); }
         
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
@@ -1069,9 +1194,42 @@
             const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; currentUserData.playlists.push(p); 
             await saveUserToDB(currentUserData); renderPlaylists(); 
             setTimeout(() => { closeCreatePlaylistModal(); document.getElementById('new-playlist-name').value = ''; window.scrollTo(0, 0); }, 300);
-            if(songToAdd) addToPlaylist(p.id); 
+            if(songToAdd || collectionToAdd) addToPlaylist(p.id); 
         }
-        async function addToPlaylist(pid){ const p=currentUserData.playlists.find(x=>x.id===pid); if(p&&!p.songs.includes(songToAdd)){ p.songs.push(songToAdd); await saveUserToDB(currentUserData); renderPlaylists(); alert("已加入清單"); }else alert("歌曲已存在於清單中"); closePlaylistSelector(); }
+        
+        async function addToPlaylist(pid){ 
+            const p=currentUserData.playlists.find(x=>x.id===pid); 
+            if(!p) return;
+
+            let addedCount = 0;
+
+            if (songToAdd) {
+                // Add Single Song
+                if(!p.songs.includes(songToAdd)){ 
+                    p.songs.push(songToAdd); 
+                    addedCount++;
+                }
+            } else if (collectionToAdd) {
+                // Add Album
+                const songsInAlbum = musicLibrary.filter(s => s.album === collectionToAdd);
+                songsInAlbum.forEach(s => {
+                    if(!p.songs.includes(s.id)) {
+                        p.songs.push(s.id);
+                        addedCount++;
+                    }
+                });
+            }
+
+            if(addedCount > 0) {
+                await saveUserToDB(currentUserData); 
+                renderPlaylists(); 
+                alert(`已加入 ${addedCount} 首歌曲到清單`);
+            } else {
+                alert("歌曲已存在於清單中");
+            }
+            closePlaylistSelector(); 
+        }
+
         async function removeFromPlaylist(e, songId) {
             e.stopPropagation(); if (!currentPlaylistId || currentPlaylistId==='favorites') return;
             if(!confirm("確定要從清單移除這首歌嗎？")) return;
