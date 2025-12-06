@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ASTRA Music</title>
     <link rel="icon" href="./images/logo.png" type="image/png">
-    <!-- 預設為淺色，JS 會根據設定動態修改 -->
     <meta name="theme-color" content="#FFFFFF" id="theme-color-meta">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -356,15 +355,23 @@
         .add-music-bar:active { transform: scale(0.99); }
         .add-music-bar svg { margin-right: 8px; }
 
-        /* Header Cover Style */
+        /* Header Cover Style & Edit Overlay */
         #cd-cover {
             width: 180px; height: 180px; margin: 0 auto 20px; 
             border-radius: 20px; background: #eee; 
             background-size: cover !important; 
             background-position: center !important; 
             box-shadow: var(--shadow-md);
-            display: flex; align-items: center; justify-content: center; /* 讓 SVG 居中 */
+            display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
         }
+        .cover-edit-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s; cursor: pointer;
+        }
+        #cd-cover:hover .cover-edit-overlay { opacity: 1; }
+        .cover-edit-overlay svg { color: white; width: 40px; height: 40px; }
 
     </style>
 </head>
@@ -454,7 +461,8 @@
 
             <!-- C. Discovery -->
             <div id="page-discovery" class="page-section">
-                <h2 style="margin-bottom:20px;">最新發行</h2>
+                <h2 style="margin-bottom:20px;">探索新聲</h2>
+                <p style="color:var(--text-secondary); margin-bottom:20px;">挖掘那些您可能錯過的好音樂</p>
                 <div id="discovery-horizontal-container"></div>
             </div>
 
@@ -565,7 +573,15 @@
         <div class="modal-body">
             <!-- Header Info -->
             <div style="text-align:center; margin-bottom:30px;">
-                <div id="cd-cover"></div>
+                <!-- 增加封面的編輯 Overlay -->
+                <div id="cd-cover" onclick="triggerCoverEdit()">
+                    <div class="cover-edit-overlay">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    </div>
+                </div>
+                <!-- 隱藏的檔案輸入框，用於修改封面 -->
+                <input type="file" id="playlist-cover-upload" accept="image/*" style="display:none;" onchange="handlePlaylistCoverUpdate(this)">
+                
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
                 <p id="cd-subtitle" style="color:var(--text-secondary);">Subtitle</p>
                 <div class="playlist-header-actions">
@@ -590,6 +606,7 @@
         const albumImages = { "WE GO UP-EP": "./images/albums/we_go_up_ep.jpg" };
         const DEFAULT_ARTIST_IMG = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
         const DEFAULT_ALBUM_IMG = "https://cdn-icons-png.flaticon.com/512/3208/3208703.png";
+        const DEFAULT_PLAYLIST_IMG = "https://cdn-icons-png.flaticon.com/512/3019/3019014.png";
 
         const DB_NAME = 'ASTRA_DB';
         const STORE_NAME = 'user_data';
@@ -638,10 +655,9 @@
                 if(currentUserData) {
                     if(!currentUserData.search_history) { currentUserData.search_history = []; }
                     if(!currentUserData.liked_songs) { currentUserData.liked_songs = []; } 
-                    // 新增：黑名單欄位，用於減少推薦
                     if(!currentUserData.disliked_songs) { currentUserData.disliked_songs = []; }
-                    // 新增：播放次數/記錄，用於推薦演算法
                     if(!currentUserData.play_counts) { currentUserData.play_counts = {}; }
+                    if(!currentUserData.favorites_cover) { currentUserData.favorites_cover = null; }
 
                     saveUserToDB(currentUserData);
                     document.getElementById('landing-page').classList.add('hidden');
@@ -663,49 +679,90 @@
             const recommended = getSmartRecommendations();
             renderHorizontalRows('home-horizontal-container', recommended);
             renderAlbumSection();
-            renderHorizontalRows('discovery-horizontal-container', [...musicLibrary].reverse());
+            
+            // 使用新發現演算法（冷門挖掘）
+            const discoveries = getDiscoveryRecommendations();
+            renderHorizontalRows('discovery-horizontal-container', discoveries);
+            
             renderPlaylists();
             updateUIFromUserData();
             updateMobileNavActive('home');
         }
 
-        // --- Smart Recommendation Algorithm ---
+        // --- Smart Recommendation Algorithm (Recommended for You) ---
         function getSmartRecommendations() {
-            // 過濾掉黑名單歌曲
             const disliked = currentUserData.disliked_songs || [];
             let candidates = musicLibrary.filter(s => !disliked.includes(s.id));
 
-            // 簡單評分機制
             const liked = currentUserData.liked_songs || [];
             const counts = currentUserData.play_counts || {};
 
+            // 1. 計算歌手親密度 (Affinity)
+            let artistAffinity = {};
+            liked.forEach(songId => {
+                const s = musicLibrary.find(x => x.id === songId);
+                if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + 10;
+            });
+            Object.keys(counts).forEach(songId => {
+                const s = musicLibrary.find(x => x.id === parseInt(songId));
+                if (s) artistAffinity[s.artist] = (artistAffinity[s.artist] || 0) + (counts[songId] * 2); 
+            });
+
             candidates.forEach(song => {
                 let score = 0;
-                // 1. 如果歌曲在喜好清單中，大幅加分 (但不推薦已經加入的，這裡假設推薦是為了發現新歌或常聽的)
-                // 但首頁「為你推薦」通常包含已喜歡的，所以加分
-                if(liked.includes(song.id)) score += 50;
+                // A. 喜好加權
+                if(liked.includes(song.id)) score += 100;
 
-                // 2. 如果喜歡該歌手的其他歌，加分 (模擬協同過濾的簡化版)
-                const artistLikedCount = liked.filter(lid => {
-                    const s = musicLibrary.find(x => x.id === lid);
-                    return s && s.artist === song.artist;
-                }).length;
-                score += (artistLikedCount * 10);
+                // B. 歌手親密度加權
+                const affinity = artistAffinity[song.artist] || 0;
+                score += Math.min(affinity, 50); // 上限 50
 
-                // 3. 播放次數加分 (越常聽越容易出現)
-                if(counts[song.id]) score += (counts[song.id] * 2);
+                // C. 播放次數加權 (喜歡聽的)
+                if(counts[song.id]) score += Math.min(counts[song.id] * 2, 40);
 
-                // 4. 隨機因子 (0~20分)，確保每次刷新有點變化，不要死板
+                // D. 隨機擾動 (0-20)
                 score += Math.random() * 20;
+
+                // E. 時間衰減 (模擬新歌加權，ID越大越新)
+                score += (song.id / 5);
 
                 song._score = score;
             });
 
-            // 依照分數高低排序
             candidates.sort((a, b) => b._score - a._score);
-
-            // 取前 20 首
             return candidates.slice(0, 20);
+        }
+
+        // --- Discovery Recommendation Algorithm (Cold Start / Less Played) ---
+        function getDiscoveryRecommendations() {
+            const disliked = currentUserData.disliked_songs || [];
+            const liked = currentUserData.liked_songs || [];
+            const counts = currentUserData.play_counts || {};
+            
+            // 過濾掉黑名單
+            let candidates = musicLibrary.filter(s => !disliked.includes(s.id));
+            
+            // 排除已經非常熟悉的歌 (已經按讚且播放次數高)
+            // 這裡邏輯是：推薦播放次數最少的
+            
+            candidates.forEach(song => {
+                // 分數越低越容易被推薦
+                let score = (counts[song.id] || 0); 
+                
+                // 如果已經按讚，稍微增加一點分數(讓它排後面一點)，因為已經發現過了
+                if(liked.includes(song.id)) score += 10;
+                
+                song._discovery_score = score;
+            });
+
+            // 升序排列 (播放越少越前面)
+            candidates.sort((a, b) => a._discovery_score - b._discovery_score);
+            
+            // 取前 50 首，然後隨機打亂取 20 首，避免每次都一樣
+            let pool = candidates.slice(0, 50);
+            pool.sort(() => Math.random() - 0.5);
+            
+            return pool.slice(0, 20);
         }
 
         function updateUIFromUserData() {
@@ -804,7 +861,7 @@
             renderPlaylists();
         }
 
-        // --- Dislike / Not Recommended Logic ---
+        // --- Dislike Logic (Silent) ---
         async function dislikeSong(id) {
             if(!currentUserData.disliked_songs.includes(id)) {
                 currentUserData.disliked_songs.push(id);
@@ -814,11 +871,11 @@
                 
                 await saveUserToDB(currentUserData);
                 
-                // 重新計算推薦並刷新首頁
+                // 靜默刷新推薦列表，不彈出通知
                 const recommended = getSmartRecommendations();
                 renderHorizontalRows('home-horizontal-container', recommended);
-                
-                alert("已減少此類歌曲推薦，演算法將自動調整。");
+                const discoveries = getDiscoveryRecommendations();
+                renderHorizontalRows('discovery-horizontal-container', discoveries);
             }
         }
 
@@ -864,7 +921,7 @@
             const song = musicLibrary.find(s => s.id === id);
             if(!song) return;
             
-            // 記錄播放次數 (用於推薦演算法)
+            // 記錄播放次數
             if(!currentUserData.play_counts) currentUserData.play_counts = {};
             currentUserData.play_counts[id] = (currentUserData.play_counts[id] || 0) + 1;
             saveUserToDB(currentUserData);
@@ -996,10 +1053,20 @@
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
             const likedCount = currentUserData.liked_songs ? currentUserData.liked_songs.length : 0;
+            
+            // 處理喜好項目封面 (如果有自定義就用，沒有就用預設)
+            const favCover = currentUserData.favorites_cover 
+                ? `background-image:url('${currentUserData.favorites_cover}'); background-size:cover !important; background-position:center !important;`
+                : `background: linear-gradient(135deg, #FA2D48, #FF7657); display:flex; align-items:center; justify-content:center;`;
+                
+            const favInner = currentUserData.favorites_cover
+                ? ``
+                : `<svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+
             let html = `
                 <div class="music-card" onclick="openPlaylistDetail('favorites')">
-                    <div class="cover-art" style="background: linear-gradient(135deg, #FA2D48, #FF7657); display:flex; align-items:center; justify-content:center;">
-                        <svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <div class="cover-art" style="${favCover}">
+                        ${favInner}
                     </div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">喜好項目</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div>
@@ -1007,7 +1074,7 @@
             `;
             html += playlists.map(pl => `
                 <div class="music-card" onclick="openPlaylistDetail(${pl.id})">
-                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_ALBUM_IMG}')"></div>
+                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')"></div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
@@ -1015,8 +1082,43 @@
             container.innerHTML = html;
         }
 
+        // --- Playlist & Favorites Cover Edit Logic ---
+        function triggerCoverEdit() {
+            // 只允許喜好項目或自建清單編輯
+            if(currentPlaylistId) {
+                document.getElementById('playlist-cover-upload').click();
+            }
+        }
+
+        function handlePlaylistCoverUpdate(input) {
+            if(input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const newCover = e.target.result;
+                    
+                    if(currentPlaylistId === 'favorites') {
+                        currentUserData.favorites_cover = newCover;
+                    } else {
+                        // 尋找一般清單
+                        const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
+                        if(pl) {
+                            pl.img = newCover;
+                        }
+                    }
+                    
+                    await saveUserToDB(currentUserData);
+                    // 重新渲染清單列表與當前詳情頁
+                    renderPlaylists();
+                    openPlaylistDetail(currentPlaylistId);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+            // Reset input
+            input.value = '';
+        }
+
         function openPlaylistDetail(plId) {
-            let pl, songs, title, subtitle, cover;
+            let pl, songs, title, subtitle, cover, isDefaultCover;
             const coverEl = document.getElementById('cd-cover');
             
             if (plId === 'favorites') {
@@ -1025,10 +1127,19 @@
                 songs = currentUserData.liked_songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 subtitle = `${songs.length} 首歌曲`;
                 
-                // 修正喜好項目頭像顯示
-                coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
-                coverEl.style.backgroundImage = 'none'; 
-                coverEl.innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                if(currentUserData.favorites_cover) {
+                    coverEl.style.background = '#eee';
+                    coverEl.style.backgroundImage = `url('${currentUserData.favorites_cover}')`;
+                    // 保留編輯遮罩，移除圖示
+                    coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
+                } else {
+                    coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
+                    coverEl.style.backgroundImage = 'none'; 
+                    coverEl.innerHTML = `
+                        <svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        <div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
+                    `;
+                }
             } else {
                 pl = currentUserData.playlists.find(p => p.id === plId);
                 if(!pl) return;
@@ -1036,11 +1147,11 @@
                 songs = pl.songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 title = pl.name;
                 subtitle = `${songs.length} 首歌曲`;
-                cover = pl.img || DEFAULT_ALBUM_IMG;
+                cover = pl.img || DEFAULT_PLAYLIST_IMG;
 
-                coverEl.innerHTML = '';
                 coverEl.style.background = '#eee';
                 coverEl.style.backgroundImage = `url(${cover})`;
+                coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
             }
 
             currentCollectionSongs = songs;
@@ -1094,6 +1205,7 @@
             const coverEl = document.getElementById('cd-cover');
             coverEl.style.background = '#eee';
             coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
+            // 專輯封面不可編輯，移除遮罩
             coverEl.innerHTML = '';
             
             currentCollectionSongs = songs;
@@ -1204,12 +1316,13 @@
                     if(!currentUserData.liked_songs) currentUserData.liked_songs = []; 
                     if(!currentUserData.disliked_songs) currentUserData.disliked_songs = [];
                     if(!currentUserData.play_counts) currentUserData.play_counts = {};
+                    if(!currentUserData.favorites_cover) currentUserData.favorites_cover = null;
                     await saveUserToDB(currentUserData);
                     localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); 
                 } else alert("密碼錯誤"); 
             } else { 
                 if(confirm("用戶不存在，是否立即註冊?")){ 
-                    const n={username:u,password:p,avatar:null,playlists:[],liked_songs:[],disliked_songs:[],play_counts:{},theme:'light',search_history:[]}; 
+                    const n={username:u,password:p,avatar:null,playlists:[],liked_songs:[],disliked_songs:[],play_counts:{},favorites_cover:null,theme:'light',search_history:[]}; 
                     await saveUserToDB(n); currentUserData=n; localStorage.setItem('current_session_user',u); closeLoginModal(); document.getElementById('landing-page').classList.add('hidden'); document.getElementById('app-view').classList.remove('hidden'); initApp(); 
                 } 
             } 
@@ -1226,7 +1339,6 @@
         function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); document.getElementById('player-bar').classList.remove('hidden'); }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
         
-        // 修正：深淺色模式切換時強制更新 meta tag
         function updateThemeUI(t) { 
             const p=document.getElementById('theme-pill'); 
             const pl=document.getElementById('pill-light'); 
