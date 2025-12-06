@@ -152,7 +152,6 @@
         }
         .music-card:active { transform: scale(0.95); }
 
-        /* [新增] 歌手卡片樣式 */
         .artist-card {
             flex: 0 0 auto; 
             width: 18%; 
@@ -168,7 +167,7 @@
         .artist-img {
             width: 140px; 
             height: 140px; 
-            border-radius: 50%; /* 圓形頭像 */
+            border-radius: 50%;
             background-size: cover !important; 
             background-position: center !important; 
             margin-bottom: 10px;
@@ -228,12 +227,20 @@
         .list-more-btn { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .list-more-btn:hover { background: var(--divider); color: var(--text-primary); }
 
-        /* --- Mini Player Bar --- */
-        .player-bar { position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); transform: translateY(200%); opacity: 0; cursor: pointer; }
-        .player-bar.active { transform: translateY(0); opacity: 1; }
+        /* --- Mini Player Bar (修正：增加 pointer-events 控制) --- */
+        .player-bar { 
+            position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; 
+            transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); 
+            transform: translateY(200%); opacity: 0; cursor: pointer; 
+            pointer-events: none; /* 預設不可點擊 */
+        }
+        .player-bar.active { 
+            transform: translateY(0); opacity: 1; 
+            pointer-events: auto; /* 啟動時才可點擊 */
+        }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
 
-        /* --- Full Screen Player (UPDATED) --- */
+        /* --- Full Screen Player --- */
         #full-player {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); backdrop-filter: blur(60px); -webkit-backdrop-filter: blur(60px);
@@ -248,46 +255,32 @@
         
         .fp-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; opacity: 0.4; filter: blur(100px); transition: background-image 0.5s; }
         
-        /* 標題與返回按鈕區域 */
         .fp-header {
             display: flex; justify-content: center; align-items: center;
             padding: calc(10px + var(--safe-top)) 20px 20px 20px;
             position: relative; flex-shrink: 0;
             width: 100%;
         }
-        /* 中間的 Pill (橫槓) - 點擊可關閉 */
         .fp-header-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; position: absolute; top: calc(10px + var(--safe-top)); left: 50%; transform: translateX(-50%); transition: 0.2s; z-index: 20;}
         .fp-header-pill:active { background: rgba(255,255,255,0.6); transform: translateX(-50%) scaleX(1.1); }
         
-        /* 左上角返回按鈕 (優化版) */
         .fp-close-btn { 
-            position: absolute; 
-            top: 25px; /* 改成 25px 讓它更靠上 */
-            left: 30px; /* 稍微靠左一點 */
+            position: absolute; top: 25px; left: 30px; 
             width: 40px; height: 40px; 
             display: flex; align-items: center; justify-content: center; 
-            background: rgba(255,255,255,0.1); 
-            border-radius: 50%; 
-            cursor: pointer; 
-            backdrop-filter: blur(10px); 
-            z-index: 50; 
-            border: 1px solid rgba(255,255,255,0.15); 
-            color: white; 
-            transition: 0.2s;
+            background: rgba(255,255,255,0.1); border-radius: 50%; 
+            cursor: pointer; backdrop-filter: blur(10px); 
+            z-index: 50; border: 1px solid rgba(255,255,255,0.15); 
+            color: white; transition: 0.2s;
         }
         .fp-close-btn:hover { background: rgba(255,255,255,0.25); }
+        @media (max-width: 768px) { .fp-close-btn { display: none !important; } }
 
-        /* 手機版絕對隱藏此按鈕 */
-        @media (max-width: 768px) {
-            .fp-close-btn { display: none !important; }
-        }
-
-        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: 40px;} /* [修改] 增加頂部間距 */
+        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: 40px;} 
         
-        /* View 1: Main Player */
         .fp-view-main {
             flex: 1; display: flex; flex-direction: column; padding: 0 30px;
-            padding-bottom: 120px; /* 留空間給底部列 */
+            padding-bottom: 120px; 
             transition: transform 0.4s ease, opacity 0.4s ease;
         }
         .fp-view-main.shifted { transform: translateX(-20%); opacity: 0; pointer-events: none; }
@@ -316,6 +309,7 @@
 
         .fp-progress-container { width: 100%; margin-bottom: 20px; }
         
+        /* [修改] 進度條樣式 - 仿圖二無段位 */
         .fp-range {
             -webkit-appearance: none;
             appearance: none;
@@ -347,13 +341,12 @@
         .fp-play-btn { width: 70px; height: 70px; background: transparent; border-radius: 50%; color: white; }
         .fp-play-btn svg { width: 45px; height: 45px; fill: white; stroke: none; }
 
-        /* View 2: Queue / Options */
         .fp-view-queue {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; 
             padding: 20px 30px;
-            padding-top: 70px; /* [修改] 電腦版：上方留白減少至 70px，讓內容往上一點 */
-            padding-bottom: 120px; /* 下方留白 */
+            padding-top: 70px; 
+            padding-bottom: 120px; 
             transform: translateX(100%); 
             transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease; 
             opacity: 0; pointer-events: none;
@@ -362,12 +355,9 @@
         .fp-view-queue.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
 
         @media (max-width: 768px) {
-            .fp-view-queue {
-                padding-top: calc(40px + var(--safe-top)); 
-            }
+            .fp-view-queue { padding-top: calc(40px + var(--safe-top)); }
         }
 
-        /* Queue Header Style */
         .fp-queue-top-info {
             display: flex; align-items: center; 
             margin-bottom: 25px; 
@@ -395,10 +385,7 @@
         .fp-opt-btn.active { background: rgba(255,255,255,0.25); color: white; }
         .fp-opt-btn svg { width: 20px; height: 20px; }
 
-        .fp-queue-list { 
-            flex: 1; overflow-y: auto; 
-            padding-bottom: 120px; /* 重要：留出下方空間給常駐功能列 */
-        }
+        .fp-queue-list { flex: 1; overflow-y: auto; padding-bottom: 120px; }
         .fp-queue-header { font-size: 1rem; font-weight: 700; margin-bottom: 15px; color: white; }
         .fp-q-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .fp-q-img { width: 40px; height: 40px; border-radius: 6px; background: #555; margin-right: 12px; background-size: cover; background-position: center; }
@@ -407,29 +394,17 @@
         .fp-q-artist { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
         .fp-q-playing .fp-q-title { color: var(--accent-color); }
 
-        /* 底部功能列常駐設定 */
         .fp-bottom-row { 
-            position: absolute; 
-            bottom: 0; 
-            left: 0;
-            width: 100%;
-            height: 110px; /* 固定高度區域 */
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 40px; 
-            padding-bottom: 30px;
-            z-index: 60; /* 最高層級 */
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 110px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 40px; padding-bottom: 30px; z-index: 60; 
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
-            pointer-events: none; /* 讓點擊穿透背景 */
+            pointer-events: none; 
         }
-        .fp-bottom-row .fp-icon-btn { pointer-events: auto; } /* 按鈕恢復可點擊 */
+        .fp-bottom-row .fp-icon-btn { pointer-events: auto; }
 
         @media (max-width: 768px) {
-            .fp-bottom-row {
-                padding: 0 30px;
-                padding-bottom: calc(20px + env(safe-area-inset-bottom));
-            }
+            .fp-bottom-row { padding: 0 30px; padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
         }
 
         .fullscreen-modal { 
@@ -444,19 +419,11 @@
         .modal-nav { padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--divider); flex-shrink: 0; }
         .modal-body { flex: 1; overflow-y: auto; padding: 30px; max-width: 900px; margin: 0 auto; width: 100%; padding-bottom: 100px; }
         
-        .page-section { 
-            padding: 20px 16px 120px 16px; display: none; 
-            opacity: 0;
-            animation: none; 
-        }
-        .page-section.active { 
-            display: block; 
-            animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
+        .page-section { padding: 20px 16px 120px 16px; display: none; opacity: 0; animation: none; }
+        .page-section.active { display: block; animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
         .search-section-title { font-size: 1.2rem; font-weight: 700; margin-top: 20px; margin-bottom: 15px; color: var(--text-primary); }
 
-        /* Mobile Nav & Adjustments */
         .mobile-nav { display: none; }
         @media (max-width: 768px) {
             .sidebar { display: none; }
@@ -526,18 +493,9 @@
 
         .cm-row { display: flex; gap: 8px; }
         .cm-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
-            text-align: left;
+            flex: 1; padding: 12px; border-radius: 10px; background: transparent; border: none;
+            color: var(--text-primary); font-size: 0.95rem; font-weight: 500; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s; text-align: left;
         }
         .cm-btn.full-width { justify-content: flex-start; padding-left: 15px; }
         .cm-btn:hover { background: var(--input-bg); transform: scale(1.02); }
@@ -566,7 +524,6 @@
         .add-music-bar:active { transform: scale(0.99); }
         .add-music-bar svg { margin-right: 8px; }
 
-        /* Header Cover Style & Edit Overlay */
         #cd-cover {
             width: 180px; height: 180px; margin: 0 auto 20px; 
             border-radius: 20px; background: #eee; 
@@ -584,15 +541,12 @@
         #cd-cover:hover .cover-edit-overlay { opacity: 1; }
         .cover-edit-overlay svg { color: white; width: 40px; height: 40px; }
         
-        .tag-section-header {
-             display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px;
-        }
+        .tag-section-header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px; }
         .tag-badge {
             background: var(--accent-color); color: white; padding: 4px 10px; border-radius: 6px; 
             font-size: 0.8rem; font-weight: bold; margin-left: 10px;
         }
 
-        /* Batch Delete Action Bar */
         .batch-action-bar {
             display: none; justify-content: space-between; align-items: center;
             background: var(--accent-color); color: white;
@@ -606,22 +560,18 @@
 <body>
     <!-- Context Menu Structure -->
     <div id="cm-overlay" class="context-menu-overlay" onclick="closeContextMenu()">
-        <div id="context-menu" class="context-menu" onclick="event.stopPropagation()">
-            <!-- Content Injected via JS -->
-        </div>
+        <div id="context-menu" class="context-menu" onclick="event.stopPropagation()"></div>
     </div>
 
     <!-- Full Screen Player Modal (New Layout) -->
     <div id="full-player">
         <div class="fp-bg-layer" id="fp-bg"></div>
         
-        <!-- Header: Pull Drag Area -->
+        <!-- Header -->
         <div class="fp-header" id="fp-drag-area">
-            <!-- 電腦版左上角按鈕 (CSS已設定手機隱藏) -->
             <button class="fp-close-btn" onclick="closeFullPlayer()">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
-            <!-- 下拉提示條 (Pill) - 點擊可關閉 -->
             <div class="fp-header-pill" onclick="closeFullPlayer()"></div>
         </div>
         
@@ -648,7 +598,8 @@
                 </div>
 
                 <div class="fp-progress-container">
-                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value); updateRangeBackground(this)">
+                    <!-- [修正] step 設為 0.01 實現無段位調整 -->
+                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="0.01" oninput="seekAudio(this.value); updateRangeBackground(this)">
                     <div class="fp-time-labels">
                         <span id="fp-curr-time">0:00</span>
                         <span id="fp-total-time">-:--</span>
@@ -713,7 +664,6 @@
             <button class="fp-icon-btn">
                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
             </button>
-            
             <button class="fp-icon-btn" id="fp-queue-toggle-btn" onclick="togglePlayerView()">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
             </button>
@@ -824,7 +774,7 @@
                 <div id="playlists-container" class="grid-container"></div>
             </div>
 
-            <!-- E. Settings (New Page Section) -->
+            <!-- E. Settings -->
             <div id="page-settings" class="page-section">
                 <div style="margin-bottom:30px;">
                     <p style="margin-bottom:10px; font-weight:600;">外觀主題</p>
@@ -864,7 +814,7 @@
         </footer>
     </section>
 
-    <!-- Modals (Profile, Playlist Selection) -->
+    <!-- Modals -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
         <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button></div>
         <div class="modal-body">
@@ -889,7 +839,6 @@
         </div>
     </div>
 
-    <!-- Create Playlist Modal -->
     <div id="create-playlist-modal" class="fullscreen-modal" style="z-index:330; background:rgba(0,0,0,0.8); backdrop-filter:blur(10px);">
         <div style="margin:auto; background:var(--card-bg); width:90%; max-width:400px; padding:30px; border-radius:24px;">
             <h3 style="margin-bottom:20px;">建立新清單</h3>
@@ -904,7 +853,6 @@
         </div>
     </div>
     
-    <!-- Search For Playlist Modal -->
     <div id="search-for-playlist-modal" class="fullscreen-modal" style="z-index:340;">
         <div class="modal-nav">
              <button onclick="closeSearchForPlaylist()" style="background:none; border:none; font-size:1.1rem; color:var(--accent-color);">取消</button>
@@ -917,7 +865,6 @@
         </div>
     </div>
 
-    <!-- Collection Detail Modal -->
     <div id="collection-detail-modal" class="fullscreen-modal" style="z-index:305;">
         <div class="modal-nav">
             <button onclick="closeCollectionDetail()" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-primary);">←</button>
@@ -1001,11 +948,10 @@
         let addingToPlaylistId = null;
         
         let isShuffleMode = false;
-        let loopMode = 0; // 0: Off, 1: Loop Playlist, 2: Loop Single
+        let loopMode = 0; 
         let isAutoPlay = false;
-        let currentSongId = null; // Track current ID for context menus
+        let currentSongId = null; 
 
-        // Batch Delete State
         let isBatchDeleteMode = false;
         let selectedPlaylists = new Set();
 
@@ -1037,7 +983,7 @@
             player.addEventListener('ended', handleSongEnd); 
             player.addEventListener('timeupdate', updateProgress);
             
-            setupDragToClose(); // 初始化拖曳關閉功能
+            setupDragToClose(); 
 
             if ('mediaSession' in navigator) {
                 player.addEventListener('play', () => updateMediaSessionPosition());
@@ -1061,23 +1007,20 @@
             updateMobileNavActive('home');
         }
 
-        // --- Drag to Close Logic (Enhanced for Queue View) ---
+        // --- Drag to Close Logic ---
         function setupDragToClose() {
             const player = document.getElementById('full-player');
             let startY = 0;
             let currentY = 0;
             let isDragging = false;
 
-            // 監聽 Header 區域的 Touch 事件
             player.addEventListener('touchstart', (e) => {
                 const queueView = document.getElementById('fp-view-queue');
                 const queueList = document.getElementById('fp-queue-list');
                 
-                // 如果是 Queue 頁面，且列表已經往下捲動，則不啟用拖曳（讓使用者正常捲動列表）
                 if (queueView.classList.contains('active') && queueList.scrollTop > 5) return;
 
                 startY = e.touches[0].clientY;
-                // 只有在接近頂部時才觸發拖曳
                 if (startY < 200) {
                      isDragging = true;
                      player.classList.add('dragging');
@@ -1089,10 +1032,8 @@
                 currentY = e.touches[0].clientY;
                 const diff = currentY - startY;
                 
-                // 只能往下拉
                 if (diff > 0) {
                     player.style.transform = `translateY(${diff}px)`;
-                    // 下拉時讓背景變透明一點
                     document.getElementById('fp-bg').style.opacity = Math.max(0, 0.4 - (diff/1000));
                 }
             }, {passive: true});
@@ -1103,10 +1044,9 @@
                 player.classList.remove('dragging');
                 
                 const diff = currentY - startY;
-                if (diff > 120) { // 下拉超過 120px 則關閉
+                if (diff > 120) { 
                     closeFullPlayer();
                 } else {
-                    // 回彈
                     player.style.transform = '';
                     document.getElementById('fp-bg').style.opacity = '0.4';
                 }
@@ -1341,24 +1281,20 @@
             audioPlayer.src = `./music/${song.filename}`;
             const coverImage = getSongCover(song);
             
-            // Update Mini Player
             document.getElementById('p-title').innerText = song.title;
             document.getElementById('p-artist').innerText = song.artist;
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
             
-            // Update Full Player (Main View)
             document.getElementById('fp-title').innerText = song.title;
             document.getElementById('fp-artist').innerText = song.artist;
             document.getElementById('fp-cover-img').style.backgroundImage = `url('${coverImage}')`;
             document.getElementById('fp-bg').style.backgroundImage = `url('${coverImage}')`;
             
-            // Update Full Player (Queue View Header)
             document.getElementById('fp-q-title').innerText = song.title;
             document.getElementById('fp-q-artist').innerText = song.artist;
             document.getElementById('fp-q-img').style.backgroundImage = `url('${coverImage}')`;
             
-            // [修正] 重置進度條背景
-            updateRangeBackground(document.getElementById('fp-progress'));
+            updateRangeBackground(document.getElementById('fp-progress')); // 重置背景
 
             updateFullPlayerHeart();
             updateMediaSession(song, coverImage);
@@ -1444,11 +1380,13 @@
         
         // --- Full Player Logic ---
         function openFullPlayer() { 
+            // [修正] 判斷是否正在播放或已載入歌曲，防止未播放時彈出
+            if (!currentSongId && !audioPlayer.src) return;
+
             const fp = document.getElementById('full-player');
             fp.classList.add('active'); 
             fp.style.transform = ''; 
             document.body.style.overflow='hidden'; 
-            // 確保打開時進度條背景正確
             updateRangeBackground(document.getElementById('fp-progress'));
         }
         function closeFullPlayer() { 
@@ -1458,19 +1396,16 @@
             document.body.style.overflow=''; 
         }
         
-        // Toggle Queue / Main View
         function togglePlayerView() {
             const main = document.getElementById('fp-view-main');
             const queue = document.getElementById('fp-view-queue');
             const toggleBtn = document.getElementById('fp-queue-toggle-btn');
             
             if (queue.classList.contains('active')) {
-                // Return to main
                 queue.classList.remove('active');
                 main.classList.remove('shifted');
                 toggleBtn.classList.remove('active');
             } else {
-                // Go to queue
                 queue.classList.add('active');
                 main.classList.add('shifted');
                 toggleBtn.classList.add('active');
@@ -1499,7 +1434,6 @@
             }
         }
 
-        // Toggles (Shuffle, Loop...)
         function toggleShuffle() {
             isShuffleMode = !isShuffleMode;
             document.getElementById('btn-shuffle').classList.toggle('active', isShuffleMode);
@@ -1547,32 +1481,31 @@
             document.getElementById('btn-auto').classList.toggle('active', isAutoPlay);
         }
 
-        // Progress & Time & [修正] Slider Background Logic
+        // Progress & Time 
         function updateProgress() {
             if(!audioPlayer.duration) return;
             const current = audioPlayer.currentTime;
             const duration = audioPlayer.duration;
             const slider = document.getElementById('fp-progress');
             slider.max = Math.floor(duration);
-            slider.value = Math.floor(current);
+            slider.value = current; // 移除 Math.floor 以保持平滑
             document.getElementById('fp-curr-time').innerText = formatTime(current);
             document.getElementById('fp-total-time').innerText = formatTime(duration);
             
-            // 更新進度條背景樣式
             updateRangeBackground(slider);
         }
         
-        // [新增] 更新進度條背景漸層函數
+        // [新增] 更新進度條背景函式
         function updateRangeBackground(input) {
             const val = input.value;
             const max = input.max || 100;
             const percentage = max > 0 ? (val / max) * 100 : 0;
+            // 動態產生背景，達成圖二的「左白右透」效果
             input.style.background = `linear-gradient(to right, #FFFFFF ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
         }
 
         function seekAudio(val) {
             audioPlayer.currentTime = val;
-            // Seek 時也更新背景
             updateRangeBackground(document.getElementById('fp-progress'));
         }
 
@@ -1777,7 +1710,6 @@
                 coverEl.style.backgroundImage = `url(${pl.img || DEFAULT_PLAYLIST_IMG})`;
             }
 
-            // 重置圓角樣式(專輯是方形)
             coverEl.style.borderRadius = "20px";
 
             currentCollectionSongs = songs;
@@ -1811,9 +1743,7 @@
             </div>`;
         }
 
-        /* [修正] 專輯詳情頁邏輯 (移除之前的遞迴錯誤) */
         function openAlbumDetail(albumName) {
-            // 先定義 songs，避免變數未定義
             const songs = musicLibrary.filter(s => s.album === albumName);
             if(songs.length === 0) return;
 
@@ -1823,7 +1753,6 @@
             const coverEl = document.getElementById('cd-cover');
             coverEl.style.background = '#eee';
             coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
-            // 重置圓角樣式(專輯是方形)
             coverEl.style.borderRadius = "20px";
             coverEl.innerHTML = '';
             
@@ -1842,7 +1771,6 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
-        /* [修正] 歌手詳情頁邏輯 (獨立函數，不再呼叫 openAlbumDetail) */
         function openArtistDetail(artistName) {
             const songs = musicLibrary.filter(s => s.artist === artistName);
             if(songs.length === 0) return;
@@ -1852,7 +1780,6 @@
             document.getElementById('cd-subtitle').innerText = "藝人";
             const coverEl = document.getElementById('cd-cover');
             coverEl.style.backgroundImage = `url(${getArtistImage(artistName)})`;
-            // 歌手圖片設為圓形
             coverEl.style.borderRadius = "50%";
             coverEl.innerHTML = '';
 
@@ -2024,7 +1951,6 @@
             
             let html = '';
             if(matchedArtists.length) {
-                // [修正] 使用新的 artist-card 樣式
                 html += `<div class="search-section-title">藝人</div><div class="horizontal-row">` + matchedArtists.map(art => `
                     <div class="artist-card" onclick="handleSearchResultClick('artist', '${art}', '${getArtistImage(art)}')">
                         <div class="artist-img" style="background-image:url('${getArtistImage(art)}')"></div>
