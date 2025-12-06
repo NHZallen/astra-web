@@ -158,7 +158,6 @@
         }
         [data-theme="dark"] .cover-art { background-image: linear-gradient(135deg, #2C2C2E, #3A3A3C); }
         
-        /* Batch Delete Checkbox */
         .batch-select-overlay {
             position: absolute; top: 8px; left: 8px; width: 24px; height: 24px;
             background: rgba(255,255,255,0.9); border-radius: 50%;
@@ -175,7 +174,7 @@
 
         .ctx-btn { position: absolute; bottom: 8px; right: 8px; width: 32px; height: 32px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.2s; z-index: 5; color: white; }
         .music-card:hover .ctx-btn { opacity: 1; }
-        .music-card.edit-mode .ctx-btn { display: none; } /* Hide context menu in edit mode */
+        .music-card.edit-mode .ctx-btn { display: none; }
         @media (max-width: 768px) { .ctx-btn { opacity: 1; background: rgba(255,255,255,0.8); color: black; box-shadow: 0 2px 8px rgba(0,0,0,0.1); } [data-theme="dark"] .ctx-btn { background: rgba(0,0,0,0.6); color: white; } }
 
         .song-list-item { 
@@ -201,10 +200,116 @@
         .list-more-btn { width: 36px; height: 36px; border-radius: 50%; background: transparent; border: none; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
         .list-more-btn:hover { background: var(--divider); color: var(--text-primary); }
 
-        .player-bar { position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); transform: translateY(200%); opacity: 0; }
+        /* --- Mini Player Bar --- */
+        .player-bar { position: fixed; height: 85px; background: var(--player-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; z-index: 2000; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1); padding-bottom: env(safe-area-inset-bottom); transform: translateY(200%); opacity: 0; cursor: pointer; }
         .player-bar.active { transform: translateY(0); opacity: 1; }
         @media (min-width: 769px) { .player-bar { bottom: 30px; right: 30px; width: calc(100% - 260px - 60px); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding-bottom: 0; } }
+
+        /* --- Full Screen Player --- */
+        #full-player {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px);
+            z-index: 3000; display: flex; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+            color: white; overflow: hidden;
+        }
+        #full-player.active { transform: translateY(0); }
         
+        .fp-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-size: cover; background-position: center; opacity: 0.3; filter: blur(80px); transition: background-image 0.5s; }
+        
+        .fp-header {
+            display: flex; justify-content: center; align-items: center;
+            padding: calc(10px + var(--safe-top)) 20px 20px 20px;
+            position: relative; flex-shrink: 0;
+        }
+        .fp-header-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; cursor: pointer; }
+
+        .fp-container { flex: 1; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        
+        /* FP View 1: Main Player */
+        .fp-view-main {
+            flex: 1; display: flex; flex-direction: column; padding: 20px 40px 50px 40px;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+        .fp-view-main.shifted { transform: translateX(-20%); opacity: 0; pointer-events: none; }
+
+        .fp-cover-container {
+            flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0;
+            margin-bottom: 40px;
+        }
+        .fp-cover {
+            width: 100%; max-width: 380px; aspect-ratio: 1/1;
+            border-radius: 20px; background: #333;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            background-size: cover; background-position: center;
+        }
+
+        .fp-info-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; }
+        .fp-text { flex: 1; margin-right: 20px; overflow: hidden; }
+        .fp-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+        .fp-artist { font-size: 1.1rem; color: rgba(255,255,255,0.6); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .fp-actions-top-right { display: flex; gap: 15px; }
+        .fp-icon-btn { background: none; border: none; color: rgba(255,255,255,0.6); cursor: pointer; padding: 5px; transition: 0.2s; }
+        .fp-icon-btn:hover { color: white; }
+        .fp-icon-btn.active { color: var(--accent-color); }
+
+        .fp-progress-container { width: 100%; margin-bottom: 40px; }
+        .fp-range {
+            width: 100%; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.2);
+            border-radius: 2px; outline: none; cursor: pointer;
+        }
+        .fp-range::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; background: white; border-radius: 50%; transition: 0.2s; }
+        .fp-range:hover::-webkit-slider-thumb { width: 16px; height: 16px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .fp-time-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 600; }
+
+        .fp-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; padding: 0 10px; }
+        .fp-ctrl-btn { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .fp-ctrl-btn:active { transform: scale(0.9); }
+        .fp-play-btn { width: 80px; height: 80px; background: white; border-radius: 50%; color: black; box-shadow: 0 5px 20px rgba(255,255,255,0.2); }
+        .fp-play-btn svg { width: 32px; height: 32px; fill: black; stroke: none; margin-left: 2px; }
+        .fp-play-btn.pause svg { margin-left: 0; }
+
+        .fp-bottom-row { display: flex; justify-content: space-between; align-items: center; }
+        .fp-vol-slider { width: 100px; -webkit-appearance: none; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .fp-vol-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: white; border-radius: 50%; }
+
+        /* FP View 2: Queue / Options */
+        .fp-view-queue {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; padding: 20px 30px;
+            transform: translateX(100%); transition: transform 0.4s ease, opacity 0.4s ease; opacity: 0; pointer-events: none;
+        }
+        .fp-view-queue.active { transform: translateX(0); opacity: 1; pointer-events: auto; }
+
+        .fp-options-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+        .fp-opt-btn {
+            background: rgba(255,255,255,0.1); border-radius: 12px; border: none;
+            padding: 15px 0; color: rgba(255,255,255,0.6); font-weight: 600; font-size: 0.8rem;
+            cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .fp-opt-btn.active { background: rgba(255,255,255,0.25); color: white; }
+        .fp-opt-btn svg { width: 24px; height: 24px; }
+
+        .fp-queue-list { flex: 1; overflow-y: auto; padding-bottom: 40px; }
+        .fp-queue-header { font-size: 1rem; font-weight: 700; margin-bottom: 15px; color: white; }
+        .fp-q-item { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .fp-q-img { width: 40px; height: 40px; border-radius: 6px; background: #555; margin-right: 12px; background-size: cover; background-position: center; }
+        .fp-q-info { flex: 1; }
+        .fp-q-title { font-size: 0.9rem; font-weight: 600; color: white; }
+        .fp-q-artist { font-size: 0.75rem; color: rgba(255,255,255,0.6); }
+        .fp-q-playing .fp-q-title { color: var(--accent-color); }
+
+        /* Media Queries for FP */
+        @media (max-width: 768px) {
+            .fp-view-main { padding: 10px 30px 40px 30px; }
+            .fp-cover-container { margin-bottom: 20px; }
+            .fp-info-row { margin-bottom: 20px; }
+            .fp-progress-container { margin-bottom: 20px; }
+            .fp-controls { margin-bottom: 30px; }
+            .fp-title { font-size: 1.5rem; }
+        }
+
         .fullscreen-modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--modal-bg); z-index: 300; 
@@ -384,6 +489,92 @@
         </div>
     </div>
 
+    <!-- Full Screen Player Modal -->
+    <div id="full-player">
+        <div class="fp-bg-layer" id="fp-bg"></div>
+        <div class="fp-header" onclick="closeFullPlayer()">
+            <div class="fp-header-pill"></div>
+        </div>
+        
+        <div class="fp-container">
+            <!-- View 1: Main -->
+            <div class="fp-view-main" id="fp-view-main">
+                <div class="fp-cover-container">
+                    <div class="fp-cover" id="fp-cover-img"></div>
+                </div>
+                
+                <div class="fp-info-row">
+                    <div class="fp-text">
+                        <div class="fp-title" id="fp-title">Song Title</div>
+                        <div class="fp-artist" id="fp-artist">Artist Name</div>
+                    </div>
+                    <div class="fp-actions-top-right">
+                        <button class="fp-icon-btn" id="fp-fav-btn" onclick="toggleCurrentFavorite(event)">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </button>
+                        <button class="fp-icon-btn" onclick="showContextMenu(event, 'song', {id: currentSongId})">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="fp-progress-container">
+                    <input type="range" class="fp-range" id="fp-progress" min="0" value="0" step="1" oninput="seekAudio(this.value)">
+                    <div class="fp-time-labels">
+                        <span id="fp-curr-time">0:00</span>
+                        <span id="fp-total-time">-:--</span>
+                    </div>
+                </div>
+
+                <div class="fp-controls">
+                    <button class="fp-ctrl-btn" onclick="playPrev()">
+                        <svg class="icon" viewBox="0 0 24 24" style="width:36px; height:36px;"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+                    </button>
+                    <button class="fp-ctrl-btn fp-play-btn" id="fp-play-btn" onclick="togglePlay()">
+                        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    </button>
+                    <button class="fp-ctrl-btn" onclick="playNext()">
+                        <svg class="icon" viewBox="0 0 24 24" style="width:36px; height:36px;"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+                    </button>
+                </div>
+
+                <div class="fp-bottom-row">
+                    <button class="fp-icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></button> <!-- Lyrics Placeholder -->
+                    <button class="fp-icon-btn"><svg class="icon" viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93L4.93 19.07"></path></svg></button> <!-- Airplay/Speaker Placeholder -->
+                    <button class="fp-icon-btn" onclick="togglePlayerView()">
+                        <svg class="icon" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- View 2: Queue & Options -->
+            <div class="fp-view-queue" id="fp-view-queue">
+                <div class="fp-options-grid">
+                    <button class="fp-opt-btn" id="btn-shuffle" onclick="toggleShuffle()">
+                        <svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                        隨機播放
+                    </button>
+                    <button class="fp-opt-btn" id="btn-loop" onclick="toggleLoop()">
+                        <svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        <span id="txt-loop">循環</span>
+                    </button>
+                    <button class="fp-opt-btn" id="btn-auto" onclick="toggleAutoPlay()">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        自動播放
+                    </button>
+                    <button class="fp-opt-btn" id="btn-mix">
+                        <svg class="icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                        混音
+                    </button>
+                </div>
+
+                <div class="fp-queue-list" id="fp-queue-list">
+                    <!-- JS Injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Landing Page -->
     <section id="landing-page">
         <nav class="lp-nav">
@@ -448,7 +639,6 @@
                 <h2>為你推薦</h2>
                 <div id="home-horizontal-container" style="margin-top:20px;"></div>
 
-                <!-- 這裡會自動生成標籤分類區塊 -->
                 <div id="home-tags-container"></div>
             </div>
 
@@ -468,7 +658,6 @@
                 <h2 style="margin-bottom:20px;">探索新聲</h2>
                 <p style="color:var(--text-secondary); margin-bottom:20px;">挖掘那些您可能錯過的好音樂</p>
                 <div id="discovery-horizontal-container"></div>
-                <!-- 新發現也會包含分類 -->
                 <div id="discovery-tags-container"></div>
             </div>
 
@@ -500,7 +689,7 @@
             <div class="mobile-nav-item" onclick="openSettings()"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>設定</div>
         </div>
 
-        <footer class="player-bar" id="player-bar">
+        <footer class="player-bar" id="player-bar" onclick="openFullPlayer()">
             <div style="display:flex; align-items:center; width: 55%;">
                 <div id="p-thumb" style="width:48px; height:48px; background:#ccc; border-radius:10px; margin-right:12px; background-size:cover !important; background-position:center !important;"></div>
                 <div style="overflow:hidden;">
@@ -508,8 +697,7 @@
                     <p id="p-artist" style="margin:0; font-size:0.75rem; color:var(--text-secondary);">ASTRA</p>
                 </div>
             </div>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <!-- Shuffle Toggle Indicator (Implicitly ON) -->
+            <div style="display:flex; gap:10px; align-items:center;" onclick="event.stopPropagation()">
                 <button onclick="togglePlay()" id="playBtn" style="width:40px; height:40px; border-radius:50%; background:var(--text-primary); color:var(--bg-color); border:none; cursor:pointer; font-size:1.2rem;">▶</button>
                 <button onclick="playNext()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">
                     <svg viewBox="0 0 24 24" width="28" height="28" stroke="currentColor" stroke-width="2" fill="currentColor"><path d="M5 4l10 8-10 8V4z"></path><line x1="19" y1="5" x2="19" y2="19"></line></svg>
@@ -518,7 +706,7 @@
         </footer>
     </section>
 
-    <!-- Modals (Profile, Settings, Playlist Selection) -->
+    <!-- Modals (Profile, Settings, Playlist Selection) - Same as before -->
     <div id="profile-modal" class="fullscreen-modal" style="z-index:350;">
         <div class="modal-nav"><h2>個人帳戶</h2><button onclick="closeProfileModal()" style="background:var(--input-bg); border:none; padding:8px 20px; border-radius:20px; cursor:pointer;">關閉</button></div>
         <div class="modal-body">
@@ -587,15 +775,12 @@
             <div style="width:30px;"></div>
         </div>
         <div class="modal-body">
-            <!-- Header Info -->
             <div style="text-align:center; margin-bottom:30px;">
-                <!-- 增加封面的編輯 Overlay -->
                 <div id="cd-cover" onclick="triggerCoverEdit()">
                     <div class="cover-edit-overlay">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
                     </div>
                 </div>
-                <!-- 隱藏的檔案輸入框，用於修改封面 -->
                 <input type="file" id="playlist-cover-upload" accept="image/*" style="display:none;" onchange="handlePlaylistCoverUpdate(this)">
                 
                 <h1 id="cd-title" style="font-size:1.8rem; margin-bottom:5px;">Name</h1>
@@ -609,7 +794,6 @@
                     </button>
                 </div>
             </div>
-            <!-- Dynamic Content Area -->
             <div id="cd-content-area"></div>
         </div>
     </div>
@@ -631,7 +815,6 @@
         async function saveUserToDB(userObj) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readwrite'); tx.objectStore(STORE_NAME).put(userObj); tx.oncomplete = () => res(); tx.onerror = () => rej(); }); }
         async function getUserFromDB(username) { const db = await openDB(); return new Promise((res, rej) => { const tx = db.transaction(STORE_NAME, 'readonly'); const req = tx.objectStore(STORE_NAME).get(username); req.onsuccess = () => res(req.result); req.onerror = () => rej(); }); }
 
-        // --- 在這裡加入 Tags (標籤) ---
         const baseMusic = [
             { id: 1, title: "WE GO UP", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song1.mp3", cover: "", tags: ["K-POP", "舞曲"] },
             { id: 2, title: "PSYCHO", artist: "BABYMONSTER", album: "WE GO UP-EP", filename: "song2.mp3", cover: "", tags: ["K-POP"] },
@@ -643,7 +826,6 @@
         const tagPool = ["華語", "西洋", "K-POP", "J-POP", "R&B", "搖滾", "嘻哈"];
 
         for(let i=5; i<=50; i++) {
-            // 隨機分配 Tag 測試用
             const randomTag = tagPool[Math.floor(Math.random() * tagPool.length)];
             const randomTag2 = Math.random() > 0.5 ? tagPool[Math.floor(Math.random() * tagPool.length)] : null;
             const tags = randomTag2 && randomTag2 !== randomTag ? [randomTag, randomTag2] : [randomTag];
@@ -667,7 +849,11 @@
         let itemsToAdd = []; 
         let tempImgBase64 = null;
         let addingToPlaylistId = null;
-        let isShuffleMode = true; // 預設隨機播放
+        
+        let isShuffleMode = false;
+        let loopMode = 0; // 0: Off, 1: Loop Playlist, 2: Loop Single
+        let isAutoPlay = false;
+        let currentSongId = null; // Track current ID for context menus
 
         // Batch Delete State
         let isBatchDeleteMode = false;
@@ -698,20 +884,8 @@
             }
             
             const player = document.getElementById('audio-player');
-            player.addEventListener('ended', playNext); 
-
-            // --- 修正1: 增加 timeupdate 監聽，解決靈動島無法拉動時間問題 ---
-            player.addEventListener('timeupdate', () => {
-                 if ('mediaSession' in navigator && !isNaN(player.duration)) {
-                    try {
-                        navigator.mediaSession.setPositionState({
-                            duration: player.duration,
-                            playbackRate: player.playbackRate,
-                            position: player.currentTime
-                        });
-                    } catch(e) {}
-                }
-            });
+            player.addEventListener('ended', handleSongEnd); 
+            player.addEventListener('timeupdate', updateProgress);
 
             if ('mediaSession' in navigator) {
                 player.addEventListener('play', () => updateMediaSessionPosition());
@@ -720,16 +894,13 @@
         };
 
         function initApp() {
-            // 推薦
             const recommended = getSmartRecommendations();
             renderHorizontalRows('home-horizontal-container', recommended);
             renderAlbumSection();
             
-            // 探索
             const discoveries = getDiscoveryRecommendations();
             renderHorizontalRows('discovery-horizontal-container', discoveries);
             
-            // --- 渲染分類 (Tags) ---
             renderTagSections('home-tags-container', musicLibrary); 
             renderTagSections('discovery-tags-container', musicLibrary, true); 
             
@@ -738,37 +909,20 @@
             updateMobileNavActive('home');
         }
 
-        // 自動生成分類區塊的函數
         function renderTagSections(containerId, sourceLibrary, isDiscovery = false) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
-            
-            // 取得所有唯一的 Tags
             const allTags = [...new Set(sourceLibrary.flatMap(s => s.tags || []))].filter(t => t);
-            
             allTags.forEach(tag => {
-                // 找出該 Tag 的歌曲
                 let songs = sourceLibrary.filter(s => s.tags && s.tags.includes(tag));
-                
                 if (songs.length > 0) {
-                    if(isDiscovery) {
-                        // 如果是 Discovery 頁面，隨機打亂並只取部分
-                        songs.sort(() => Math.random() - 0.5);
-                        songs = songs.slice(0, 10);
-                    } else {
-                         // 首頁只顯示前 15 首
-                         songs = songs.slice(0, 15);
-                    }
-                    
+                    if(isDiscovery) { songs.sort(() => Math.random() - 0.5); songs = songs.slice(0, 10); } 
+                    else { songs = songs.slice(0, 15); }
                     if(songs.length === 0) return;
-
-                    // 建立標題
                     const titleDiv = document.createElement('div');
                     titleDiv.className = 'search-section-title tag-section-header';
                     titleDiv.innerHTML = `${tag} <span class="tag-badge">${isDiscovery ? '新發現' : '精選'}</span>`;
                     container.appendChild(titleDiv);
-                    
-                    // 建立橫向捲動區
                     const wrapper = document.createElement('div');
                     wrapper.className = 'horizontal-section-wrapper';
                     const row = document.createElement('div');
@@ -840,10 +994,10 @@
             return DEFAULT_ALBUM_IMG;
         }
 
-        // --- Context Menu System ---
+        // --- Context Menu ---
         function showContextMenu(e, type, data) {
             e.stopPropagation();
-            if(isBatchDeleteMode) return; // Disable in batch mode
+            if(isBatchDeleteMode) return; 
 
             const overlay = document.getElementById('cm-overlay');
             const menu = document.getElementById('context-menu');
@@ -859,7 +1013,7 @@
             const iconAlbum = `<svg class="icon" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
             const iconTrash = `<svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
-            const isLiked = currentUserData.liked_songs.includes(data.id);
+            const isLiked = data.id ? currentUserData.liked_songs.includes(data.id) : false;
             const likeIcon = isLiked ? iconHeartFill : iconHeart;
             const likeText = isLiked ? "取消喜好" : "喜好項目";
 
@@ -881,7 +1035,6 @@
                     </div>
                     <button class="cm-btn full-width" onclick="pinSongInPlaylist(${data.id}); closeContextMenu()">${iconPin} 釘選歌曲 (置頂)</button>
                     <button class="cm-btn full-width" onclick="openAlbumDetail('${data.albumName}'); closeContextMenu()">${iconAlbum} 前往專輯</button>
-                    <button class="cm-btn full-width" onclick="dislikeSong(${data.id}); closeContextMenu()">${iconBan} 減少推薦</button>
                     <button class="cm-btn full-width" onclick="removeFromPlaylist(event, ${data.id}); closeContextMenu()" style="color:var(--accent-color);">${iconTrash} 從清單移除</button>
                 `;
             } else if (type === 'album') {
@@ -892,7 +1045,6 @@
                     </div>
                     <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(false); closeContextMenu()">${iconPlay} 立即播放</button>
                     <button class="cm-btn full-width" onclick="openAlbumDetail('${data.name}'); playCollectionAll(true); closeContextMenu()">${iconShuffle} 隨機播放</button>
-                    <button class="cm-btn full-width" onclick="closeContextMenu(); alert('已減少推薦')">${iconBan} 減少推薦</button>
                 `;
             }
 
@@ -919,6 +1071,9 @@
             else currentUserData.liked_songs.splice(idx, 1);
             await saveUserToDB(currentUserData);
             if(currentPlaylistId === 'favorites') openPlaylistDetail('favorites');
+            
+            // Update Full Player Heart
+            if (currentSongId === id) updateFullPlayerHeart();
             renderPlaylists();
         }
 
@@ -927,24 +1082,7 @@
                 currentUserData.disliked_songs.push(id);
                 const likeIdx = currentUserData.liked_songs.indexOf(id);
                 if(likeIdx !== -1) currentUserData.liked_songs.splice(likeIdx, 1);
-                
                 await saveUserToDB(currentUserData);
-                
-                const recommended = getSmartRecommendations();
-                renderHorizontalRows('home-horizontal-container', recommended);
-                const discoveries = getDiscoveryRecommendations();
-                renderHorizontalRows('discovery-horizontal-container', discoveries);
-            }
-        }
-
-        async function pinSongInPlaylist(songId) {
-            if(!currentPlaylistId || currentPlaylistId === 'favorites') return;
-            const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
-            if(pl) {
-                pl.songs = pl.songs.filter(id => id !== songId);
-                pl.songs.unshift(songId);
-                await saveUserToDB(currentUserData);
-                openPlaylistDetail(currentPlaylistId);
             }
         }
 
@@ -957,8 +1095,6 @@
             updateMobileNavActive(pid);
             const titles = { 'home': '首頁', 'search': '搜尋', 'discovery': '新發現', 'database': '資料庫' };
             document.getElementById('current-page-title').innerText = titles[pid];
-            
-            // Exit batch mode if leaving database
             if(pid !== 'database' && isBatchDeleteMode) toggleBatchDeleteMode();
         }
 
@@ -974,7 +1110,7 @@
             else header.classList.remove('scrolled');
         }
 
-        // --- Player ---
+        // --- Player Logic ---
         const audioPlayer = document.getElementById('audio-player');
         let isPlaying = false;
 
@@ -982,13 +1118,14 @@
             const song = musicLibrary.find(s => s.id === id);
             if(!song) return;
             
-            // 記錄播放次數
             if(!currentUserData.play_counts) currentUserData.play_counts = {};
             currentUserData.play_counts[id] = (currentUserData.play_counts[id] || 0) + 1;
             saveUserToDB(currentUserData);
 
             if (currentCollectionSongs.length > 0 && currentCollectionSongs.find(s => s.id === id)) {
-                currentQueue = [...currentCollectionSongs];
+                // If shuffling, currentQueue might be shuffled.
+                // We should find the index in the current queue if possible, or reset queue
+                if (!currentQueue.some(s => s.id === id)) currentQueue = [...currentCollectionSongs];
             } else {
                 currentQueue = [...musicLibrary];
             }
@@ -998,21 +1135,214 @@
         }
 
         function playSongObject(song) {
+            currentSongId = song.id;
             audioPlayer.src = `./music/${song.filename}`;
+            
+            // Update Mini Player
             document.getElementById('p-title').innerText = song.title;
             document.getElementById('p-artist').innerText = song.artist;
             const coverImage = getSongCover(song);
             document.getElementById('p-thumb').style.backgroundImage = `url('${coverImage}')`;
+            
+            // Update Full Player
+            document.getElementById('fp-title').innerText = song.title;
+            document.getElementById('fp-artist').innerText = song.artist;
+            document.getElementById('fp-cover-img').style.backgroundImage = `url('${coverImage}')`;
+            document.getElementById('fp-bg').style.backgroundImage = `url('${coverImage}')`;
+            updateFullPlayerHeart();
+
             updateMediaSession(song, coverImage);
+            
             audioPlayer.play().then(() => {
                 isPlaying = true;
-                updatePlayBtn();
-                if(!document.getElementById('settings-modal').classList.contains('active') && !document.getElementById('profile-modal').classList.contains('active')){
+                updatePlayBtns();
+                if(!document.getElementById('settings-modal').classList.contains('active')){
                      document.getElementById('player-bar').classList.add('active');
                 }
             }).catch(e => console.log(e));
+            
+            renderQueue();
         }
 
+        function togglePlay() {
+            if(audioPlayer.src) {
+                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
+                isPlaying = !isPlaying;
+                updatePlayBtns();
+            }
+        }
+        function updatePlayBtns() { 
+            const miniBtn = document.getElementById('playBtn');
+            miniBtn.innerText = isPlaying ? "||" : "▶";
+            
+            const fpBtn = document.getElementById('fp-play-btn');
+            if(isPlaying) {
+                fpBtn.classList.add('pause');
+                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+            } else {
+                fpBtn.classList.remove('pause');
+                fpBtn.innerHTML = `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+            }
+        }
+
+        function playNext() {
+            if(currentQueue.length > 0) {
+                if(currentSongIndex < currentQueue.length - 1) {
+                    currentSongIndex++;
+                    playSongObject(currentQueue[currentSongIndex]);
+                } else if (loopMode === 1) { // Loop Playlist
+                    currentSongIndex = 0;
+                    playSongObject(currentQueue[currentSongIndex]);
+                } else if (isAutoPlay) {
+                     // Auto play logic: pick random
+                     const candidates = getDiscoveryRecommendations();
+                     const nextSong = candidates[0];
+                     if(nextSong) {
+                         currentQueue.push(nextSong);
+                         currentSongIndex++;
+                         playSongObject(nextSong);
+                     }
+                } else {
+                    // Stop
+                    isPlaying = false;
+                    updatePlayBtns();
+                }
+            }
+        }
+
+        function playPrev() {
+            if(audioPlayer.currentTime > 3) {
+                audioPlayer.currentTime = 0;
+            } else {
+                if(currentQueue.length > 0) {
+                     if(currentSongIndex > 0) {
+                         currentSongIndex--;
+                         playSongObject(currentQueue[currentSongIndex]);
+                     } else {
+                         playSongObject(currentQueue[currentQueue.length - 1]);
+                     }
+                }
+            }
+        }
+
+        function handleSongEnd() {
+            if (loopMode === 2) { // Loop Single
+                audioPlayer.currentTime = 0;
+                audioPlayer.play();
+            } else {
+                playNext();
+            }
+        }
+        
+        // --- Full Player Logic ---
+        function openFullPlayer() { document.getElementById('full-player').classList.add('active'); document.body.style.overflow='hidden'; }
+        function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); document.body.style.overflow=''; }
+        
+        let fpView = 'main'; // 'main' or 'queue'
+        function togglePlayerView() {
+            const main = document.getElementById('fp-view-main');
+            const queue = document.getElementById('fp-view-queue');
+            if (fpView === 'main') {
+                fpView = 'queue';
+                main.classList.add('shifted');
+                queue.classList.add('active');
+            } else {
+                fpView = 'main';
+                main.classList.remove('shifted');
+                queue.classList.remove('active');
+            }
+        }
+
+        function toggleCurrentFavorite(e) {
+            e.stopPropagation();
+            if(currentSongId) toggleLike(currentSongId);
+        }
+        function updateFullPlayerHeart() {
+            const isLiked = currentUserData.liked_songs.includes(currentSongId);
+            const btn = document.getElementById('fp-fav-btn');
+            if(isLiked) {
+                btn.classList.add('active');
+                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24" style="fill:var(--accent-color); stroke:none;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            }
+        }
+
+        // Toggles
+        function toggleShuffle() {
+            isShuffleMode = !isShuffleMode;
+            document.getElementById('btn-shuffle').classList.toggle('active', isShuffleMode);
+            
+            if(isShuffleMode) {
+                // Shuffle current queue (keep current song)
+                const current = currentQueue[currentSongIndex];
+                let rest = currentQueue.filter((_, i) => i !== currentSongIndex);
+                // Fisher-Yates
+                for (let i = rest.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [rest[i], rest[j]] = [rest[j], rest[i]];
+                }
+                currentQueue = [current, ...rest];
+                currentSongIndex = 0;
+            } else {
+                 // Revert to original album/playlist order? 
+                 // Simplifying: just sort ID or keep as is for now.
+                 // Ideally we store original queue order.
+                 if(currentCollectionSongs.length) {
+                     const current = currentQueue[currentSongIndex];
+                     currentQueue = [...currentCollectionSongs];
+                     currentSongIndex = currentQueue.findIndex(s => s.id === current.id);
+                 }
+            }
+            renderQueue();
+        }
+
+        function toggleLoop() {
+            // 0 -> 1 -> 2 -> 0
+            loopMode = (loopMode + 1) % 3;
+            const btn = document.getElementById('btn-loop');
+            const txt = document.getElementById('txt-loop');
+            
+            if (loopMode === 0) {
+                btn.classList.remove('active');
+                txt.innerText = "循環";
+                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg><span id="txt-loop">循環</span>`;
+            } else if (loopMode === 1) {
+                btn.classList.add('active');
+                txt.innerText = "列表循環";
+                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg><span id="txt-loop">列表</span>`;
+            } else {
+                btn.classList.add('active');
+                txt.innerText = "單曲循環";
+                btn.innerHTML = `<svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path><text x="10" y="15" font-size="8" fill="currentColor" font-weight="bold">1</text></svg><span id="txt-loop">單曲</span>`;
+            }
+        }
+        
+        function toggleAutoPlay() {
+            isAutoPlay = !isAutoPlay;
+            document.getElementById('btn-auto').classList.toggle('active', isAutoPlay);
+        }
+
+        // Progress & Time
+        function updateProgress() {
+            if(!audioPlayer.duration) return;
+            const current = audioPlayer.currentTime;
+            const duration = audioPlayer.duration;
+            document.getElementById('fp-progress').max = Math.floor(duration);
+            document.getElementById('fp-progress').value = Math.floor(current);
+            document.getElementById('fp-curr-time').innerText = formatTime(current);
+            document.getElementById('fp-total-time').innerText = formatTime(duration);
+        }
+        function seekAudio(val) {
+            audioPlayer.currentTime = val;
+        }
+        function formatTime(s) {
+            const min = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+        
         function updateMediaSession(song, coverImage) {
             if ('mediaSession' in navigator) {
                 navigator.mediaSession.metadata = new MediaMetadata({
@@ -1024,11 +1354,10 @@
                         { src: coverImage, sizes: '512x512', type: 'image/png' },
                     ]
                 });
-                navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtn(); });
-                navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtn(); });
+                navigator.mediaSession.setActionHandler('play', () => { audioPlayer.play(); isPlaying=true; updatePlayBtns(); });
+                navigator.mediaSession.setActionHandler('pause', () => { audioPlayer.pause(); isPlaying=false; updatePlayBtns(); });
                 navigator.mediaSession.setActionHandler('nexttrack', playNext);
-                
-                // --- 修正1 補充: 增加 seekto 處理器，允許鎖定畫面調整時間 ---
+                navigator.mediaSession.setActionHandler('previoustrack', playPrev);
                 navigator.mediaSession.setActionHandler('seekto', (details) => {
                      if (details.seekTime || details.seekTime === 0) {
                          audioPlayer.currentTime = details.seekTime;
@@ -1037,7 +1366,7 @@
                 });
             }
         }
-
+        
         function updateMediaSessionPosition() {
              if ('mediaSession' in navigator && audioPlayer.duration) {
                 try {
@@ -1050,49 +1379,28 @@
             }
         }
 
-        function togglePlay() {
-            if(audioPlayer.src) {
-                if(isPlaying) audioPlayer.pause(); else audioPlayer.play();
-                isPlaying = !isPlaying;
-                updatePlayBtn();
+        function renderQueue() {
+            const list = document.getElementById('fp-queue-list');
+            let html = `<div class="fp-queue-header">待播清單</div>`;
+            
+            // Show playing + next
+            for (let i = currentSongIndex; i < currentQueue.length; i++) {
+                const s = currentQueue[i];
+                const isPlayingItem = (i === currentSongIndex);
+                html += `
+                    <div class="fp-q-item ${isPlayingItem ? 'fp-q-playing' : ''}" onclick="playSong(${s.id})">
+                        <div class="fp-q-img" style="background-image:url('${getSongCover(s)}')"></div>
+                        <div class="fp-q-info">
+                            <div class="fp-q-title">${s.title} ${isPlayingItem ? '<svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px; display:inline; vertical-align:middle; margin-left:4px;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>' : ''}</div>
+                            <div class="fp-q-artist">${s.artist}</div>
+                        </div>
+                    </div>
+                `;
             }
-        }
-        function updatePlayBtn() { document.getElementById('playBtn').innerText = isPlaying ? "||" : "▶"; }
-        
-        // --- 修正2: Fisher-Yates 洗牌演算法，保證真正的隨機 ---
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function playNext() {
-            if(currentQueue.length > 0) {
-                if (isShuffleMode) {
-                    if (currentQueue.length > 1) {
-                        let nextIndex;
-                        // 簡單的隨機下一首 (不重排列表，只重選索引)
-                        // 如果要嚴格不重複，應該要維護一個播放過的清單，這裡簡化處理
-                        do {
-                            nextIndex = Math.floor(Math.random() * currentQueue.length);
-                        } while (nextIndex === currentSongIndex);
-                        currentSongIndex = nextIndex;
-                    }
-                } else {
-                    // 順序播放模式
-                    if (currentSongIndex < currentQueue.length - 1) {
-                        currentSongIndex++;
-                    } else {
-                        currentSongIndex = 0;
-                    }
-                }
-                playSongObject(currentQueue[currentSongIndex]);
-            }
+            list.innerHTML = html;
         }
 
-        // --- Rendering Helpers ---
+        // --- (Rest of standard functions: Playlist, Album, Search, etc.) ---
         function createSongCardHTML(song) {
             const img = getSongCover(song);
             return `
@@ -1139,25 +1447,18 @@
             `).join('');
         }
 
-        // --- Playlist Logic ---
         function renderPlaylists() { 
             const container = document.getElementById('playlists-container'); 
             const playlists = currentUserData.playlists || []; 
             const likedCount = currentUserData.liked_songs ? currentUserData.liked_songs.length : 0;
-            
             const favCover = currentUserData.favorites_cover 
                 ? `background-image:url('${currentUserData.favorites_cover}'); background-size:cover !important; background-position:center !important;`
                 : `background: linear-gradient(135deg, #FA2D48, #FF7657); display:flex; align-items:center; justify-content:center;`;
-                
-            const favInner = currentUserData.favorites_cover
-                ? ``
-                : `<svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+            const favInner = currentUserData.favorites_cover ? `` : `<svg class="icon" viewBox="0 0 24 24" style="width:50px; height:50px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 
             let html = `
                 <div class="music-card" onclick="openPlaylistDetail('favorites')">
-                    <div class="cover-art" style="${favCover}">
-                        ${favInner}
-                    </div>
+                    <div class="cover-art" style="${favCover}">${favInner}</div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">喜好項目</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${likedCount} 首歌曲</div>
                 </div>
@@ -1166,9 +1467,7 @@
                 const isSelected = selectedPlaylists.has(pl.id);
                 return `
                 <div class="music-card ${isBatchDeleteMode ? 'edit-mode' : ''} ${isSelected ? 'selected' : ''}" onclick="handlePlaylistClick(${pl.id})">
-                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')">
-                        <div class="batch-select-overlay"></div>
-                    </div>
+                    <div class="cover-art" style="background-image:url('${pl.img || DEFAULT_PLAYLIST_IMG}')"><div class="batch-select-overlay"></div></div>
                     <div style="font-weight:bold; font-size:0.95rem; margin-bottom:2px;">${pl.name}</div>
                     <div style="font-size:0.8rem; color:var(--text-secondary);">${pl.songs.length} 首歌曲</div>
                 </div>
@@ -1176,83 +1475,42 @@
             container.innerHTML = html;
         }
 
-        // --- 修正4: 批次刪除邏輯 ---
         function toggleBatchDeleteMode() {
             isBatchDeleteMode = !isBatchDeleteMode;
             selectedPlaylists.clear();
             const btn = document.getElementById('batch-delete-toggle-btn');
             const actionBar = document.getElementById('batch-action-bar');
-            
             if(isBatchDeleteMode) {
-                btn.innerText = "完成";
-                btn.style.color = "var(--accent-color)";
-                actionBar.classList.add('active');
+                btn.innerText = "完成"; btn.style.color = "var(--accent-color)"; actionBar.classList.add('active');
             } else {
-                btn.innerText = "編輯";
-                btn.style.color = "var(--text-primary)";
-                actionBar.classList.remove('active');
+                btn.innerText = "編輯"; btn.style.color = "var(--text-primary)"; actionBar.classList.remove('active');
             }
-            updateBatchSelectCount();
-            renderPlaylists();
+            updateBatchSelectCount(); renderPlaylists();
         }
-
         function handlePlaylistClick(plId) {
-            if(plId === 'favorites') {
-                if(!isBatchDeleteMode) openPlaylistDetail('favorites');
-                return; // Favorites cannot be selected/deleted
-            }
-
+            if(plId === 'favorites') { if(!isBatchDeleteMode) openPlaylistDetail('favorites'); return; }
             if (isBatchDeleteMode) {
-                if (selectedPlaylists.has(plId)) {
-                    selectedPlaylists.delete(plId);
-                } else {
-                    selectedPlaylists.add(plId);
-                }
-                updateBatchSelectCount();
-                renderPlaylists(); // Re-render to show selection
-            } else {
-                openPlaylistDetail(plId);
-            }
+                if (selectedPlaylists.has(plId)) selectedPlaylists.delete(plId); else selectedPlaylists.add(plId);
+                updateBatchSelectCount(); renderPlaylists();
+            } else { openPlaylistDetail(plId); }
         }
-
-        function updateBatchSelectCount() {
-            document.getElementById('batch-select-count').innerText = `已選取 ${selectedPlaylists.size} 個項目`;
-        }
-
+        function updateBatchSelectCount() { document.getElementById('batch-select-count').innerText = `已選取 ${selectedPlaylists.size} 個項目`; }
         async function executeBatchDelete() {
             if (selectedPlaylists.size === 0) return alert("請先選取要刪除的清單");
             if (confirm(`確定要刪除這 ${selectedPlaylists.size} 個播放清單嗎？`)) {
                 currentUserData.playlists = currentUserData.playlists.filter(p => !selectedPlaylists.has(p.id));
-                await saveUserToDB(currentUserData);
-                toggleBatchDeleteMode(); // Exit mode
-                renderPlaylists();
+                await saveUserToDB(currentUserData); toggleBatchDeleteMode(); renderPlaylists();
             }
         }
-
-        function triggerCoverEdit() {
-            if(currentPlaylistId) {
-                document.getElementById('playlist-cover-upload').click();
-            }
-        }
-
+        function triggerCoverEdit() { if(currentPlaylistId) document.getElementById('playlist-cover-upload').click(); }
         function handlePlaylistCoverUpdate(input) {
             if(input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = async function(e) {
                     const newCover = e.target.result;
-                    
-                    if(currentPlaylistId === 'favorites') {
-                        currentUserData.favorites_cover = newCover;
-                    } else {
-                        const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
-                        if(pl) {
-                            pl.img = newCover;
-                        }
-                    }
-                    
-                    await saveUserToDB(currentUserData);
-                    renderPlaylists();
-                    openPlaylistDetail(currentPlaylistId);
+                    if(currentPlaylistId === 'favorites') currentUserData.favorites_cover = newCover;
+                    else { const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId); if(pl) pl.img = newCover; }
+                    await saveUserToDB(currentUserData); renderPlaylists(); openPlaylistDetail(currentPlaylistId);
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -1260,7 +1518,7 @@
         }
 
         function openPlaylistDetail(plId) {
-            let pl, songs, title, subtitle, cover, isDefaultCover;
+            let pl, songs, title, subtitle, cover;
             const coverEl = document.getElementById('cd-cover');
             
             if (plId === 'favorites') {
@@ -1268,19 +1526,8 @@
                 title = "喜好項目";
                 songs = currentUserData.liked_songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 subtitle = `${songs.length} 首歌曲`;
-                
-                if(currentUserData.favorites_cover) {
-                    coverEl.style.background = '#eee';
-                    coverEl.style.backgroundImage = `url('${currentUserData.favorites_cover}')`;
-                    coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
-                } else {
-                    coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
-                    coverEl.style.backgroundImage = 'none'; 
-                    coverEl.innerHTML = `
-                        <svg class="icon" viewBox="0 0 24 24" style="width:80px; height:80px; color:white; stroke:white; fill:white;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                        <div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
-                    `;
-                }
+                coverEl.style.backgroundImage = currentUserData.favorites_cover ? `url('${currentUserData.favorites_cover}')` : 'none';
+                if(!currentUserData.favorites_cover) coverEl.style.background = 'linear-gradient(135deg, #FA2D48, #FF7657)';
             } else {
                 pl = currentUserData.playlists.find(p => p.id === plId);
                 if(!pl) return;
@@ -1288,36 +1535,27 @@
                 songs = pl.songs.map(sid => musicLibrary.find(s => s.id === sid)).filter(s => s);
                 title = pl.name;
                 subtitle = `${songs.length} 首歌曲`;
-                cover = pl.img || DEFAULT_PLAYLIST_IMG;
-
                 coverEl.style.background = '#eee';
-                coverEl.style.backgroundImage = `url(${cover})`;
-                coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
+                coverEl.style.backgroundImage = `url(${pl.img || DEFAULT_PLAYLIST_IMG})`;
             }
 
             currentCollectionSongs = songs;
-
             document.getElementById('cd-nav-title').innerText = title;
             document.getElementById('cd-title').innerText = title;
             document.getElementById('cd-subtitle').innerText = subtitle;
+            coverEl.innerHTML = `<div class="cover-edit-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>`;
 
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
             html += songs.map(s => createPlaylistSongRowHTML(s)).join('');
-
             if (plId !== 'favorites') {
                 html += `
-                <div class="add-music-bar" onclick="openSearchForPlaylist(${plId})">
-                    <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    添加音樂
-                </div>
+                <div class="add-music-bar" onclick="openSearchForPlaylist(${plId})"><svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>添加音樂</div>
                 <div style="margin-top: 40px; margin-bottom: 20px; display: flex; justify-content: flex-end; width: 100%;">
                     <button onclick="deleteCurrentPlaylist()" style="padding: 10px 24px; background: rgba(250, 45, 72, 0.1); color: var(--accent-color); border: 1px solid var(--accent-color); border-radius: 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center;">
-                        <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        刪除此清單
+                        <svg class="icon" viewBox="0 0 24 24" style="width: 18px; height: 18px; margin-right: 6px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>刪除此清單
                     </button>
                 </div>`;
             }
-
             document.getElementById('cd-content-area').innerHTML = html;
             document.getElementById('collection-detail-modal').classList.add('active');
         }
@@ -1327,13 +1565,8 @@
             return `
             <div class="song-list-item" onclick="playSong(${song.id})">
                 <div class="song-row-img" style="background-image:url('${img}')"></div>
-                <div class="song-row-info">
-                    <div class="song-row-title">${song.title}</div>
-                    <div class="song-row-artist">${song.artist}</div>
-                </div>
-                <button class="list-more-btn" onclick="showContextMenu(event, 'playlist_song', {id: ${song.id}, albumName: '${song.album}'})">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
-                </button>
+                <div class="song-row-info"><div class="song-row-title">${song.title}</div><div class="song-row-artist">${song.artist}</div></div>
+                <button class="list-more-btn" onclick="showContextMenu(event, 'playlist_song', {id: ${song.id}, albumName: '${song.album}'})"><svg class="icon" viewBox="0 0 24 24" style="width:18px; height:18px;"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg></button>
             </div>`;
         }
 
@@ -1347,9 +1580,7 @@
             coverEl.style.background = '#eee';
             coverEl.style.backgroundImage = `url(${getAlbumImage(albumName)})`;
             coverEl.innerHTML = '';
-            
             currentCollectionSongs = songs;
-            
             let html = `<h3 style="margin-bottom:15px; font-size:1.1rem; opacity:0; animation:fadeIn 0.5s ease forwards;">歌曲列表</h3>`;
             html += songs.map(s => {
                  const img = getSongCover(s);
@@ -1364,34 +1595,25 @@
             document.getElementById('collection-detail-modal').classList.add('active');
         }
 
-        // --- 修正2: 確保隨機播放是真的隨機排列 ---
         function playCollectionAll(shuffle) {
             if(currentCollectionSongs.length > 0) {
-                // 複製一個新陣列
                 let queue = [...currentCollectionSongs];
                 isShuffleMode = shuffle;
-                
                 if (shuffle) {
-                    // 使用 Fisher-Yates 洗牌，確保即使只有兩首也能交換順序
-                    queue = shuffleArray(queue);
+                    for (let i = queue.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [queue[i], queue[j]] = [queue[j], queue[i]];
+                    }
                 }
-                
                 currentQueue = queue;
-                currentSongIndex = 0; // 永遠從洗牌後的第一首開始
+                currentSongIndex = 0;
                 playSongObject(currentQueue[0]);
+                document.getElementById('btn-shuffle').classList.toggle('active', isShuffleMode);
             }
         }
 
-        function openSearchForPlaylist(plId) {
-            addingToPlaylistId = plId;
-            document.getElementById('playlist-add-search-input').value = '';
-            document.getElementById('playlist-add-results').innerHTML = '<div style="text-align:center; color:var(--text-secondary);">輸入關鍵字以搜尋</div>';
-            document.getElementById('search-for-playlist-modal').classList.add('active');
-        }
-        function closeSearchForPlaylist() {
-            document.getElementById('search-for-playlist-modal').classList.remove('active');
-            addingToPlaylistId = null;
-        }
+        function openSearchForPlaylist(plId) { addingToPlaylistId = plId; document.getElementById('playlist-add-search-input').value = ''; document.getElementById('playlist-add-results').innerHTML = '<div style="text-align:center; color:var(--text-secondary);">輸入關鍵字以搜尋</div>'; document.getElementById('search-for-playlist-modal').classList.add('active'); }
+        function closeSearchForPlaylist() { document.getElementById('search-for-playlist-modal').classList.remove('active'); addingToPlaylistId = null; }
         function handlePlaylistAddSearch(e) {
             const val = e.target.value.toLowerCase().trim();
             const resDiv = document.getElementById('playlist-add-results');
@@ -1408,25 +1630,12 @@
         async function addSongToSpecificPlaylist(sid) {
             if(!addingToPlaylistId) return;
             const p = currentUserData.playlists.find(x => x.id === addingToPlaylistId);
-            if(p && !p.songs.includes(sid)) {
-                p.songs.push(sid);
-                await saveUserToDB(currentUserData);
-                renderPlaylists();
-                openPlaylistDetail(addingToPlaylistId);
-                closeSearchForPlaylist();
-            } else { alert("歌曲已存在於清單中"); }
+            if(p && !p.songs.includes(sid)) { p.songs.push(sid); await saveUserToDB(currentUserData); renderPlaylists(); openPlaylistDetail(addingToPlaylistId); closeSearchForPlaylist(); } else { alert("歌曲已存在於清單中"); }
         }
 
         function openPlaylistSelector(e, idOrName, type){ 
             e.stopPropagation(); 
-            itemsToAdd = [];
-            if (type === 'album') {
-                const albumSongs = musicLibrary.filter(s => s.album === idOrName).map(s => s.id);
-                itemsToAdd = albumSongs;
-            } else {
-                itemsToAdd = [idOrName];
-            }
-
+            itemsToAdd = (type === 'album') ? musicLibrary.filter(s => s.album === idOrName).map(s => s.id) : [idOrName];
             if(!currentUserData.playlists.length){if(confirm("尚未建立清單，是否新建?"))openCreatePlaylistModal();return;} 
             const l=document.getElementById('playlist-selector-list'); 
             l.innerHTML=`<div onclick="openCreatePlaylistModal()" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer; color:var(--accent-color); font-weight:bold;">+ 建立新清單</div>`+currentUserData.playlists.map(p=>`<div onclick="addToPlaylist(${p.id})" style="padding:15px; border-bottom:1px solid var(--divider); cursor:pointer;">${p.name}</div>`).join(''); 
@@ -1438,12 +1647,8 @@
             const p=currentUserData.playlists.find(x=>x.id===pid); 
             if(p){
                 let addedCount = 0;
-                itemsToAdd.forEach(sid => {
-                    if(!p.songs.includes(sid)) { p.songs.push(sid); addedCount++; }
-                });
-                if (addedCount > 0) {
-                    await saveUserToDB(currentUserData); renderPlaylists(); alert(`已加入 ${addedCount} 首歌曲到清單`); 
-                } else { alert("選取的歌曲已存在於清單中"); }
+                itemsToAdd.forEach(sid => { if(!p.songs.includes(sid)) { p.songs.push(sid); addedCount++; } });
+                if (addedCount > 0) { await saveUserToDB(currentUserData); renderPlaylists(); alert(`已加入 ${addedCount} 首歌曲到清單`); } else { alert("選取的歌曲已存在於清單中"); }
             }
             closePlaylistSelector(); 
         }
@@ -1481,23 +1686,10 @@
         function openSettings() { document.getElementById('settings-modal').classList.add('active'); document.getElementById('player-bar').classList.add('hidden'); }
         function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); document.getElementById('player-bar').classList.remove('hidden'); }
         function toggleThemePill() { const isDark=document.body.getAttribute('data-theme')==='dark'; currentUserData.theme=isDark?'light':'dark'; saveUserToDB(currentUserData); updateThemeUI(currentUserData.theme); }
-        
         function updateThemeUI(t) { 
-            const p=document.getElementById('theme-pill'); 
-            const pl=document.getElementById('pill-light'); 
-            const pd=document.getElementById('pill-dark'); 
-            const m=document.getElementById('theme-color-meta'); 
-            if(t==='dark'){ 
-                document.body.setAttribute('data-theme','dark'); 
-                p.setAttribute('data-state','dark'); 
-                pl.classList.remove('active'); pd.classList.add('active'); 
-                m.setAttribute('content','#000000'); 
-            }else{ 
-                document.body.removeAttribute('data-theme'); 
-                p.setAttribute('data-state','light'); 
-                pd.classList.remove('active'); pl.classList.add('active'); 
-                m.setAttribute('content','#FFFFFF'); 
-            } 
+            const p=document.getElementById('theme-pill'); const pl=document.getElementById('pill-light'); const pd=document.getElementById('pill-dark'); const m=document.getElementById('theme-color-meta'); 
+            if(t==='dark'){ document.body.setAttribute('data-theme','dark'); p.setAttribute('data-state','dark'); pl.classList.remove('active'); pd.classList.add('active'); m.setAttribute('content','#000000'); }
+            else{ document.body.removeAttribute('data-theme'); p.setAttribute('data-state','light'); pd.classList.remove('active'); pl.classList.add('active'); m.setAttribute('content','#FFFFFF'); } 
         }
         
         function openCreatePlaylistModal(){ document.getElementById('select-playlist-modal').classList.remove('active'); document.getElementById('create-playlist-modal').classList.add('active'); tempImgBase64=null; document.getElementById('img-preview').style.backgroundImage=''; }
@@ -1505,7 +1697,6 @@
         function previewImage(i){ if(i.files&&i.files[0]){ const r=new FileReader(); r.onload=function(e){ tempImgBase64=e.target.result; document.getElementById('img-preview').style.backgroundImage=`url(${tempImgBase64})`; }; r.readAsDataURL(i.files[0]); } }
         async function confirmCreatePlaylist(){ 
             const n=document.getElementById('new-playlist-name').value; if(!n)return alert("請輸入清單名稱"); 
-            if (document.activeElement) document.activeElement.blur();
             const p={id:Date.now(),name:n,songs:[],img:tempImgBase64}; currentUserData.playlists.push(p); 
             await saveUserToDB(currentUserData); renderPlaylists(); 
             setTimeout(() => { closeCreatePlaylistModal(); document.getElementById('new-playlist-name').value = ''; window.scrollTo(0, 0); }, 300);
@@ -1515,21 +1706,11 @@
             e.stopPropagation(); if (!currentPlaylistId || currentPlaylistId==='favorites') return;
             if(!confirm("確定要從清單移除這首歌嗎？")) return;
             const pl = currentUserData.playlists.find(p => p.id === currentPlaylistId);
-            if (pl) {
-                pl.songs = pl.songs.filter(id => id !== songId); 
-                await saveUserToDB(currentUserData);
-                renderPlaylists(); 
-                openPlaylistDetail(currentPlaylistId);
-            }
+            if (pl) { pl.songs = pl.songs.filter(id => id !== songId); await saveUserToDB(currentUserData); renderPlaylists(); openPlaylistDetail(currentPlaylistId); }
         }
         async function deleteCurrentPlaylist() {
             if (!currentPlaylistId || currentPlaylistId==='favorites') return;
-            if (confirm("確定要刪除此播放清單嗎？")) {
-                currentUserData.playlists = currentUserData.playlists.filter(p => p.id !== currentPlaylistId);
-                await saveUserToDB(currentUserData);
-                renderPlaylists();
-                closeCollectionDetail();
-            }
+            if (confirm("確定要刪除此播放清單嗎？")) { currentUserData.playlists = currentUserData.playlists.filter(p => p.id !== currentPlaylistId); await saveUserToDB(currentUserData); renderPlaylists(); closeCollectionDetail(); }
         }
         function closeCollectionDetail() { document.getElementById('collection-detail-modal').classList.remove('active'); }
         
@@ -1565,18 +1746,15 @@
         }
         function handleHistoryItemClick(type, title, id) { document.getElementById('search-history-dropdown').classList.remove('active'); if(type === 'artist') openArtistDetail(title); else if(type === 'album') openAlbumDetail(title); else if(type === 'song' && id) playSong(parseInt(id)); }
         
-        // --- 修正3: 增加藝人(Artist)搜尋 ---
         async function performSearch(keyword) {
             document.getElementById('search-history-dropdown').classList.remove('active');
             const area = document.getElementById('search-results-area');
             const val = keyword.toLowerCase();
-            
             const matchedSongs = musicLibrary.filter(s => s.title.toLowerCase().includes(val));
             const matchedAlbums = [...new Set(musicLibrary.filter(s => s.album.toLowerCase().includes(val)).map(s => s.album))];
             const matchedArtists = [...new Set(musicLibrary.filter(s => s.artist.toLowerCase().includes(val)).map(s => s.artist))];
             
             let html = '';
-            
             if(matchedArtists.length) {
                 html += `<div class="search-section-title">藝人</div><div class="horizontal-row">` + matchedArtists.map(art => `
                     <div class="artist-card" onclick="handleSearchResultClick('artist', '${art}', '${getArtistImage(art)}')">
@@ -1584,7 +1762,6 @@
                         <div style="font-weight:bold; font-size:0.9rem;">${art}</div>
                     </div>`).join('') + `</div>`;
             }
-
             if(matchedAlbums.length) {
                 html += `<div class="search-section-title">專輯</div><div class="horizontal-row">` + matchedAlbums.map(alb => `
                     <div class="music-card" onclick="handleSearchResultClick('album', '${alb}', '${getAlbumImage(alb)}')">
@@ -1599,17 +1776,12 @@
             area.innerHTML = html;
         }
 
-        // Helper for artist detail (simple version showing songs by that artist)
         function openArtistDetail(artistName) {
-            // Re-use album detail layout for simplicity or create new modal
             openAlbumDetail(artistName); 
-            // Override texts
             document.getElementById('cd-nav-title').innerText = artistName;
             document.getElementById('cd-title').innerText = artistName;
             document.getElementById('cd-subtitle').innerText = "藝人";
             document.getElementById('cd-cover').style.backgroundImage = `url(${getArtistImage(artistName)})`;
-            
-            // Logic to fetch songs by artist
             const songs = musicLibrary.filter(s => s.artist === artistName);
             currentCollectionSongs = songs;
              let html = `<h3 style="margin-bottom:15px; font-size:1.1rem;">歌曲列表</h3>`;
